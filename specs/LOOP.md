@@ -135,8 +135,8 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **iOS audio unlock**: 최초 터치에 `audioCtx.resume()` + 무음 버퍼로 wake (이미 부분 구현, 모바일 검증).
 
 ### Onboarding / polish
-- [ ] **First-run tour**: 1회 한정 툴팁 3스텝 (키 눌러보기 → 홀드해보기 → 1키 DJ).
 - [ ] **다크/라이트 테마 토글** (기본 다크 유지).
+- [ ] **Tour 재방문**: help overlay에 "튜토리얼 다시 보기" 버튼.
 
 ### Audio quality
 
@@ -185,6 +185,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 38 — DRUMROLL 이펙트**: 32분음 28회 반복 + 볼륨 크레셴도 (빌드업용). 총 32개.
 - [x] **[2026-04-17] Loop 39 — 루프 녹음 라이브 카운트**: 녹음 중 버튼 텍스트에 이벤트 개수 실시간 표시.
 - [x] **[2026-04-17] Loop 40 — Esc = 패닉 정지**: Escape가 루프 재생/녹음 + 모든 DJ 노드 stopAllDj. 도움말 업데이트.
+- [x] **[2026-04-17] Loop 41 — First-run tour**: 첫 방문 1.6s 후 3-step 그라디언트 버블 + 대상에 점선 링 포인터. `건너뛰기`/`다음`. `oiia-tour-done-v1` localStorage flag.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

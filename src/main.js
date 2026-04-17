@@ -54,6 +54,52 @@ function setupStartHint() {
 }
 setupStartHint();
 
+function setupTour() {
+  if (localStorage.getItem('oiia-tour-done-v1')) return;
+  const root = document.getElementById('tour');
+  if (!root) return;
+  const titleEl = document.getElementById('tour-title');
+  const bodyEl = document.getElementById('tour-body');
+  const nEl = document.getElementById('tour-n');
+  const arrow = document.getElementById('tour-arrow');
+  const steps = [
+    { title: '키를 눌러보세요', body: 'ㅜ(N) · ㅣ(L) · ㅏ(K) 각 자모가 소리와 파티클을 터뜨립니다.', target: '#keys .key' },
+    { title: '꾹 눌러보세요', body: '키를 1초 이상 유지 → EDM 빌드업 → 드롭 폭발.', target: '#keys .key' },
+    { title: 'DJ 슬롯 1–9', body: '숫자 키 또는 ▶ 버튼으로 DJ 이펙트 발사. 🎲 셔플 해보세요.', target: '#dj-slots .dj-slot-wrap' },
+  ];
+  let i = 0;
+  function position() {
+    const tgt = document.querySelector(steps[i].target);
+    if (!tgt) return;
+    const r = tgt.getBoundingClientRect();
+    arrow.style.left = (r.left + r.width / 2 - 24) + 'px';
+    arrow.style.top = (r.top + r.height / 2 - 24) + 'px';
+  }
+  function render() {
+    titleEl.textContent = steps[i].title;
+    bodyEl.textContent = steps[i].body;
+    nEl.textContent = (i + 1);
+    position();
+  }
+  function done() {
+    localStorage.setItem('oiia-tour-done-v1', '1');
+    root.style.animation = 'sh-fadeout 0.3s ease forwards';
+    setTimeout(() => root.remove(), 320);
+  }
+  document.getElementById('tour-skip').onclick = done;
+  document.getElementById('tour-next').onclick = () => {
+    i++;
+    if (i >= steps.length) done();
+    else render();
+  };
+  window.addEventListener('resize', position);
+  setTimeout(() => {
+    root.hidden = false;
+    render();
+  }, 1600);
+}
+setupTour();
+
 const sessionStats = { key: {}, dj: {}, total: 0, start: Date.now() };
 
 function bumpStat(group, id) {

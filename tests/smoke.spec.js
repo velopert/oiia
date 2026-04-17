@@ -14,9 +14,15 @@ function attachConsoleGuard(page) {
   return errors;
 }
 
+async function suppressTour(page) {
+  await page.addInitScript(() => {
+    try { localStorage.setItem('oiia-tour-done-v1', '1'); } catch {}
+  });
+}
+
 test('start hint shows and dismisses on first interaction', async ({ page }) => {
   const errors = attachConsoleGuard(page);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await expect(page.locator('#start-hint')).toBeVisible();
   await page.keyboard.press('n');
   await page.waitForTimeout(600);
@@ -27,7 +33,7 @@ test('start hint shows and dismisses on first interaction', async ({ page }) => 
 test('app loads, core UI renders, no console errors', async ({ page }, testInfo) => {
   const errors = attachConsoleGuard(page);
 
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await page.keyboard.press('Escape').catch(() => {});
   await page.locator('#start-hint').evaluate((el) => el && el.remove()).catch(() => {});
 
@@ -49,7 +55,7 @@ test('app loads, core UI renders, no console errors', async ({ page }, testInfo)
 
 test('press ㅜ (KeyN) triggers burst FX', async ({ page }) => {
   const errors = attachConsoleGuard(page);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await page.locator('#waveform').click();
   await page.keyboard.press('n');
   await page.waitForTimeout(400);
@@ -59,7 +65,7 @@ test('press ㅜ (KeyN) triggers burst FX', async ({ page }) => {
 
 test('DJ slot 1 triggers drop', async ({ page }) => {
   const errors = attachConsoleGuard(page);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await page.locator('#waveform').click();
   await page.keyboard.press('1');
   await page.waitForTimeout(300);
@@ -70,7 +76,7 @@ test('DJ slot 1 triggers drop', async ({ page }) => {
 
 test('? key opens help overlay, Esc closes', async ({ page }) => {
   const errors = attachConsoleGuard(page);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await page.locator('#start-hint').evaluate((el) => el && el.remove()).catch(() => {});
   await expect(page.locator('#keyhelp')).toBeHidden();
   await page.keyboard.press('Shift+/');
@@ -86,7 +92,7 @@ test('haptic vibrate fires on key press (when API present)', async ({ page }) =>
     window.__vibrateCalls = [];
     navigator.vibrate = (p) => { window.__vibrateCalls.push(p); return true; };
   });
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await page.keyboard.press('n');
   await page.waitForTimeout(100);
   const calls = await page.evaluate(() => window.__vibrateCalls);
@@ -96,7 +102,7 @@ test('haptic vibrate fires on key press (when API present)', async ({ page }) =>
 
 test('record button toggles state', async ({ page }) => {
   const errors = attachConsoleGuard(page);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   const btn = page.locator('#rec');
   await expect(btn).toBeVisible();
   await expect(btn).toHaveText(/녹음/);
@@ -110,7 +116,7 @@ test('record button toggles state', async ({ page }) => {
 });
 
 test('touch key pads are rendered at touchable size', async ({ page }) => {
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   const first = page.locator('#keys .key').first();
   const box = await first.boundingBox();
   expect(box.height).toBeGreaterThanOrEqual(72);
@@ -118,7 +124,7 @@ test('touch key pads are rendered at touchable size', async ({ page }) => {
 
 test('tap tempo computes BPM after a few taps', async ({ page }) => {
   const errors = attachConsoleGuard(page);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   const btn = page.locator('#tap');
   await expect(btn).toBeVisible();
   await expect(page.locator('#bpm-value')).toHaveText('— BPM');
@@ -137,7 +143,7 @@ test('tap tempo computes BPM after a few taps', async ({ page }) => {
 test('share creates URL preset that reloads into app', async ({ page, context }) => {
   const errors = attachConsoleGuard(page);
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await page.waitForSelector('select[data-slot="0"]');
 
   await page.selectOption('select[data-slot="0"]', 'reverse');
@@ -155,7 +161,7 @@ test('share creates URL preset that reloads into app', async ({ page, context })
 
 test('auto-beat triggers key presses', async ({ page }) => {
   const errors = attachConsoleGuard(page);
-  await page.goto('/');
+  await suppressTour(page); await page.goto('/');
   await page.addInitScript(() => { window.__pressCount = 0; });
   await page.evaluate(() => {
     const origKey = document.dispatchEvent;
@@ -167,9 +173,20 @@ test('auto-beat triggers key presses', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test('A key spawns a cat', async ({ page }) => {
+test('first-run tour appears and can be skipped', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');
+  await expect(page.locator('#tour')).toBeVisible({ timeout: 3000 });
+  await expect(page.locator('#tour-title')).not.toBeEmpty();
+  await page.locator('#tour-skip').click();
+  await page.waitForTimeout(400);
+  await expect(page.locator('#tour')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('A key spawns a cat', async ({ page }) => {
+  const errors = attachConsoleGuard(page);
+  await suppressTour(page); await page.goto('/');
   await page.locator('#waveform').click();
   await page.keyboard.press('a');
   await expect(page.locator('.cat-layer .cat-pop')).toBeVisible();
