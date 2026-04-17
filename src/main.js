@@ -553,7 +553,7 @@ app.innerHTML = `
     </label>
   </div>
   <div id="countdown" class="countdown" hidden></div>
-  <div id="toast" class="toast" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 `;
 
 applyAllI18n();
