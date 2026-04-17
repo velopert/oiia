@@ -1,0 +1,17 @@
+{
+  "name": "Oiiai Keyboard",
+  "short_name": "Oiiai",
+  "description": "The viral oiiai cat keyboard with DJ effects.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#111111",
+  "theme_color": "#5aaaff",
+  "icons": [
+    {
+      "src": "oia-uia.gif",
+      "sizes": "any",
+      "type": "image/gif"
+    }
+  ]
+}

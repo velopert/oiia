@@ -134,7 +134,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 ### Mobile & cross-device
 - [ ] **풀 모바일 패드 모드**: 작은 화면에서 전체 하단 터치 바에 고정 — 현재는 인라인 + 폰트/사이즈 튜닝 단계.
 - [ ] **Orientation-aware**: portrait = 하단 패드, landscape = 좌우 분리.
-- [ ] **PWA**: manifest + service worker, 홈 추가 가능.
+- [ ] **PWA service worker**: 오프라인 작동. 현재는 manifest만 있음.
 - [ ] **iOS audio unlock**: 최초 터치에 `audioCtx.resume()` + 무음 버퍼로 wake (이미 부분 구현, 모바일 검증).
 
 ### Onboarding / polish
@@ -164,6 +164,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 11 — URL preset 공유**: base64url 해시로 세그먼트+DJ 매핑 인코딩, `🔗 링크 공유` 버튼이 clipboard 복사 + history replace. 페이지 로드 시 `#p=` 감지 → 자동 적용 + 토스트.
 - [x] **[2026-04-17] Loop 12 — Screen Wake Lock**: 첫 키프레스에 `navigator.wakeLock.request('screen')`, visibilitychange로 재획득. 미지원 브라우저는 무음 실패.
 - [x] **[2026-04-17] Loop 13 — Auto-beat 버튼**: 16-step 8분박 랜덤 패턴 4종 중 하나 + 중간중간 DJ 트리거 자동 발사. BPM 설정되어 있으면 거기에 맞춤.
+- [x] **[2026-04-17] Loop 14 — PWA 매니페스트**: `manifest.webmanifest` + apple-touch-icon + theme-color meta. 홈 추가 가능 (iOS/Android).
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
