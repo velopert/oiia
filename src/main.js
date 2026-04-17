@@ -2427,14 +2427,19 @@ function applyNamedPreset(p) {
   toast(t('toast.preset', { name: p.name }));
 }
 
+let activePresetIdx = -1;
 function renderPresets() {
   const el = document.getElementById('presets');
   if (!el) return;
   el.innerHTML = PRESETS.map((p, i) =>
-    `<button class="preset-btn" data-preset="${i}">${p.name}${p.bpm ? ` · ${p.bpm}` : ''}</button>`
+    `<button class="preset-btn${i === activePresetIdx ? ' active' : ''}" data-preset="${i}">${p.name}${p.bpm ? ` · ${p.bpm}` : ''}</button>`
   ).join('');
   el.querySelectorAll('[data-preset]').forEach((b) => {
-    b.addEventListener('click', () => applyNamedPreset(PRESETS[+b.dataset.preset]));
+    b.addEventListener('click', () => {
+      activePresetIdx = +b.dataset.preset;
+      applyNamedPreset(PRESETS[activePresetIdx]);
+      renderPresets();
+    });
   });
 }
 

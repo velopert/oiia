@@ -163,8 +163,17 @@ html[data-theme="light"] .ticker-chip { color: #111; background: color-mix(in sr
   transition: background 0.12s;
 }
 .preset-btn:hover { background: #242424; border-color: #5af; }
+.preset-btn.active {
+  background: #3a7fff;
+  color: #fff;
+  border-color: #3a7fff;
+  box-shadow: 0 0 0 2px rgba(58,127,255,0.3);
+}
 html[data-theme="light"] .preset-btn { background: #fff; color: #222; border-color: #d0d0d0; }
 html[data-theme="light"] .preset-btn:hover { background: #eaf2ff; }
+html[data-theme="light"] .preset-btn.active {
+  background: #3a7fff; color: #fff; border-color: #3a7fff;
+}
 
 
 .keys {
