@@ -285,6 +285,8 @@ function applyAllI18n() {
   if (sb) sb.textContent = t('start.button');
   const sh = document.querySelector('#start-hint .start-text');
   if (sh) sh.textContent = t('start.hint');
+  const sj = document.querySelector('#start-hint .start-jamo');
+  if (sj) sj.textContent = t('start.jamo');
   const shuffle = document.getElementById('dj-shuffle-inline');
   if (shuffle) { shuffle.textContent = t('dj.shuffle'); shuffle.title = t('dj.shuffle.title'); }
   const tourSkip = document.getElementById('tour-skip');
@@ -420,7 +422,7 @@ document.getElementById('replay-tour')?.addEventListener('click', (e) => {
 document.getElementById('reset-storage')?.addEventListener('click', (e) => {
   e.stopPropagation();
   if (!confirm(t('confirm.resetAll'))) return;
-  ['oiia-segments-v11', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
+  ['oiia-segments-v12', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
   location.href = location.origin + location.pathname;
 });
 
@@ -487,9 +489,9 @@ const DEFAULT_SEGMENTS = [
   { id: 'o', jamo: 'ㅜ', latin: 'O', code: 'KeyN', key: 'ㅜ', start: 0.430, end: 0.622, color: '#ff6b6b' },
   { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },
   { id: 'a', jamo: 'ㅏ', latin: 'A', code: 'KeyK', key: 'ㅏ', start: 0.831, end: 1.017, color: '#6bcf7f' },
-  { id: 'ka', jamo: 'A', latin: 'A', code: 'KeyQ', key: 'q', start: 0.440, end: 2.041, color: '#4d96ff' },
-  { id: 'kb', jamo: 'B', latin: 'B', code: 'KeyW', key: 'w', start: 3.272, end: 5.304, color: '#c86bff' },
-  { id: 'kc', jamo: 'C', latin: 'C', code: 'KeyE', key: 'e', start: 0.852, end: 1.257, color: '#4dd0e1' },
+  { id: 'ka', jamo: 'Q', latin: 'Q', code: 'KeyQ', key: 'q', start: 0.440, end: 2.041, color: '#4d96ff' },
+  { id: 'kb', jamo: 'W', latin: 'W', code: 'KeyW', key: 'w', start: 3.272, end: 5.304, color: '#c86bff' },
+  { id: 'kc', jamo: 'E', latin: 'E', code: 'KeyE', key: 'e', start: 0.852, end: 1.257, color: '#4dd0e1' },
 ];
 
 const KEY_LAYOUT = {
@@ -497,17 +499,17 @@ const KEY_LAYOUT = {
     { segId: 'o',  jamo: 'ㅜ', latin: 'O', code: 'KeyN' },
     { segId: 'i',  jamo: 'ㅣ', latin: 'I', code: 'KeyL' },
     { segId: 'a',  jamo: 'ㅏ', latin: 'A', code: 'KeyK' },
-    { segId: 'ka', jamo: 'A',  latin: 'A', code: 'KeyQ' },
-    { segId: 'kb', jamo: 'B',  latin: 'B', code: 'KeyW' },
-    { segId: 'kc', jamo: 'C',  latin: 'C', code: 'KeyE' },
+    { segId: 'ka', jamo: 'Q',  latin: 'Q', code: 'KeyQ' },
+    { segId: 'kb', jamo: 'W',  latin: 'W', code: 'KeyW' },
+    { segId: 'kc', jamo: 'E',  latin: 'E', code: 'KeyE' },
   ],
   en: [
-    { segId: 'o',  jamo: 'o', latin: 'O', code: 'KeyN' },
+    { segId: 'o',  jamo: 'o', latin: 'O', code: 'KeyO' },
     { segId: 'i',  jamo: 'i', latin: 'I', code: 'KeyI' },
     { segId: 'a',  jamo: 'a', latin: 'A', code: 'KeyA' },
-    { segId: 'ka', jamo: 'A', latin: 'A', code: 'KeyQ' },
-    { segId: 'kb', jamo: 'B', latin: 'B', code: 'KeyW' },
-    { segId: 'kc', jamo: 'C', latin: 'C', code: 'KeyE' },
+    { segId: 'ka', jamo: 'Q', latin: 'Q', code: 'KeyQ' },
+    { segId: 'kb', jamo: 'W', latin: 'W', code: 'KeyW' },
+    { segId: 'kc', jamo: 'E', latin: 'E', code: 'KeyE' },
   ],
 };
 let KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
@@ -578,7 +580,7 @@ const segsEl = document.getElementById('segments');
 
 function loadSegments() {
   try {
-    const saved = localStorage.getItem('oiia-segments-v11');
+    const saved = localStorage.getItem('oiia-segments-v12');
     if (saved) return JSON.parse(saved);
   } catch {}
   return structuredClone(DEFAULT_SEGMENTS);
@@ -601,7 +603,7 @@ function undoSegments() {
       s.end = restored[i].end;
     }
   });
-  localStorage.setItem('oiia-segments-v11', JSON.stringify(segments));
+  localStorage.setItem('oiia-segments-v12', JSON.stringify(segments));
   renderSegments();
   renderActiveBar();
   drawWaveform();
@@ -610,7 +612,7 @@ function undoSegments() {
 }
 
 function saveSegments() {
-  localStorage.setItem('oiia-segments-v11', JSON.stringify(segments));
+  localStorage.setItem('oiia-segments-v12', JSON.stringify(segments));
   pushSegHistory();
 }
 
