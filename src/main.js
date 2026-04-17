@@ -1416,7 +1416,22 @@ function shuffleDj() {
 }
 document.getElementById('shuffle-dj').onclick = shuffleDj;
 document.getElementById('make-clip').onclick = makeClip;
-document.getElementById('loop-btn').onclick = loopToggle;
+document.getElementById('loop-btn').addEventListener('click', (e) => {
+  if (e.shiftKey) {
+    loopEvents = [];
+    loopPlaying = false;
+    loopRecording = false;
+    loopTimeouts.forEach((id) => clearTimeout(id));
+    loopTimeouts = [];
+    if (loopIterTimer) clearTimeout(loopIterTimer);
+    const btn = document.getElementById('loop-btn');
+    btn.textContent = '🔁 루프';
+    btn.classList.remove('on', 'rec');
+    toast('루프 클리어');
+    return;
+  }
+  loopToggle();
+});
 document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
 document.getElementById('share-x').onclick = () => {
