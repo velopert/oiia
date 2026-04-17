@@ -1138,6 +1138,20 @@ function schedulePulse() {
 
 window.__getBpm = () => currentBpm;
 
+document.getElementById('bpm-value').addEventListener('dblclick', (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  const input = prompt('BPM 입력 (40–240)', currentBpm || '');
+  if (input === null) return;
+  const n = parseInt(input);
+  if (!isNaN(n) && n >= 40 && n <= 240) {
+    currentBpm = n;
+    tapTimes = [];
+    document.getElementById('bpm-value').textContent = n + ' BPM';
+    schedulePulse();
+    toast('BPM ' + n + '으로 설정');
+  }
+});
 document.getElementById('tap').onclick = tapBeat;
 document.getElementById('rec').onclick = toggleRec;
 
