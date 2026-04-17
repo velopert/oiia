@@ -1269,6 +1269,7 @@ function encodePreset() {
   const data = {
     s: segments.map((x) => ({ id: x.id, s: +x.start.toFixed(4), e: +x.end.toFixed(4) })),
     d: djMapping,
+    b: currentBpm || undefined,
   };
   const json = JSON.stringify(data);
   return btoa(unescape(encodeURIComponent(json)))
@@ -1300,6 +1301,12 @@ function applyPreset(p) {
   if (Array.isArray(p.d) && p.d.length === 9) {
     djMapping = p.d.map((id) => (DJ_EFFECTS.find((e) => e.id === id) ? id : DEFAULT_DJ_MAPPING[0]));
     saveDjMapping();
+  }
+  if (typeof p.b === 'number' && p.b >= 40 && p.b <= 240) {
+    currentBpm = p.b;
+    const bv = document.getElementById('bpm-value');
+    if (bv) bv.textContent = p.b + ' BPM';
+    schedulePulse();
   }
   return true;
 }
