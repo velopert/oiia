@@ -793,6 +793,37 @@ function dj_pingpong() {
   s.start();
 }
 
+function dj_swell() {
+  const s = djBufferSource();
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  s.connect(g).connect(masterOut);
+  const t = audioCtx.currentTime;
+  g.gain.setValueAtTime(0, t);
+  g.gain.exponentialRampToValueAtTime(1, t + 1.4);
+  g.gain.setValueAtTime(1, t + 2.6);
+  g.gain.exponentialRampToValueAtTime(0.01, t + 3.0);
+  s.start();
+}
+
+function dj_chop() {
+  const s = djBufferSource();
+  const g = audioCtx.createGain();
+  g.gain.value = 1;
+  s.connect(g).connect(masterOut);
+  const t = audioCtx.currentTime;
+  const step = currentBpm ? beatSec(16) : 0.1;
+  const total = getDjBuffer().duration || 2;
+  let tt = t;
+  let on = true;
+  while (tt < t + total) {
+    g.gain.setValueAtTime(on ? 1 : 0, tt);
+    tt += step * (0.6 + Math.random() * 0.8);
+    on = Math.random() > 0.35;
+  }
+  s.start();
+}
+
 function dj_phaser() {
   const s = djBufferSource();
   const lfo = djOsc('sine', 0.5);
@@ -906,6 +937,8 @@ const DJ_EFFECTS = [
   { id: 'tapestop', name: 'TAPESTOP', color: '#ee4422', play: dj_tapestop,      desc: '1.2초에 걸쳐 서서히 정지' },
   { id: 'glitch',   name: 'GLITCH',   color: '#ff0066', play: dj_glitch,        desc: '랜덤 오프셋·길이·피치·방향 스터터' },
   { id: 'phaser',   name: 'PHASER',   color: '#66aaff', play: dj_phaser,        desc: '4단 allpass 위상 시프트 + 0.5Hz LFO' },
+  { id: 'swell',    name: 'SWELL',    color: '#88ffaa', play: dj_swell,         desc: '1.4초 볼륨 스웰 인 → 급격 페이드' },
+  { id: 'chop',     name: 'CHOP',     color: '#ff55bb', play: dj_chop,          desc: 'BPM 기반 랜덤 게이트 (trance gate)' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];

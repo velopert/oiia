@@ -177,6 +177,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 29 — 루프 클리어**: Shift-click on 🔁로 녹음/재생 전부 정리.
 - [x] **[2026-04-17] Loop 30 — 안티앨리어싱**: `antiAliasFilter(maxRate)` 헬퍼, CHIP/SCRATCH/POWERUP/LASER에 pre-lowpass(Nyquist/maxRate*0.88) 체인 삽입.
 - [x] **[2026-04-17] Loop 31 — DJ 기본값 복원**: 셔플 옆에 ↺ 버튼, DEFAULT_DJ_MAPPING으로 즉시 복원.
+- [x] **[2026-04-17] Loop 32 — DJ 이펙트 +2종**: SWELL(1.4s 볼륨 스웰), CHOP(BPM 기반 랜덤 trance gate). 총 30개.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
