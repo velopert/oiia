@@ -397,11 +397,14 @@ html[data-theme="light"] .dj-filter { background: #fff; color: #222; border-colo
   color: #eee;
   border: 1px solid #333;
   border-radius: 4px;
-  padding: 5px 6px;
+  padding: 7px 6px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  min-height: 32px;
 }
+.dj-filter::placeholder { color: #888; }
+html[data-theme="light"] .dj-filter::placeholder { color: #999; }
 .dj-slot select:hover { background: #2a2a2a; }
 .dj-slot button {
   background: var(--c, #5af);
