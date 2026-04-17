@@ -173,7 +173,13 @@ setupTour();
 
 function setupTheme() {
   const saved = localStorage.getItem('oiia-theme-v1');
-  if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  let initialLight;
+  if (saved === 'light' || saved === 'dark') {
+    initialLight = saved === 'light';
+  } else {
+    initialLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  }
+  if (initialLight) document.documentElement.setAttribute('data-theme', 'light');
   const btn = document.createElement('button');
   btn.className = 'theme-toggle';
   btn.setAttribute('aria-label', t('aria.theme'));
