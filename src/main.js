@@ -1,0 +1,1000 @@
+import './style.css';
+import oiiaUrl from '/oiia.mp3?url';
+import catGifUrl from '/oia-uia.gif?url';
+import { createFX, createCatSpawner } from './effects.js';
+
+const fx = createFX();
+const catFx = createCatSpawner(catGifUrl);
+
+const DEFAULT_SEGMENTS = [
+  { id: 'o', jamo: 'ㅜ', latin: 'O', code: 'KeyN', key: 'ㅜ', start: 0.430, end: 0.622, color: '#ff6b6b' },
+  { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },
+  { id: 'a', jamo: 'ㅏ', latin: 'A', code: 'KeyK', key: 'ㅏ', start: 0.831, end: 1.017, color: '#6bcf7f' },
+  { id: 'ka', jamo: 'A', latin: 'A', code: 'KeyA', key: 'a', start: 0.440, end: 2.041, color: '#4d96ff' },
+  { id: 'kb', jamo: 'B', latin: 'B', code: 'KeyB', key: 'b', start: 3.268, end: 5.304, color: '#c86bff' },
+];
+
+const KEY_ORDER = [
+  { jamo: 'ㅜ', latin: 'O', code: 'KeyN', segId: 'o' },
+  { jamo: 'ㅣ', latin: 'I', code: 'KeyL', segId: 'i' },
+  { jamo: 'ㅏ', latin: 'A', code: 'KeyK', segId: 'a' },
+  { jamo: 'A', latin: 'A', code: 'KeyA', segId: 'ka' },
+  { jamo: 'B', latin: 'B', code: 'KeyB', segId: 'kb' },
+];
+
+const app = document.getElementById('app');
+app.innerHTML = `
+  <h1>Oiiai Keyboard</h1>
+  <div class="hint">
+    <code>ㅜ</code><code>ㅣ</code><code>ㅣ</code><code>ㅏ</code> (물리키 N/L/K) · 추가 슬롯 <code>A</code><code>B</code> · <code>1</code>–<code>9</code> = 🎧 DJ 이펙트 슬롯 · 꾹 누르기 = EDM 빌드업 + 드롭
+    <br/>파형 조작: 구간 <b>클릭=선택</b> · 바디 <b>드래그=이동</b> · 경계선 <b>드래그=리사이즈</b> · 빈영역 <b>드래그=선택된 구간 범위 재지정</b> · 빈영역 클릭=미리듣기
+    <br/>단축키: Space=전체재생 · <code>Tab</code>=구간 순환 · 파형 드래그로 구간 튜닝
+  </div>
+  <div class="active-bar" id="active-bar"></div>
+  <canvas id="waveform"></canvas>
+  <div class="keys" id="keys"></div>
+  <div class="segments" id="segments"></div>
+  <h3 style="margin:24px 0 8px;font-size:14px;color:#888;">🎧 DJ 슬롯 (1–9 키)</h3>
+  <div class="dj-slots" id="dj-slots"></div>
+  <div class="controls">
+    <button id="play-all">▶ 전체 재생 (Space)</button>
+    <button id="play-oiia" class="secondary">▶ ㅜㅣㅣㅏ 순서로</button>
+    <button id="reset" class="secondary">↺ 기본값</button>
+    <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
+  </div>
+`;
+
+let audioCtx;
+let buffer;
+let segments = loadSegments();
+let activeSegIndex = 0;
+let dragState = null;
+
+const canvas = document.getElementById('waveform');
+const keysEl = document.getElementById('keys');
+const segsEl = document.getElementById('segments');
+
+function loadSegments() {
+  try {
+    const saved = localStorage.getItem('oiia-segments-v7');
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return structuredClone(DEFAULT_SEGMENTS);
+}
+
+function saveSegments() {
+  localStorage.setItem('oiia-segments-v7', JSON.stringify(segments));
+}
+
+async function init() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const res = await fetch(oiiaUrl);
+    const arr = await res.arrayBuffer();
+    buffer = await audioCtx.decodeAudioData(arr);
+    clampSegments();
+    renderKeys();
+    renderActiveBar();
+    renderSegments();
+    renderDjSlots();
+    drawWaveform();
+  } catch (err) {
+    app.innerHTML = `<div class="error">로드 실패: ${err.message}</div>`;
+  }
+}
+
+function clampSegments() {
+  segments.forEach((s) => {
+    if (s.end > buffer.duration) s.end = buffer.duration;
+    if (s.start < 0) s.start = 0;
+    if (s.start >= s.end) s.start = Math.max(0, s.end - 0.05);
+  });
+}
+
+function drawWaveform() {
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, w, h);
+
+  const data = buffer.getChannelData(0);
+  const step = Math.ceil(data.length / w);
+  const amp = h / 2;
+
+  ctx.strokeStyle = '#3a7ab8';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i < w; i++) {
+    let min = 1, max = -1;
+    for (let j = 0; j < step; j++) {
+      const v = data[i * step + j];
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    ctx.moveTo(i, (1 + min) * amp);
+    ctx.lineTo(i, (1 + max) * amp);
+  }
+  ctx.stroke();
+
+  segments.forEach((s, i) => {
+    const x1 = (s.start / buffer.duration) * w;
+    const x2 = (s.end / buffer.duration) * w;
+    const isActive = i === activeSegIndex;
+    ctx.fillStyle = s.color + (isActive ? '55' : '1f');
+    ctx.fillRect(x1, 0, x2 - x1, h);
+    ctx.fillStyle = s.color;
+    ctx.fillRect(x1, 0, isActive ? 3 : 2, h);
+    ctx.fillRect(x2 - (isActive ? 3 : 2), 0, isActive ? 3 : 2, h);
+    ctx.fillStyle = '#fff';
+    ctx.font = (isActive ? 'bold 14px' : 'bold 13px') + ' sans-serif';
+    ctx.fillText(s.jamo + (isActive ? ' ●' : ''), x1 + 4, 16);
+  });
+
+  ctx.fillStyle = '#555';
+  ctx.font = '10px ui-monospace, monospace';
+  for (let t = 0; t <= buffer.duration; t += 0.5) {
+    const x = (t / buffer.duration) * w;
+    ctx.fillRect(x, h - 8, 1, 8);
+    ctx.fillText(t.toFixed(1) + 's', x + 2, h - 10);
+  }
+}
+
+function renderKeys() {
+  keysEl.innerHTML = '';
+  KEY_ORDER.forEach((k) => {
+    const el = document.createElement('div');
+    el.className = 'key';
+    el.id = 'key-' + k.code;
+    el.innerHTML = `
+      <div class="jamo">${k.jamo}</div>
+      <div class="latin">${k.latin}</div>
+      <div class="bind">${k.code.replace('Key', '')} · ${k.jamo}</div>
+    `;
+    el.addEventListener('pointerdown', () => pressKey(k.code));
+    keysEl.appendChild(el);
+  });
+}
+
+function renderSegments() {
+  segsEl.innerHTML = '';
+  segments.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'seg' + (i === activeSegIndex ? ' active' : '');
+    el.dataset.idx = i;
+    el.addEventListener('click', (ev) => {
+      if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'BUTTON') return;
+      setActiveSegment(i);
+    });
+    el.innerHTML = `
+      <div class="seg-head">
+        <span class="seg-label">${s.jamo} <span style="color:#888;font-weight:400">(${s.id})</span></span>
+        <span class="seg-meta">${(s.end - s.start).toFixed(3)}s</span>
+      </div>
+      <div class="row"><span>start</span><span id="v-${i}-start">${s.start.toFixed(3)}s</span></div>
+      <input type="range" min="0" max="${buffer.duration.toFixed(3)}" step="0.005" value="${s.start}" data-i="${i}" data-k="start">
+      <div class="row"><span>end</span><span id="v-${i}-end">${s.end.toFixed(3)}s</span></div>
+      <input type="range" min="0" max="${buffer.duration.toFixed(3)}" step="0.005" value="${s.end}" data-i="${i}" data-k="end">
+      <button data-play="${i}">▶ ${s.jamo} 재생</button>
+    `;
+    segsEl.appendChild(el);
+  });
+  segsEl.querySelectorAll('input[type=range]').forEach((inp) => {
+    inp.addEventListener('input', (e) => {
+      const i = +e.target.dataset.i;
+      const k = e.target.dataset.k;
+      segments[i][k] = +e.target.value;
+      document.getElementById(`v-${i}-${k}`).textContent = (+e.target.value).toFixed(3) + 's';
+      segsEl.children[i].querySelector('.seg-meta').textContent = (segments[i].end - segments[i].start).toFixed(3) + 's';
+      saveSegments();
+      drawWaveform();
+    });
+  });
+  segsEl.querySelectorAll('button[data-play]').forEach((btn) => {
+    btn.addEventListener('click', () => playSegmentByIndex(+btn.dataset.play));
+  });
+}
+
+function playSegmentByIndex(i) {
+  const s = segments[i];
+  if (!s) return;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  src.connect(audioCtx.destination);
+  const dur = Math.max(0.01, s.end - s.start);
+  src.start(0, s.start, dur);
+}
+
+function playSegmentById(id) {
+  const i = segments.findIndex((s) => s.id === id);
+  if (i >= 0) playSegmentByIndex(i);
+}
+
+function pressKey(code, intensity = 1) {
+  if (audioCtx?.state === 'suspended') audioCtx.resume();
+  const k = KEY_ORDER.find((x) => x.code === code);
+  if (!k) return;
+  playSegmentById(k.segId);
+  flashKey(code);
+  const seg = segments.find((s) => s.id === k.segId);
+  if (seg) fx.burst(seg.color, seg.jamo, intensity);
+  if (code === 'KeyA') catFx.spawn();
+}
+
+const activeDjNodes = new Set();
+
+function stopAllDj() {
+  for (const n of activeDjNodes) {
+    try { n.stop(); } catch {}
+  }
+  activeDjNodes.clear();
+}
+
+let aSubBufferCache = null;
+let aSubBufferKey = '';
+
+function getDjBuffer() {
+  if (!buffer) return null;
+  const seg = segments.find((s) => s.id === 'ka');
+  if (!seg) return buffer;
+  const key = `${seg.start.toFixed(4)}|${seg.end.toFixed(4)}`;
+  if (aSubBufferCache && aSubBufferKey === key) return aSubBufferCache;
+
+  const sampleStart = Math.max(0, Math.floor(seg.start * buffer.sampleRate));
+  const sampleEnd = Math.min(buffer.length, Math.floor(seg.end * buffer.sampleRate));
+  const length = Math.max(1, sampleEnd - sampleStart);
+  const sub = audioCtx.createBuffer(buffer.numberOfChannels, length, buffer.sampleRate);
+  for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+    const src = buffer.getChannelData(ch);
+    const dst = sub.getChannelData(ch);
+    for (let i = 0; i < length; i++) dst[i] = src[sampleStart + i];
+  }
+  aSubBufferCache = sub;
+  aSubBufferKey = key;
+  return sub;
+}
+
+function djBufferSource(buf) {
+  const s = audioCtx.createBufferSource();
+  s.buffer = buf || getDjBuffer();
+  activeDjNodes.add(s);
+  return s;
+}
+
+function djOsc(type, freq) {
+  const o = audioCtx.createOscillator();
+  o.type = type || 'sine';
+  o.frequency.value = freq;
+  activeDjNodes.add(o);
+  return o;
+}
+
+function makeDistortionCurve(amount) {
+  const n = 44100;
+  const curve = new Float32Array(n);
+  const deg = Math.PI / 180;
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+  }
+  return curve;
+}
+
+function reverseBuffer(buf) {
+  const rev = audioCtx.createBuffer(buf.numberOfChannels, buf.length, buf.sampleRate);
+  for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+    const src = buf.getChannelData(ch);
+    const dst = rev.getChannelData(ch);
+    for (let i = 0; i < src.length; i++) dst[i] = src[src.length - 1 - i];
+  }
+  return rev;
+}
+
+function dj_distort() {
+  const ws = audioCtx.createWaveShaper();
+  ws.curve = makeDistortionCurve(600);
+  ws.oversample = '4x';
+  const g = audioCtx.createGain();
+  g.gain.value = 0.35;
+  ws.connect(g).connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(ws);
+  s.start();
+}
+
+function dj_reverse() {
+  const s = djBufferSource(reverseBuffer(getDjBuffer()));
+  s.connect(audioCtx.destination);
+  s.start();
+}
+
+function dj_deep() {
+  const s = djBufferSource();
+  s.playbackRate.value = 0.55;
+  const g = audioCtx.createGain();
+  g.gain.value = 1.2;
+  s.connect(g).connect(audioCtx.destination);
+  s.start();
+}
+
+function dj_chipmunk() {
+  const s = djBufferSource();
+  s.playbackRate.value = 1.9;
+  s.connect(audioCtx.destination);
+  s.start();
+}
+
+function dj_sweep() {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'lowpass';
+  f.Q.value = 10;
+  f.connect(audioCtx.destination);
+  const t = audioCtx.currentTime;
+  f.frequency.setValueAtTime(150, t);
+  f.frequency.exponentialRampToValueAtTime(14000, t + 2.5);
+  const s = djBufferSource();
+  s.connect(f);
+  s.start();
+}
+
+function dj_riser() {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'highpass';
+  f.Q.value = 6;
+  f.connect(audioCtx.destination);
+  const t = audioCtx.currentTime;
+  f.frequency.setValueAtTime(100, t);
+  f.frequency.exponentialRampToValueAtTime(6000, t + 2.2);
+  const s = djBufferSource();
+  s.connect(f);
+  s.start();
+}
+
+function dj_stutter() {
+  const segLen = 0.09;
+  const gap = 0.015;
+  const count = 14;
+  const startT = 0;
+  const base = audioCtx.currentTime;
+  for (let i = 0; i < count; i++) {
+    const s = djBufferSource();
+    s.connect(audioCtx.destination);
+    s.start(base + i * (segLen + gap), startT, segLen);
+  }
+}
+
+function dj_scratch() {
+  const s = djBufferSource();
+  s.connect(audioCtx.destination);
+  const t = audioCtx.currentTime;
+  s.playbackRate.setValueAtTime(0.2, t);
+  s.playbackRate.linearRampToValueAtTime(2.5, t + 0.25);
+  s.playbackRate.linearRampToValueAtTime(0.4, t + 0.55);
+  s.playbackRate.linearRampToValueAtTime(1.8, t + 0.9);
+  s.playbackRate.linearRampToValueAtTime(1.0, t + 1.3);
+  s.start();
+  s.stop(t + 2);
+}
+
+function dj_wubwub() {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'lowpass';
+  f.Q.value = 18;
+  f.frequency.value = 1500;
+  f.connect(audioCtx.destination);
+  const lfo = djOsc('sine', 7);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 1400;
+  lfo.connect(lfoGain).connect(f.frequency);
+  lfo.start();
+  const s = djBufferSource();
+  s.connect(f);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_echo() {
+  const delay = audioCtx.createDelay(2);
+  delay.delayTime.value = 0.22;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.55;
+  const wet = audioCtx.createGain();
+  wet.gain.value = 0.7;
+  delay.connect(fb).connect(delay);
+  delay.connect(wet).connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(audioCtx.destination);
+  s.connect(delay);
+  s.start();
+}
+
+function dj_crush() {
+  const ws = audioCtx.createWaveShaper();
+  const steps = 8;
+  const n = 256;
+  const curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    curve[i] = Math.round(x * steps) / steps;
+  }
+  ws.curve = curve;
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'lowpass';
+  f.frequency.value = 3500;
+  ws.connect(f).connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(ws);
+  s.start();
+}
+
+function dj_tremolo() {
+  const g = audioCtx.createGain();
+  g.connect(audioCtx.destination);
+  g.gain.value = 0.5;
+  const lfo = djOsc('sine', 9);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 0.5;
+  lfo.connect(lfoGain).connect(g.gain);
+  lfo.start();
+  const s = djBufferSource();
+  s.connect(g);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_flanger() {
+  const delay = audioCtx.createDelay(0.02);
+  delay.delayTime.value = 0.005;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.7;
+  const lfo = djOsc('sine', 0.4);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 0.004;
+  lfo.connect(lfoGain).connect(delay.delayTime);
+  lfo.start();
+  delay.connect(fb).connect(delay);
+  delay.connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(audioCtx.destination);
+  s.connect(delay);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_autowah() {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'bandpass';
+  f.Q.value = 8;
+  f.frequency.value = 1500;
+  f.connect(audioCtx.destination);
+  const lfo = djOsc('sine', 3);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 1200;
+  lfo.connect(lfoGain).connect(f.frequency);
+  lfo.start();
+  const s = djBufferSource();
+  s.connect(f);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_phone() {
+  const hp = audioCtx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 900;
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 2800;
+  const ws = audioCtx.createWaveShaper();
+  ws.curve = makeDistortionCurve(40);
+  hp.connect(lp).connect(ws).connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(hp);
+  s.start();
+}
+
+function dj_gate() {
+  const g = audioCtx.createGain();
+  g.gain.value = 0.5;
+  g.connect(audioCtx.destination);
+  const lfo = djOsc('square', 8);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 0.5;
+  lfo.connect(lfoGain).connect(g.gain);
+  lfo.start();
+  const s = djBufferSource();
+  s.connect(g);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_backspin() {
+  const s = djBufferSource();
+  s.connect(audioCtx.destination);
+  const t = audioCtx.currentTime;
+  s.playbackRate.setValueAtTime(1.0, t);
+  s.playbackRate.exponentialRampToValueAtTime(0.08, t + 0.8);
+  s.start();
+  s.stop(t + 1);
+}
+
+function dj_powerup() {
+  const s = djBufferSource();
+  s.connect(audioCtx.destination);
+  const t = audioCtx.currentTime;
+  s.playbackRate.setValueAtTime(0.4, t);
+  s.playbackRate.exponentialRampToValueAtTime(2.4, t + 1.6);
+  s.start();
+}
+
+function dj_vinyl() {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'lowpass';
+  f.frequency.value = 3800;
+  const g = audioCtx.createGain();
+  g.gain.value = 0.85;
+  f.connect(g).connect(audioCtx.destination);
+  const lfo = djOsc('sine', 0.7);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 0.05;
+  lfo.connect(lfoGain).connect(g.gain);
+  lfo.start();
+  const s = djBufferSource();
+  s.playbackRate.value = 0.94;
+  s.connect(f);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_hall() {
+  const taps = [0.05, 0.11, 0.17, 0.23, 0.31, 0.43];
+  const out = audioCtx.createGain();
+  out.gain.value = 0.75;
+  out.connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(out);
+  taps.forEach((d, i) => {
+    const dl = audioCtx.createDelay(1);
+    dl.delayTime.value = d;
+    const g = audioCtx.createGain();
+    g.gain.value = 0.45 / (i + 1);
+    s.connect(dl).connect(g).connect(out);
+  });
+  s.start();
+}
+
+function dj_overdrive() {
+  const ws = audioCtx.createWaveShaper();
+  ws.curve = makeDistortionCurve(150);
+  ws.oversample = '2x';
+  const g = audioCtx.createGain();
+  g.gain.value = 0.55;
+  ws.connect(g).connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(ws);
+  s.start();
+}
+
+function dj_laser() {
+  const s = djBufferSource();
+  s.connect(audioCtx.destination);
+  const t = audioCtx.currentTime;
+  s.playbackRate.setValueAtTime(2.6, t);
+  s.playbackRate.exponentialRampToValueAtTime(0.35, t + 1.4);
+  s.start();
+}
+
+function dj_pingpong() {
+  const splitL = audioCtx.createDelay(1);
+  const splitR = audioCtx.createDelay(1);
+  splitL.delayTime.value = 0.18;
+  splitR.delayTime.value = 0.36;
+  const fbL = audioCtx.createGain();
+  const fbR = audioCtx.createGain();
+  fbL.gain.value = 0.5;
+  fbR.gain.value = 0.5;
+  splitL.connect(fbR).connect(splitR);
+  splitR.connect(fbL).connect(splitL);
+  const merger = audioCtx.createChannelMerger(2);
+  splitL.connect(merger, 0, 0);
+  splitR.connect(merger, 0, 1);
+  merger.connect(audioCtx.destination);
+  const s = djBufferSource();
+  s.connect(audioCtx.destination);
+  s.connect(splitL);
+  s.start();
+}
+
+function dj_reverse_echo() {
+  const rev = reverseBuffer(getDjBuffer());
+  const delay = audioCtx.createDelay(2);
+  delay.delayTime.value = 0.18;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.5;
+  delay.connect(fb).connect(delay);
+  delay.connect(audioCtx.destination);
+  const s = djBufferSource(rev);
+  s.playbackRate.value = 0.9;
+  s.connect(audioCtx.destination);
+  s.connect(delay);
+  s.start();
+}
+
+const DJ_EFFECTS = [
+  { id: 'distort',  name: 'DISTORT',  color: '#ff3355', play: dj_distort },
+  { id: 'reverse',  name: 'REVERSE',  color: '#55ffaa', play: dj_reverse },
+  { id: 'deep',     name: 'DEEP',     color: '#ff8800', play: dj_deep },
+  { id: 'chip',     name: 'CHIP',     color: '#ffee55', play: dj_chipmunk },
+  { id: 'sweep',    name: 'SWEEP',    color: '#3388ff', play: dj_sweep },
+  { id: 'riser',    name: 'RISER',    color: '#ff55ee', play: dj_riser },
+  { id: 'stutter',  name: 'STUTTER',  color: '#ffffff', play: dj_stutter },
+  { id: 'scratch',  name: 'SCRATCH',  color: '#00ffff', play: dj_scratch },
+  { id: 'wubwub',   name: 'WUBWUB',   color: '#aa33ff', play: dj_wubwub },
+  { id: 'echo',     name: 'ECHO',     color: '#77ffdd', play: dj_echo },
+  { id: 'crush',    name: 'CRUSH',    color: '#ff99cc', play: dj_crush },
+  { id: 'tremolo',  name: 'TREMOLO',  color: '#ffaa33', play: dj_tremolo },
+  { id: 'flanger',  name: 'FLANGER',  color: '#44ddff', play: dj_flanger },
+  { id: 'autowah',  name: 'AUTOWAH',  color: '#ccff33', play: dj_autowah },
+  { id: 'phone',    name: 'PHONE',    color: '#888888', play: dj_phone },
+  { id: 'gate',     name: 'GATE',     color: '#ff4488', play: dj_gate },
+  { id: 'backspin', name: 'BACKSPIN', color: '#ff6600', play: dj_backspin },
+  { id: 'powerup',  name: 'POWERUP',  color: '#ffff00', play: dj_powerup },
+  { id: 'vinyl',    name: 'VINYL',    color: '#cc8866', play: dj_vinyl },
+  { id: 'hall',     name: 'HALL',     color: '#99ddff', play: dj_hall },
+  { id: 'drive',    name: 'OVERDRIVE',color: '#dd3300', play: dj_overdrive },
+  { id: 'laser',    name: 'LASER',    color: '#ff00ff', play: dj_laser },
+  { id: 'pingpong', name: 'PINGPONG', color: '#00ff88', play: dj_pingpong },
+  { id: 'revecho',  name: 'REV-ECHO', color: '#9966ff', play: dj_reverse_echo },
+];
+
+const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
+
+function loadDjMapping() {
+  try {
+    const saved = localStorage.getItem('oiia-dj-mapping-v1');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length === 9) {
+        return parsed.map((id) => (DJ_EFFECTS.find((e) => e.id === id) ? id : DEFAULT_DJ_MAPPING[0]));
+      }
+    }
+  } catch {}
+  return [...DEFAULT_DJ_MAPPING];
+}
+
+function saveDjMapping() {
+  localStorage.setItem('oiia-dj-mapping-v1', JSON.stringify(djMapping));
+}
+
+let djMapping = loadDjMapping();
+
+function playDjSlot(idx) {
+  if (!buffer) return;
+  if (audioCtx?.state === 'suspended') audioCtx.resume();
+  stopAllDj();
+  const id = djMapping[idx];
+  const eff = DJ_EFFECTS.find((e) => e.id === id);
+  if (!eff) return;
+  try { eff.play(); } catch (err) { console.error(err); }
+  fx.drop(eff.color, eff.name);
+}
+
+function renderDjSlots() {
+  const el = document.getElementById('dj-slots');
+  if (!el) return;
+  el.innerHTML = djMapping.map((id, i) => {
+    const opts = DJ_EFFECTS.map((e) =>
+      `<option value="${e.id}"${e.id === id ? ' selected' : ''}>${e.name}</option>`
+    ).join('');
+    const curr = DJ_EFFECTS.find((e) => e.id === id) || DJ_EFFECTS[0];
+    return `
+      <div class="dj-slot" style="--c:${curr.color}">
+        <span class="dj-num">${i + 1}</span>
+        <select data-slot="${i}">${opts}</select>
+        <button data-test="${i}" title="테스트">▶</button>
+      </div>
+    `;
+  }).join('');
+  el.querySelectorAll('select').forEach((sel) => {
+    sel.addEventListener('change', (e) => {
+      djMapping[+e.target.dataset.slot] = e.target.value;
+      saveDjMapping();
+      renderDjSlots();
+    });
+  });
+  el.querySelectorAll('button[data-test]').forEach((btn) => {
+    btn.addEventListener('click', () => playDjSlot(+btn.dataset.test));
+  });
+}
+
+const HOLD_START = 0.35;
+const HOLD_PEAK = 0.04;
+const HOLD_BUILDUP = 2.5;
+const DROP_MIN_HOLD = 1.0;
+const heldKeys = new Map();
+
+function startHold(code) {
+  if (heldKeys.has(code)) return;
+  const k = KEY_ORDER.find((x) => x.code === code);
+  if (!k) return;
+  const state = { startTime: performance.now(), timer: null, code };
+  heldKeys.set(code, state);
+
+  function tick() {
+    const elapsed = (performance.now() - state.startTime) / 1000;
+    const progress = Math.min(elapsed / HOLD_BUILDUP, 1);
+    const intensity = 1 + progress * 1.6;
+    pressKey(code, intensity);
+    const interval = HOLD_START * Math.pow(HOLD_PEAK / HOLD_START, progress) * 1000;
+    state.timer = setTimeout(tick, interval);
+  }
+  tick();
+}
+
+function endHold(code) {
+  const state = heldKeys.get(code);
+  if (!state) return;
+  clearTimeout(state.timer);
+  heldKeys.delete(code);
+  const elapsed = (performance.now() - state.startTime) / 1000;
+  if (elapsed >= DROP_MIN_HOLD) {
+    const k = KEY_ORDER.find((x) => x.code === code);
+    if (!k) return;
+    const seg = segments.find((s) => s.id === k.segId);
+    if (seg) {
+      playSegmentById(k.segId);
+      fx.drop(seg.color, seg.jamo);
+    }
+  }
+}
+
+function flashKey(code) {
+  const el = document.getElementById('key-' + code);
+  if (!el) return;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 120);
+}
+
+const JAMO_TO_CODE = { 'ㅜ': 'KeyN', 'ㅣ': 'KeyL', 'ㅏ': 'KeyK' };
+
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') {
+    e.preventDefault();
+    playAll();
+    return;
+  }
+  if (e.code === 'Tab') {
+    e.preventDefault();
+    const next = (activeSegIndex + (e.shiftKey ? -1 : 1) + segments.length) % segments.length;
+    setActiveSegment(next);
+    return;
+  }
+  if (/^Digit[1-9]$/.test(e.code)) {
+    e.preventDefault();
+    const n = parseInt(e.code.slice(5)) - 1;
+    playDjSlot(n);
+    return;
+  }
+  let code = e.code;
+  if (!KEY_ORDER.find((k) => k.code === code) && JAMO_TO_CODE[e.key]) {
+    code = JAMO_TO_CODE[e.key];
+  }
+  if (KEY_ORDER.find((k) => k.code === code)) {
+    startHold(code);
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  let code = e.code;
+  if (!KEY_ORDER.find((k) => k.code === code) && JAMO_TO_CODE[e.key]) {
+    code = JAMO_TO_CODE[e.key];
+  }
+  endHold(code);
+});
+
+window.addEventListener('blur', () => {
+  for (const code of Array.from(heldKeys.keys())) endHold(code);
+});
+
+function playAll() {
+  if (audioCtx?.state === 'suspended') audioCtx.resume();
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  src.connect(audioCtx.destination);
+  src.start();
+}
+
+function playOiiaSequence() {
+  const order = ['o', 'i', 'i', 'a'];
+  let t = 0;
+  order.forEach((id) => {
+    const s = segments.find((x) => x.id === id);
+    if (!s) return;
+    const dur = s.end - s.start;
+    setTimeout(() => playSegmentById(id), t);
+    t += dur * 1000 + 30;
+  });
+}
+
+document.getElementById('play-all').onclick = playAll;
+document.getElementById('play-oiia').onclick = playOiiaSequence;
+document.getElementById('reset').onclick = () => {
+  segments = structuredClone(DEFAULT_SEGMENTS);
+  clampSegments();
+  saveSegments();
+  renderActiveBar();
+  renderSegments();
+  drawWaveform();
+};
+document.getElementById('export').onclick = () => {
+  const data = segments.map((s) => ({
+    id: s.id, jamo: s.jamo, start: +s.start.toFixed(3), end: +s.end.toFixed(3),
+  }));
+  const text = JSON.stringify(data, null, 2);
+  navigator.clipboard.writeText(text).catch(() => {});
+  console.log(text);
+  alert('타임스탬프가 클립보드에 복사됨 (콘솔에도 출력)');
+};
+
+function setActiveSegment(i) {
+  activeSegIndex = i;
+  document.querySelectorAll('.seg').forEach((el, idx) => {
+    el.classList.toggle('active', idx === i);
+  });
+  renderActiveBar();
+  drawWaveform();
+}
+
+function renderActiveBar() {
+  const bar = document.getElementById('active-bar');
+  if (!bar) return;
+  bar.innerHTML = segments.map((s, i) => `
+    <button class="active-chip${i === activeSegIndex ? ' on' : ''}" data-sel="${i}" style="--c:${s.color}">
+      <span class="num">${i + 1}</span>
+      <span class="jamo">${s.jamo}</span>
+      <span class="sub">${s.id}</span>
+    </button>
+  `).join('');
+  bar.querySelectorAll('button[data-sel]').forEach((b) => {
+    b.addEventListener('click', () => setActiveSegment(+b.dataset.sel));
+  });
+}
+
+function timeFromX(clientX) {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
+  return (x / rect.width) * buffer.duration;
+}
+
+function pxPerSec() {
+  return canvas.clientWidth / buffer.duration;
+}
+
+function hitTest(t, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const relY = (clientY - rect.top) / rect.height;
+  const edgeTolSec = 8 / pxPerSec();
+  let activeHit = null;
+  let otherHit = null;
+  for (let i = 0; i < segments.length; i++) {
+    const s = segments[i];
+    const near = (Math.abs(t - s.start) < edgeTolSec) ? 'start'
+               : (Math.abs(t - s.end) < edgeTolSec) ? 'end'
+               : (t >= s.start && t <= s.end) ? 'body'
+               : null;
+    if (!near) continue;
+    const hit = { i, where: near };
+    if (i === activeSegIndex) { activeHit = hit; break; }
+    if (!otherHit) otherHit = hit;
+  }
+  return activeHit || otherHit;
+}
+
+function updateCursor(hit) {
+  if (!hit) { canvas.style.cursor = 'crosshair'; return; }
+  if (hit.where === 'start' || hit.where === 'end') canvas.style.cursor = 'ew-resize';
+  else canvas.style.cursor = 'grab';
+}
+
+canvas.addEventListener('pointermove', (e) => {
+  if (dragState || !buffer) return;
+  const t = timeFromX(e.clientX);
+  updateCursor(hitTest(t, e.clientY));
+});
+
+canvas.addEventListener('pointerdown', (e) => {
+  if (!buffer) return;
+  if (audioCtx?.state === 'suspended') audioCtx.resume();
+  const t = timeFromX(e.clientX);
+  const hit = hitTest(t, e.clientY);
+  if (hit && (hit.where === 'start' || hit.where === 'end')) {
+    dragState = { kind: 'resize', i: hit.i, edge: hit.where, startX: e.clientX, moved: false };
+    setActiveSegment(hit.i);
+  } else if (hit && hit.where === 'body') {
+    const s = segments[hit.i];
+    dragState = { kind: 'move', i: hit.i, anchorT: t, origStart: s.start, origEnd: s.end, startX: e.clientX, moved: false };
+    setActiveSegment(hit.i);
+  } else {
+    dragState = { kind: 'range', anchor: t, startX: e.clientX, moved: false };
+  }
+  canvas.setPointerCapture(e.pointerId);
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (!dragState || !buffer) return;
+  const t = timeFromX(e.clientX);
+  const moved = Math.abs(e.clientX - dragState.startX) > 3;
+  if (!moved && !dragState.moved) return;
+  dragState.moved = true;
+
+  if (dragState.kind === 'resize') {
+    const s = segments[dragState.i];
+    if (dragState.edge === 'start') s.start = Math.max(0, Math.min(t, s.end - 0.01));
+    else s.end = Math.min(buffer.duration, Math.max(t, s.start + 0.01));
+    updateSegmentInputs(dragState.i);
+  } else if (dragState.kind === 'move') {
+    const s = segments[dragState.i];
+    const delta = t - dragState.anchorT;
+    const dur = dragState.origEnd - dragState.origStart;
+    let newStart = dragState.origStart + delta;
+    newStart = Math.max(0, Math.min(buffer.duration - dur, newStart));
+    s.start = newStart;
+    s.end = newStart + dur;
+    updateSegmentInputs(dragState.i);
+  } else if (dragState.kind === 'range') {
+    const s = segments[activeSegIndex];
+    s.start = Math.max(0, Math.min(dragState.anchor, t));
+    s.end = Math.min(buffer.duration, Math.max(dragState.anchor, t));
+    if (s.end - s.start < 0.01) s.end = s.start + 0.01;
+    updateSegmentInputs(activeSegIndex);
+  }
+  drawWaveform();
+});
+
+canvas.addEventListener('pointerup', (e) => {
+  if (!dragState) return;
+  canvas.releasePointerCapture(e.pointerId);
+  const moved = dragState.moved;
+  const kind = dragState.kind;
+  const idx = dragState.i ?? activeSegIndex;
+  const ds = dragState;
+  dragState = null;
+
+  if (!moved) {
+    if (kind === 'range') {
+      const t = timeFromX(e.clientX);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(audioCtx.destination);
+      src.start(0, t, 0.3);
+    }
+    return;
+  }
+  saveSegments();
+  if (kind === 'range' || kind === 'move' || kind === 'resize') {
+    playSegmentByIndex(idx);
+  }
+});
+
+function updateSegmentInputs(i) {
+  const s = segments[i];
+  const card = segsEl.children[i];
+  if (!card) return;
+  const inputs = card.querySelectorAll('input[type=range]');
+  inputs[0].value = s.start;
+  inputs[1].value = s.end;
+  document.getElementById(`v-${i}-start`).textContent = s.start.toFixed(3) + 's';
+  document.getElementById(`v-${i}-end`).textContent = s.end.toFixed(3) + 's';
+  card.querySelector('.seg-meta').textContent = (s.end - s.start).toFixed(3) + 's';
+}
+
+window.addEventListener('resize', () => buffer && drawWaveform());
+
+init();
