@@ -530,7 +530,7 @@ app.innerHTML = `
   <div class="segments" id="segments"></div>
   <div class="dj-header">
     <h3 style="margin:0;font-size:14px;color:#888;">🎧 DJ 슬롯 (1–9 키)</h3>
-    <input id="dj-filter" class="dj-filter" type="search" placeholder="이펙트 검색…" />
+    <input id="dj-filter" class="dj-filter" type="search" placeholder="이펙트 검색…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     <button id="shuffle-dj" class="dj-shuffle" title="9개 슬롯을 전부 랜덤 이펙트로">🎲 셔플</button>
     <button id="reset-dj" class="dj-shuffle" title="DJ 슬롯을 기본값으로">↺ 기본</button>
   </div>
