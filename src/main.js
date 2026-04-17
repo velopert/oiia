@@ -168,8 +168,8 @@ function setupTheme() {
   if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
   const btn = document.createElement('button');
   btn.className = 'theme-toggle';
-  btn.setAttribute('aria-label', '테마 전환');
-  btn.title = '다크 ↔ 라이트';
+  btn.setAttribute('aria-label', t('aria.theme'));
+  btn.title = t('title.theme');
   function refresh() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     btn.textContent = isLight ? '🌙' : '☀️';
@@ -314,8 +314,13 @@ function applyAllI18n() {
   }
   const mv = document.querySelector('.master-vol-wrap');
   if (mv) mv.title = t('title.masterVol');
+  const djHeader = document.querySelector('.dj-header h3');
+  if (djHeader) djHeader.textContent = t('header.djSlots');
   const theme = document.querySelector('.theme-toggle');
-  if (theme) theme.setAttribute('aria-label', t('aria.theme'));
+  if (theme) {
+    theme.setAttribute('aria-label', t('aria.theme'));
+    theme.title = t('title.theme');
+  }
   const djModeBtn = document.getElementById('dj-mode-toggle');
   if (djModeBtn) djModeBtn.setAttribute('aria-label', t('aria.dj'));
   const langBtn = document.getElementById('lang-toggle');
@@ -628,7 +633,7 @@ async function init() {
     drawWaveform();
     loadFromHash();
   } catch (err) {
-    app.innerHTML = `<div class="error">로드 실패: ${err.message}</div>`;
+    app.innerHTML = `<div class="error">${t('error.load', { msg: err.message })}</div>`;
   }
 }
 
