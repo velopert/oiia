@@ -998,6 +998,56 @@ function dj_tapestop() {
   s.stop(t + 1.3);
 }
 
+function dj_siren() {
+  const s = djBufferSource();
+  const aa = antiAliasFilter(2.2);
+  s.connect(aa).connect(djBus);
+  const t = audioCtx.currentTime;
+  const dur = 2.0;
+  for (let i = 0; i < 6; i++) {
+    const tt = t + (i / 6) * dur;
+    s.playbackRate.setValueAtTime(i % 2 ? 1.8 : 0.6, tt);
+    s.playbackRate.linearRampToValueAtTime(i % 2 ? 0.6 : 1.8, tt + dur / 6);
+  }
+  s.start();
+  s.stop(t + dur + 0.1);
+}
+
+function dj_lofi() {
+  const f1 = audioCtx.createBiquadFilter();
+  f1.type = 'lowpass';
+  f1.frequency.value = 3200;
+  f1.Q.value = 0.7;
+  const hp = audioCtx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 160;
+  const ws = audioCtx.createWaveShaper();
+  const n = 256, curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    curve[i] = Math.round(x * 24) / 24;
+  }
+  ws.curve = curve;
+  f1.connect(hp).connect(ws).connect(djBus);
+  // vinyl noise
+  const bufSize = audioCtx.sampleRate * 2;
+  const noiseBuf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = noiseBuf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (Math.random() < 0.02 ? 1 : 0.12);
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = noiseBuf;
+  const ng = audioCtx.createGain();
+  ng.gain.value = 0.08;
+  noise.connect(ng).connect(djBus);
+  activeDjNodes.add(noise);
+  noise.start();
+  const s = djBufferSource();
+  s.playbackRate.value = 0.92;
+  s.connect(f1);
+  s.onended = () => { try { noise.stop(); } catch {} };
+  s.start();
+}
+
 function dj_reverse_echo() {
   const rev = reverseBuffer(getDjBuffer());
   const delay = audioCtx.createDelay(2);
@@ -1046,6 +1096,8 @@ const DJ_EFFECTS = [
   { id: 'chop',     name: 'CHOP',     color: '#ff55bb', play: dj_chop,          desc: 'BPM 기반 랜덤 게이트 (trance gate)' },
   { id: 'chord',    name: 'CHORD',    color: '#aaff44', play: dj_chord,         desc: '옥타브 다운 + 기본 + 5도 위 동시 재생' },
   { id: 'drumroll', name: 'DRUMROLL', color: '#ffcc66', play: dj_drumroll,      desc: '32분음 고속 반복 + 크레셴도' },
+  { id: 'siren',    name: 'SIREN',    color: '#ff3333', play: dj_siren,         desc: '사이렌 (피치 0.6↔1.8 반복 스윕)' },
+  { id: 'lofi',     name: 'LOFI',     color: '#b79066', play: dj_lofi,          desc: '저샘플 + 비닐 노이즈 (로파이)' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
