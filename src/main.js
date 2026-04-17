@@ -101,7 +101,6 @@ function setupTour() {
     { key: 'tour.1', target: '#keys .key' },
     { key: 'tour.2', target: '#dj-slots .dj-slot-wrap' },
     { key: 'tour.3', target: '#dj-shuffle-inline' },
-    { key: 'tour.4', target: '#dj-mode-toggle' },
   ];
   const bubble = root.querySelector('.tour-bubble');
   const totalEl = document.getElementById('tour-total');
