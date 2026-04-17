@@ -193,6 +193,7 @@ function setupTheme() {
       localStorage.setItem('oiia-theme-v1', 'light');
     }
     refresh();
+    if (typeof drawWaveform === 'function' && typeof buffer !== 'undefined' && buffer) drawWaveform();
   };
   document.body.appendChild(btn);
 }
@@ -669,14 +670,15 @@ function drawWaveform() {
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  ctx.fillStyle = '#000';
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  ctx.fillStyle = isLight ? '#fff' : '#000';
   ctx.fillRect(0, 0, w, h);
 
   const data = buffer.getChannelData(0);
   const step = Math.ceil(data.length / w);
   const amp = h / 2;
 
-  ctx.strokeStyle = '#3a7ab8';
+  ctx.strokeStyle = isLight ? '#2e5f91' : '#3a7ab8';
   ctx.lineWidth = 1;
   ctx.beginPath();
   for (let i = 0; i < w; i++) {
@@ -700,12 +702,12 @@ function drawWaveform() {
     ctx.fillStyle = s.color;
     ctx.fillRect(x1, 0, isActive ? 3 : 2, h);
     ctx.fillRect(x2 - (isActive ? 3 : 2), 0, isActive ? 3 : 2, h);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = isLight ? '#111' : '#fff';
     ctx.font = (isActive ? 'bold 14px' : 'bold 13px') + ' sans-serif';
     ctx.fillText(s.jamo + (isActive ? ' ●' : ''), x1 + 4, 16);
   });
 
-  ctx.fillStyle = '#555';
+  ctx.fillStyle = isLight ? '#888' : '#555';
   ctx.font = '10px ui-monospace, monospace';
   for (let t = 0; t <= buffer.duration; t += 0.5) {
     const x = (t / buffer.duration) * w;
