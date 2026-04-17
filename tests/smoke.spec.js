@@ -171,11 +171,11 @@ test('first-run tour appears and can be skipped', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test('A key spawns a cat', async ({ page }) => {
+test('Q key (A slot) spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await suppressTour(page); await page.goto('/');
   await page.locator('#waveform').click();
-  await page.keyboard.press('a');
+  await page.keyboard.press('q');
   await expect(page.locator('.cat-layer .cat-pop')).toBeVisible();
   await page.screenshot({ path: `${SHOTS_DIR}/cat-a.png`, fullPage: true });
   expect(errors).toEqual([]);

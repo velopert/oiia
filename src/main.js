@@ -60,7 +60,7 @@ function setupStartHint() {
       try { if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume(); } catch {}
       const tryPress = () => {
         if (typeof audioCtx !== 'undefined' && audioCtx && typeof buffer !== 'undefined' && buffer) {
-          pressKey('KeyA');
+          pressKey('KeyQ');
           return true;
         }
         return false;
@@ -89,7 +89,7 @@ function setupTour() {
   const nEl = document.getElementById('tour-n');
   const arrow = document.getElementById('tour-arrow');
   const steps = [
-    { title: '오이아이 키 6개', body: 'ㅜ ㅣ ㅏ A B C 자모 키를 탭(또는 N/L/K/A/B/C). 꾹 누르면 EDM 빌드업 → 드롭 폭발!', target: '#keys .key' },
+    { title: '오이아이 키 6개', body: 'ㅜ ㅣ ㅏ A B C 자모 키를 탭(또는 N/L/K/Q/W/E). 꾹 누르면 EDM 빌드업 → 드롭 폭발!', target: '#keys .key' },
     { title: '1–9 DJ 이펙트 패드', body: '숫자패드를 탭하거나 키보드 1–9로 9가지 DJ 이펙트를 발사하세요.', target: '#dj-slots .dj-slot-wrap' },
     { title: '🎲 이펙트 셔플', body: '패드 아래 셔플 버튼 한 번으로 9개 슬롯을 전부 랜덤 이펙트로 교체.', target: '#dj-shuffle-inline' },
     { title: '⚙ Advanced 모드', body: '우측 상단 버튼으로 파형·세그먼트 편집·녹음·루프 등 고급 기능 전환.', target: '#dj-mode-toggle' },
@@ -253,7 +253,7 @@ document.getElementById('replay-tour')?.addEventListener('click', (e) => {
 document.getElementById('reset-storage')?.addEventListener('click', (e) => {
   e.stopPropagation();
   if (!confirm('세그먼트·DJ 매핑·볼륨·테마·튜토리얼 기록을 모두 지우고 새로고침합니다. 진행?')) return;
-  ['oiia-segments-v10', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
+  ['oiia-segments-v11', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
   location.href = location.origin + location.pathname;
 });
 
@@ -320,25 +320,25 @@ const DEFAULT_SEGMENTS = [
   { id: 'o', jamo: 'ㅜ', latin: 'O', code: 'KeyN', key: 'ㅜ', start: 0.430, end: 0.622, color: '#ff6b6b' },
   { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },
   { id: 'a', jamo: 'ㅏ', latin: 'A', code: 'KeyK', key: 'ㅏ', start: 0.831, end: 1.017, color: '#6bcf7f' },
-  { id: 'ka', jamo: 'A', latin: 'A', code: 'KeyA', key: 'a', start: 0.440, end: 2.041, color: '#4d96ff' },
-  { id: 'kb', jamo: 'B', latin: 'B', code: 'KeyB', key: 'b', start: 3.272, end: 5.304, color: '#c86bff' },
-  { id: 'kc', jamo: 'C', latin: 'C', code: 'KeyC', key: 'c', start: 0.852, end: 1.257, color: '#4dd0e1' },
+  { id: 'ka', jamo: 'A', latin: 'A', code: 'KeyQ', key: 'q', start: 0.440, end: 2.041, color: '#4d96ff' },
+  { id: 'kb', jamo: 'B', latin: 'B', code: 'KeyW', key: 'w', start: 3.272, end: 5.304, color: '#c86bff' },
+  { id: 'kc', jamo: 'C', latin: 'C', code: 'KeyE', key: 'e', start: 0.852, end: 1.257, color: '#4dd0e1' },
 ];
 
 const KEY_ORDER = [
   { jamo: 'ㅜ', latin: 'O', code: 'KeyN', segId: 'o' },
   { jamo: 'ㅣ', latin: 'I', code: 'KeyL', segId: 'i' },
   { jamo: 'ㅏ', latin: 'A', code: 'KeyK', segId: 'a' },
-  { jamo: 'A', latin: 'A', code: 'KeyA', segId: 'ka' },
-  { jamo: 'B', latin: 'B', code: 'KeyB', segId: 'kb' },
-  { jamo: 'C', latin: 'C', code: 'KeyC', segId: 'kc' },
+  { jamo: 'A', latin: 'A', code: 'KeyQ', segId: 'ka' },
+  { jamo: 'B', latin: 'B', code: 'KeyW', segId: 'kb' },
+  { jamo: 'C', latin: 'C', code: 'KeyE', segId: 'kc' },
 ];
 
 const app = document.getElementById('app');
 app.innerHTML = `
   <h1>Oiiai Keyboard</h1>
   <div class="hint">
-    <code>ㅜ</code><code>ㅣ</code><code>ㅣ</code><code>ㅏ</code> (물리키 N/L/K) · 추가 슬롯 <code>A</code><code>B</code> · <code>1</code>–<code>9</code> = 🎧 DJ 이펙트 슬롯 · 꾹 누르기 = EDM 빌드업 + 드롭
+    <code>ㅜ</code><code>ㅣ</code><code>ㅣ</code><code>ㅏ</code> (물리키 N/L/K) · 추가 슬롯 <code>A</code><code>B</code><code>C</code> (Q/W/E) · <code>1</code>–<code>9</code> = 🎧 DJ 이펙트 슬롯 · 꾹 누르기 = EDM 빌드업 + 드롭
     <br/>파형 조작: 구간 <b>클릭=선택</b> · 바디 <b>드래그=이동</b> · 경계선 <b>드래그=리사이즈</b> · 빈영역 <b>드래그=선택된 구간 범위 재지정</b> · 빈영역 클릭=미리듣기
     <br/>단축키: Space=전체재생 · <code>Tab</code>=구간 순환 · 파형 드래그로 구간 튜닝
   </div>
@@ -395,7 +395,7 @@ const segsEl = document.getElementById('segments');
 
 function loadSegments() {
   try {
-    const saved = localStorage.getItem('oiia-segments-v10');
+    const saved = localStorage.getItem('oiia-segments-v11');
     if (saved) return JSON.parse(saved);
   } catch {}
   return structuredClone(DEFAULT_SEGMENTS);
@@ -418,7 +418,7 @@ function undoSegments() {
       s.end = restored[i].end;
     }
   });
-  localStorage.setItem('oiia-segments-v10', JSON.stringify(segments));
+  localStorage.setItem('oiia-segments-v11', JSON.stringify(segments));
   renderSegments();
   renderActiveBar();
   drawWaveform();
@@ -427,7 +427,7 @@ function undoSegments() {
 }
 
 function saveSegments() {
-  localStorage.setItem('oiia-segments-v10', JSON.stringify(segments));
+  localStorage.setItem('oiia-segments-v11', JSON.stringify(segments));
   pushSegHistory();
 }
 
@@ -680,9 +680,9 @@ function pressKey(code, intensity = 1) {
   flashKey(code);
   const seg = segments.find((s) => s.id === k.segId);
   if (seg) fx.burst(seg.color, seg.jamo, intensity);
-  if (code === 'KeyA') catFx.spawn();
-  if (code === 'KeyB') catFx.spawnBig();
-  if (code === 'KeyC') catFx.spawnRotate();
+  if (code === 'KeyQ') catFx.spawn();
+  if (code === 'KeyW') catFx.spawnBig();
+  if (code === 'KeyE') catFx.spawnRotate();
   haptic(Math.min(30, 12 + intensity * 6));
 }
 
