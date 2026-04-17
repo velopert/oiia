@@ -83,8 +83,21 @@ function setupTour() {
   }
   function done() {
     localStorage.setItem('oiia-tour-done-v1', '1');
+    document.removeEventListener('keydown', keyHandler, true);
     root.style.animation = 'sh-fadeout 0.3s ease forwards';
     setTimeout(() => root.remove(), 320);
+  }
+  function keyHandler(e) {
+    if (root.hidden) return;
+    if (e.key === 'Escape') { done(); return; }
+    if (e.key === 'ArrowRight' || e.key === 'Enter' || e.code === 'Space') {
+      e.preventDefault();
+      i++;
+      if (i >= steps.length) done();
+      else render();
+    } else if (e.key.length === 1 || /^Key|^Digit/.test(e.code)) {
+      done();
+    }
   }
   document.getElementById('tour-skip').onclick = done;
   document.getElementById('tour-next').onclick = () => {
@@ -92,6 +105,7 @@ function setupTour() {
     if (i >= steps.length) done();
     else render();
   };
+  document.addEventListener('keydown', keyHandler, true);
   window.addEventListener('resize', position);
   setTimeout(() => {
     root.hidden = false;
@@ -228,6 +242,7 @@ app.innerHTML = `
     <br/>단축키: Space=전체재생 · <code>Tab</code>=구간 순환 · 파형 드래그로 구간 튜닝
   </div>
   <div class="active-bar" id="active-bar"></div>
+  <div class="ticker" id="ticker" aria-hidden="true"></div>
   <div class="presets" id="presets"></div>
   <canvas id="waveform"></canvas>
   <div class="keys" id="keys"></div>
@@ -1760,6 +1775,31 @@ function replayRec(type, arg) {
   const now = performance.now();
   replayBuffer.push({ t: now, type, arg });
   while (replayBuffer.length && now - replayBuffer[0].t > REPLAY_WINDOW_MS) replayBuffer.shift();
+  tickerPush(type, arg);
+}
+
+function tickerPush(type, arg) {
+  const el = document.getElementById('ticker');
+  if (!el) return;
+  let label, color;
+  if (type === 'key') {
+    const k = KEY_ORDER.find((x) => x.code === arg);
+    const seg = k && segments.find((s) => s.id === k.segId);
+    label = k ? k.jamo : '?';
+    color = seg ? seg.color : '#5af';
+  } else {
+    const id = djMapping[arg];
+    const eff = DJ_EFFECTS.find((e) => e.id === id);
+    label = eff ? eff.name : '?';
+    color = eff ? eff.color : '#5af';
+  }
+  const chip = document.createElement('span');
+  chip.className = 'ticker-chip ' + (type === 'dj' ? 'ticker-dj' : 'ticker-key');
+  chip.style.setProperty('--c', color);
+  chip.textContent = label;
+  el.appendChild(chip);
+  while (el.childElementCount > 16) el.firstElementChild.remove();
+  setTimeout(() => chip.remove(), 4000);
 }
 function replayLast() {
   if (!replayBuffer.length) { toast('재생할 이벤트 없음 — 키를 먼저 눌러보세요'); return; }

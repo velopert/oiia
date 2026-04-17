@@ -95,6 +95,42 @@ canvas#waveform {
 .active-chip .jamo { font-size: 16px; font-weight: 700; }
 .active-chip .sub { font-size: 11px; opacity: 0.7; font-family: ui-monospace, monospace; }
 
+.ticker {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-height: 22px;
+  margin: 4px 0 6px;
+  padding: 0;
+  font-family: ui-monospace, monospace;
+}
+.ticker-chip {
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  background: color-mix(in srgb, var(--c) 25%, #111 75%);
+  border: 1px solid var(--c);
+  animation: ticker-pop 0.22s ease-out, ticker-fade 4s linear forwards;
+  white-space: nowrap;
+  text-shadow: 0 0 4px var(--c);
+}
+.ticker-chip.ticker-dj {
+  background: color-mix(in srgb, var(--c) 40%, #111 60%);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--c) 60%, transparent);
+}
+@keyframes ticker-pop {
+  0%   { transform: scale(0.6) translateY(-8px); opacity: 0; }
+  100% { transform: scale(1) translateY(0);     opacity: 1; }
+}
+@keyframes ticker-fade {
+  0%, 70% { opacity: 1; }
+  100%    { opacity: 0; transform: translateX(-14px); }
+}
+html[data-theme="light"] .ticker-chip { color: #111; background: color-mix(in srgb, var(--c) 70%, #fff 30%); }
+
 .presets {
   display: flex;
   gap: 6px;

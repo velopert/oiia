@@ -198,6 +198,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 55 — 세션 stats v2**: 상위 3개 키/DJ 칩, 분당 프레스 카운트. help 오버레이의 한 눈에 보는 세션 요약.
 - [x] **[2026-04-17] Loop 56 — Replay 버튼**: 마지막 10초 링 버퍼 (키+DJ 이벤트), 🎞 버튼으로 원래 타이밍 그대로 다시 발사.
 - [x] **[2026-04-17] Loop 57 — 파형 플레이헤드**: 전체 재생(Space) 시 파형 위에 흰 세로 라인이 시간에 따라 스윕.
+- [x] **[2026-04-17] Loop 58 — 라이브 ticker + tour 키-닫기**: active-bar 아래 최근 16개 이벤트 칩 (키는 자모, DJ는 대문자), pop→4s fade. Tour가 키 입력으로도 즉시 닫히도록 keydown capture 핸들러.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
