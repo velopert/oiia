@@ -255,6 +255,8 @@ function setupDjMode() {
     refreshLabels();
     refreshLang();
     applyAllI18n();
+    KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
+    if (typeof renderKeys === 'function') renderKeys();
   });
 }
 setupDjMode();
@@ -369,14 +371,25 @@ const DEFAULT_SEGMENTS = [
   { id: 'kc', jamo: 'C', latin: 'C', code: 'KeyE', key: 'e', start: 0.852, end: 1.257, color: '#4dd0e1' },
 ];
 
-const KEY_ORDER = [
-  { jamo: 'ㅜ', latin: 'O', code: 'KeyN', segId: 'o' },
-  { jamo: 'ㅣ', latin: 'I', code: 'KeyL', segId: 'i' },
-  { jamo: 'ㅏ', latin: 'A', code: 'KeyK', segId: 'a' },
-  { jamo: 'A', latin: 'A', code: 'KeyQ', segId: 'ka' },
-  { jamo: 'B', latin: 'B', code: 'KeyW', segId: 'kb' },
-  { jamo: 'C', latin: 'C', code: 'KeyE', segId: 'kc' },
-];
+const KEY_LAYOUT = {
+  ko: [
+    { segId: 'o',  jamo: 'ㅜ', latin: 'O', code: 'KeyN' },
+    { segId: 'i',  jamo: 'ㅣ', latin: 'I', code: 'KeyL' },
+    { segId: 'a',  jamo: 'ㅏ', latin: 'A', code: 'KeyK' },
+    { segId: 'ka', jamo: 'A',  latin: 'A', code: 'KeyQ' },
+    { segId: 'kb', jamo: 'B',  latin: 'B', code: 'KeyW' },
+    { segId: 'kc', jamo: 'C',  latin: 'C', code: 'KeyE' },
+  ],
+  en: [
+    { segId: 'o',  jamo: 'n', latin: 'N', code: 'KeyN' },
+    { segId: 'i',  jamo: 'i', latin: 'I', code: 'KeyI' },
+    { segId: 'a',  jamo: 'a', latin: 'A', code: 'KeyA' },
+    { segId: 'ka', jamo: 'A', latin: 'A', code: 'KeyQ' },
+    { segId: 'kb', jamo: 'B', latin: 'B', code: 'KeyW' },
+    { segId: 'kc', jamo: 'C', latin: 'C', code: 'KeyE' },
+  ],
+};
+let KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
 
 const app = document.getElementById('app');
 app.innerHTML = `
