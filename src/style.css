@@ -852,6 +852,11 @@ html[data-theme="light"] body.dj-mode .dj-slot-wrap .dj-pad {
   border-color: #d0d0d0;
 }
 html[data-theme="light"] body.dj-mode .dj-pad-name { color: #222; }
+html[data-theme="light"] body.dj-mode .dj-slot-wrap.firing .dj-pad {
+  background: color-mix(in srgb, var(--c, #5af) 18%, #fff 82%);
+  border-color: var(--c, #5af);
+  box-shadow: 0 0 0 3px var(--c, #5af), 0 0 24px 4px color-mix(in srgb, var(--c) 35%, transparent);
+}
 
 html[data-theme="light"] canvas#waveform { background: #fff; }
 html[data-theme="light"] .hint code { background: #e8e8e8; color: #222; }
