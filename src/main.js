@@ -1773,7 +1773,7 @@ document.addEventListener('keydown', (e) => {
       loopTimeouts = [];
       if (loopIterTimer) clearTimeout(loopIterTimer);
       const btn = document.getElementById('loop-btn');
-      btn.textContent = '🔁 루프';
+      btn.textContent = t('ctrl.loop');
       btn.classList.remove('on', 'rec');
     }
     stopAllDj();
@@ -1895,7 +1895,7 @@ function toggleRec() {
     recChunks = [];
     recStart = performance.now();
     recorder.start();
-    btn.textContent = '⏹ 녹음 중…';
+    btn.textContent = t('ctrl.recStop');
     btn.classList.add('recording');
     startRecTimer();
   } else {
@@ -1910,7 +1910,7 @@ function toggleRec() {
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
-      btn.textContent = '⏺ 녹음';
+      btn.textContent = t('ctrl.rec');
       btn.classList.remove('recording');
       stopRecTimer();
     };
@@ -2006,7 +2006,7 @@ function toggleMetro() {
     clearInterval(metroLookahead);
     metroLookahead = null;
     btn.classList.remove('on');
-    btn.textContent = '🥁 Metro';
+    btn.textContent = t('ctrl.metro');
     return;
   }
   if (!currentBpm) { toast(t('toast.bpm.needFirst')); return; }
@@ -2014,7 +2014,7 @@ function toggleMetro() {
   if (!masterOut) return;
   metroCount = 0;
   btn.classList.add('on');
-  btn.textContent = '🥁 …';
+  btn.textContent = t('ctrl.metroOn');
   const period = 60 / currentBpm;
   const now = audioCtx.currentTime;
   if (beatAnchorAudio != null) {
@@ -2255,7 +2255,7 @@ function loopToggle() {
     loopTimeouts.forEach((id) => clearTimeout(id));
     loopTimeouts = [];
     if (loopIterTimer) clearTimeout(loopIterTimer);
-    btn.textContent = '🔁 루프';
+    btn.textContent = t('ctrl.loop');
     btn.classList.remove('on', 'rec');
     toast(t('toast.loop.stop'));
     return;
@@ -2264,7 +2264,7 @@ function loopToggle() {
     loopRecording = false;
     btn.classList.remove('rec');
     if (loopEvents.length === 0) {
-      btn.textContent = '🔁 루프';
+      btn.textContent = t('ctrl.loop');
       toast(t('toast.loop.empty'));
       return;
     }
@@ -2279,7 +2279,7 @@ function loopToggle() {
   loopEvents = [];
   loopStartT = performance.now();
   loopRecording = true;
-  btn.textContent = '⏺ 녹음 중 (다시 눌러 종료)';
+  btn.textContent = t('ctrl.loopRec');
   btn.classList.add('rec');
   toast(t('toast.loop.rec'));
 }
@@ -2303,28 +2303,28 @@ async function makeClip() {
   const mk = document.getElementById('make-clip');
   if (mk.disabled) return;
   mk.disabled = true;
-  mk.textContent = '🎬 준비 중…';
+  mk.textContent = t('ctrl.clipPrep');
   if (audioCtx?.state === 'suspended') await audioCtx.resume();
   await countdown();
   setupRecorder();
-  if (!recorder) { mk.disabled = false; mk.textContent = '🎬 Make Clip'; return; }
+  if (!recorder) { mk.disabled = false; mk.textContent = t('ctrl.makeClip'); return; }
   if (recorder.state === 'recording') recorder.stop();
   recChunks = [];
   recStart = performance.now();
   recorder.start();
   const recBtn = document.getElementById('rec');
-  recBtn.textContent = '⏹ 녹음 중…';
+  recBtn.textContent = t('ctrl.recStop');
   recBtn.classList.add('recording');
   startRecTimer();
-  mk.textContent = '🎬 녹음 중…';
+  mk.textContent = t('ctrl.clipRec');
   const bpm = currentBpm || 128;
   const step = (60 / bpm) * 500;
   const clipMs = step * 18 + 600;
   await new Promise((r) => setTimeout(r, clipMs));
   toggleRec();
-  mk.textContent = '🎬 저장됨!';
+  mk.textContent = t('ctrl.clipSaved');
   toast(t('toast.clip.saved'));
-  setTimeout(() => { mk.disabled = false; mk.textContent = '🎬 Make Clip'; }, 1600);
+  setTimeout(() => { mk.disabled = false; mk.textContent = t('ctrl.makeClip'); }, 1600);
 }
 function shuffleDj() {
   const ids = DJ_EFFECTS.map((e) => e.id);
@@ -2364,7 +2364,7 @@ document.getElementById('loop-btn').addEventListener('click', (e) => {
     loopTimeouts = [];
     if (loopIterTimer) clearTimeout(loopIterTimer);
     const btn = document.getElementById('loop-btn');
-    btn.textContent = '🔁 루프';
+    btn.textContent = t('ctrl.loop');
     btn.classList.remove('on', 'rec');
     toast(t('toast.loop.clear'));
     return;
