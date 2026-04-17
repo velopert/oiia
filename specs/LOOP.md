@@ -174,6 +174,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 24 — 𝕏 트윗 공유**: 현재 세팅 URL로 트윗 작성 창 오픈 (noopener).
 - [x] **[2026-04-17] Loop 25 — BPM 직접 입력**: BPM 값 더블클릭 시 prompt 입력 (40-240 범위).
 - [x] **[2026-04-17] Loop 26 — GLITCH DJ 이펙트**: 랜덤 오프셋/길이/피치(0.4–2.6x)/50% 리버스 스터터. 총 27개.
+- [x] **[2026-04-17] Loop 27 — PHASER DJ 이펙트**: 4단 allpass 체인 + 0.5Hz LFO 주파수 변조. 총 28개.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

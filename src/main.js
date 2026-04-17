@@ -778,6 +778,32 @@ function dj_pingpong() {
   s.start();
 }
 
+function dj_phaser() {
+  const s = djBufferSource();
+  const lfo = djOsc('sine', 0.5);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 800;
+  lfo.connect(lfoGain);
+  let prev = s;
+  const stages = [];
+  for (let i = 0; i < 4; i++) {
+    const ap = audioCtx.createBiquadFilter();
+    ap.type = 'allpass';
+    ap.Q.value = 1.2;
+    ap.frequency.value = 400 + i * 350;
+    lfoGain.connect(ap.frequency);
+    stages.push(ap);
+    prev.connect(ap);
+    prev = ap;
+  }
+  const wet = audioCtx.createGain();
+  wet.gain.value = 0.7;
+  prev.connect(wet).connect(masterOut);
+  s.connect(masterOut);
+  lfo.start();
+  s.start();
+}
+
 function dj_glitch() {
   const base = audioCtx.currentTime;
   const totalDur = 1.6;
@@ -864,6 +890,7 @@ const DJ_EFFECTS = [
   { id: 'robot',    name: 'ROBOT',    color: '#11dd99', play: dj_robot,         desc: '80Hz 링 모듈레이션, 로봇 음성' },
   { id: 'tapestop', name: 'TAPESTOP', color: '#ee4422', play: dj_tapestop,      desc: '1.2초에 걸쳐 서서히 정지' },
   { id: 'glitch',   name: 'GLITCH',   color: '#ff0066', play: dj_glitch,        desc: '랜덤 오프셋·길이·피치·방향 스터터' },
+  { id: 'phaser',   name: 'PHASER',   color: '#66aaff', play: dj_phaser,        desc: '4단 allpass 위상 시프트 + 0.5Hz LFO' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
