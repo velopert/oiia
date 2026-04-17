@@ -957,7 +957,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
 .cat-pop {
   transform-origin: center;
   will-change: transform, opacity;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.55));
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.45));
   backface-visibility: hidden;
   contain: layout paint;
 }
@@ -996,7 +996,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
 }
 .cat-pop-slow {
   animation: cat-pop-slow 3s cubic-bezier(.22,.9,.3,1) forwards;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 @keyframes cat-pop-rotate {
   0%   { transform: rotate(0deg) scale(0.2); opacity: 0; filter: blur(8px); }
@@ -1019,7 +1019,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
 .cat-pop-burst {
   animation: cat-pop-burst 1.4s cubic-bezier(.2,.7,.3,1) forwards;
   transform-origin: center;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
 @keyframes cat-pop-rain {
@@ -1045,7 +1045,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
   animation-timing-function: cubic-bezier(.3,.6,.4,1);
   animation-fill-mode: forwards;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 28px rgba(107,207,127,0.9)) drop-shadow(0 12px 24px rgba(0,0,0,0.7));
+  filter: drop-shadow(0 0 28px rgba(107,207,127,0.9));
 }
 @keyframes cat-pop-streak {
   0%   { transform: translate3d(0, 0, 0) scaleX(1.4) scaleY(0.9); opacity: 0; }
@@ -1058,7 +1058,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
   animation-timing-function: cubic-bezier(.3,0,.2,1);
   animation-fill-mode: forwards;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 40px rgba(255,217,61,1)) drop-shadow(0 0 20px rgba(255,217,61,0.9));
+  filter: drop-shadow(0 0 36px rgba(255,217,61,0.95));
 }
 @keyframes cat-pop-corners {
   0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(0.4); opacity: 0; }
@@ -1071,7 +1071,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
   animation-timing-function: cubic-bezier(.3,.1,.4,1);
   animation-fill-mode: forwards;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 32px rgba(200,107,255,0.95)) drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 30px rgba(200,107,255,0.9));
 }
 @keyframes cat-pop-orbit {
   0%   { transform: translate3d(var(--x0, 0px), var(--y0, 0px), 0) scale(0.4); opacity: 0; }
@@ -1086,7 +1086,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
   animation-fill-mode: forwards;
   transform-origin: center;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 30px rgba(77,208,225,0.9)) drop-shadow(0 8px 18px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 28px rgba(77,208,225,0.9));
 }
 @keyframes cat-pop-pulse {
   0%   { transform: scale(0.2); opacity: 0; filter: drop-shadow(0 0 0 rgba(255,85,238,0)); }
@@ -1102,7 +1102,7 @@ html[data-theme="light"] .stats-row b { color: #000; }
   animation-timing-function: cubic-bezier(.4,0,.2,1);
   animation-fill-mode: forwards;
   transform-origin: center;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 @keyframes cat-pop-shake {
   0%   { transform: translate3d(0, 0, 0) scale(0.2); opacity: 0; }
@@ -1156,14 +1156,14 @@ html[data-theme="light"] .stats-row b { color: #000; }
   animation-timing-function: cubic-bezier(.3,.1,.3,1);
   animation-fill-mode: forwards;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 30px rgba(255,107,107,0.9)) drop-shadow(0 8px 18px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 28px rgba(255,107,107,0.9));
 }
 .cat-pop-mirror-r {
   animation-name: cat-pop-mirror-r;
   animation-timing-function: cubic-bezier(.3,.1,.3,1);
   animation-fill-mode: forwards;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 30px rgba(77,150,255,0.9)) drop-shadow(0 8px 18px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 28px rgba(77,150,255,0.9));
 }
 
 .start-hint {

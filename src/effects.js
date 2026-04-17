@@ -293,7 +293,7 @@ export function createCatSpawner(url) {
   layer.className = 'cat-layer';
   document.body.appendChild(layer);
 
-  const MAX_CATS = 14;
+  const MAX_CATS = 9;
   const pool = [];
 
   function purge() {
@@ -303,14 +303,21 @@ export function createCatSpawner(url) {
   }
   function makeCat(cls, styleStr, lifeMs) {
     purge();
-    const img = new Image();
+    const img = pool.pop() || new Image();
     img.src = url;
+    img.decoding = 'async';
     img.className = 'cat-pop ' + cls;
     img.style.cssText = styleStr;
     layer.appendChild(img);
-    setTimeout(() => { if (img.parentNode) img.remove(); }, lifeMs);
+    setTimeout(() => {
+      if (img.parentNode) img.remove();
+      if (pool.length < 6) { img.style.cssText = ''; img.className = ''; pool.push(img); }
+    }, lifeMs);
     return img;
   }
+
+  let lastDjSpawnAt = 0;
+  let lastDjSpawnIdx = -1;
 
   function spawn() {
     while (layer.childElementCount >= MAX_CATS && layer.firstElementChild) {
@@ -436,8 +443,8 @@ export function createCatSpawner(url) {
 
   function spawnRain() {
     const w = window.innerWidth, h = window.innerHeight;
-    const n = 5;
-    const size = Math.max(110, Math.min(w, h) * 0.16);
+    const n = 3;
+    const size = Math.max(130, Math.min(w, h) * 0.18);
     for (let i = 0; i < n; i++) {
       const x = (w / (n + 1)) * (i + 1) + (Math.random() - 0.5) * 40;
       const delay = i * 60 + Math.random() * 80;
@@ -449,8 +456,8 @@ export function createCatSpawner(url) {
 
   function spawnRise() {
     const w = window.innerWidth, h = window.innerHeight;
-    const n = 3;
-    const size = Math.max(150, Math.min(w, h) * 0.22);
+    const n = 2;
+    const size = Math.max(170, Math.min(w, h) * 0.24);
     for (let i = 0; i < n; i++) {
       const x = w * (0.2 + i * 0.3) + (Math.random() - 0.5) * 60;
       const dur = 1500 + i * 120;
@@ -475,9 +482,11 @@ export function createCatSpawner(url) {
 
   function spawnCorners() {
     const w = window.innerWidth, h = window.innerHeight;
-    const size = Math.max(140, Math.min(w, h) * 0.18);
+    const size = Math.max(160, Math.min(w, h) * 0.2);
     const cx = w / 2, cy = h / 2;
-    const corners = [[-size - 20, -size - 20], [w + 20, -size - 20], [-size - 20, h + 20], [w + 20, h + 20]];
+    const allCorners = [[-size - 20, -size - 20], [w + 20, -size - 20], [-size - 20, h + 20], [w + 20, h + 20]];
+    const pick = Math.random() < 0.5 ? [0, 3] : [1, 2];
+    const corners = pick.map((i) => allCorners[i]);
     const dur = 1100;
     corners.forEach(([sx, sy], i) => {
       const tx = cx - sx - size / 2;
@@ -496,10 +505,10 @@ export function createCatSpawner(url) {
 
   function spawnOrbit() {
     const w = window.innerWidth, h = window.innerHeight;
-    const size = Math.max(130, Math.min(w, h) * 0.16);
+    const size = Math.max(150, Math.min(w, h) * 0.18);
     const r = Math.min(w, h) * 0.32;
     const cx = w / 2 - size / 2, cy = h / 2 - size / 2;
-    const n = 4;
+    const n = 3;
     const dur = 1400;
     const dir = Math.random() < 0.5 ? 1 : -1;
     for (let i = 0; i < n; i++) {
@@ -568,6 +577,11 @@ export function createCatSpawner(url) {
 
   const DJ_SPAWNERS = [spawnRain, spawnRise, spawnStreak, spawnCorners, spawnOrbit, spawnPulse, spawnShake, spawnZigzag, spawnMirror];
   function spawnDjFx(idx) {
+    const now = performance.now();
+    if (now - lastDjSpawnAt < 110 && idx === lastDjSpawnIdx) return;
+    if (layer.childElementCount >= MAX_CATS - 1) return;
+    lastDjSpawnAt = now;
+    lastDjSpawnIdx = idx;
     const fn = DJ_SPAWNERS[idx % DJ_SPAWNERS.length];
     if (fn) fn();
   }
