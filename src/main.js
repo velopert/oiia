@@ -77,6 +77,10 @@ app.innerHTML = `
     <button id="play-all">▶ 전체 재생 (Space)</button>
     <button id="play-oiia" class="secondary">▶ ㅜㅣㅣㅏ 순서로</button>
     <button id="rec" class="rec-btn">⏺ 녹음</button>
+    <button id="tap" class="tap-btn" title="t 키로도 탭">
+      <span class="tap-label">TAP</span>
+      <span id="bpm-value" class="bpm-value">— BPM</span>
+    </button>
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
   </div>
@@ -846,6 +850,11 @@ document.addEventListener('keydown', (e) => {
     playDjSlot(n);
     return;
   }
+  if (e.code === 'KeyT' && !e.metaKey && !e.ctrlKey) {
+    e.preventDefault();
+    tapBeat();
+    return;
+  }
   let code = e.code;
   if (!KEY_ORDER.find((k) => k.code === code) && JAMO_TO_CODE[e.key]) {
     code = JAMO_TO_CODE[e.key];
@@ -950,6 +959,45 @@ function stopRecTimer() {
   if (recTimerId) { clearInterval(recTimerId); recTimerId = null; }
 }
 
+let tapTimes = [];
+let currentBpm = null;
+let bpmPulseTimer = null;
+
+function tapBeat() {
+  const now = performance.now();
+  if (tapTimes.length && now - tapTimes[tapTimes.length - 1] > 2500) tapTimes = [];
+  tapTimes.push(now);
+  if (tapTimes.length > 8) tapTimes.shift();
+  const btn = document.getElementById('tap');
+  btn.classList.remove('tap-pulse');
+  void btn.offsetWidth;
+  btn.classList.add('tap-pulse');
+  if (tapTimes.length >= 2) {
+    const diffs = [];
+    for (let i = 1; i < tapTimes.length; i++) diffs.push(tapTimes[i] - tapTimes[i - 1]);
+    const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+    const raw = 60000 / avg;
+    currentBpm = Math.round(Math.max(40, Math.min(240, raw)));
+    document.getElementById('bpm-value').textContent = currentBpm + ' BPM';
+    schedulePulse();
+  }
+}
+
+function schedulePulse() {
+  if (bpmPulseTimer) { clearInterval(bpmPulseTimer); bpmPulseTimer = null; }
+  if (!currentBpm) return;
+  const period = 60000 / currentBpm;
+  const el = document.getElementById('tap');
+  bpmPulseTimer = setInterval(() => {
+    el.classList.remove('tap-tick');
+    void el.offsetWidth;
+    el.classList.add('tap-tick');
+  }, period);
+}
+
+window.__getBpm = () => currentBpm;
+
+document.getElementById('tap').onclick = tapBeat;
 document.getElementById('rec').onclick = toggleRec;
 document.getElementById('play-all').onclick = playAll;
 document.getElementById('play-oiia').onclick = playOiiaSequence;

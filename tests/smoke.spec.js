@@ -116,6 +116,24 @@ test('touch key pads are rendered at touchable size', async ({ page }) => {
   expect(box.height).toBeGreaterThanOrEqual(72);
 });
 
+test('tap tempo computes BPM after a few taps', async ({ page }) => {
+  const errors = attachConsoleGuard(page);
+  await page.goto('/');
+  const btn = page.locator('#tap');
+  await expect(btn).toBeVisible();
+  await expect(page.locator('#bpm-value')).toHaveText('— BPM');
+  for (let i = 0; i < 4; i++) {
+    await btn.click();
+    await page.waitForTimeout(500); // ~120 BPM
+  }
+  const text = await page.locator('#bpm-value').textContent();
+  expect(text).toMatch(/\d+ BPM/);
+  const bpm = parseInt(text);
+  expect(bpm).toBeGreaterThan(60);
+  expect(bpm).toBeLessThan(200);
+  expect(errors).toEqual([]);
+});
+
 test('A key spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');
