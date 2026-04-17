@@ -242,9 +242,12 @@ function drawWaveform() {
 function renderKeys() {
   keysEl.innerHTML = '';
   KEY_ORDER.forEach((k) => {
+    const seg = segments.find((s) => s.id === k.segId);
+    const color = seg ? seg.color : '#888';
     const el = document.createElement('div');
     el.className = 'key';
     el.id = 'key-' + k.code;
+    el.style.setProperty('--c', color);
     el.innerHTML = `
       <div class="jamo">${k.jamo}</div>
       <div class="latin">${k.latin}</div>

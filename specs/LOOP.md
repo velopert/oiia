@@ -166,6 +166,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 14 — PWA 매니페스트**: `manifest.webmanifest` + apple-touch-icon + theme-color meta. 홈 추가 가능 (iOS/Android).
 - [x] **[2026-04-17] Loop 15 — 세션 통계 in 도움말**: 프레스 카운트 · 경과 시간 · 메인 키/DJ를 `?` 오버레이 하단에 라이브 표시.
 - [x] **[2026-04-17] Loop 16 — DJ 슬롯 firing 피드백**: 트리거 시 슬롯에 컬러 링 + glow + 스케일 800ms CSS 애니메이션.
+- [x] **[2026-04-17] Loop 17 — 키 플래시 색상 매칭**: 각 키 카드에 `--c` 세그먼트 컬러 var 주입, hover/active 시 해당 컬러로 링/글로우.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

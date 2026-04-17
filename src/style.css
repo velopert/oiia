@@ -101,11 +101,15 @@ canvas#waveform {
   align-items: center;
   justify-content: center;
 }
-.key:hover { background: #262626; }
+.key:hover { background: #262626; border-color: color-mix(in srgb, var(--c, #5af) 35%, #2a2a2a); }
 .key.active {
   transform: scale(0.96);
-  background: #2a3a4e;
-  border-color: #5af;
+  background: color-mix(in srgb, var(--c, #5af) 20%, #1a1a1a);
+  border-color: var(--c, #5af);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c, #5af) 40%, transparent), 0 0 20px 2px color-mix(in srgb, var(--c, #5af) 35%, transparent);
+}
+.key .jamo {
+  color: var(--c, #fff);
 }
 .key .jamo {
   font-size: 44px;
