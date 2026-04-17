@@ -84,7 +84,7 @@ const DICT = {
     'tour.skip': 'Skip',
     'tour.next': 'Next →',
     'tour.1.title': '6 Oiiai keys',
-    'tour.1.body': 'Tap ㅜ ㅣ ㅏ A B C (or N/L/K/Q/W/E). Hold a key for EDM build-up → drop!',
+    'tour.1.body': 'Tap N I A + A B C (or N/I/A/Q/W/E). Hold a key for EDM build-up → drop!',
     'tour.2.title': '1–9 DJ FX pads',
     'tour.2.body': 'Tap the number pad or press 1–9 to fire 9 DJ effects.',
     'tour.3.title': '🎲 Shuffle FX',
