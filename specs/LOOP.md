@@ -140,7 +140,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **다크/라이트 테마 토글** (기본 다크 유지).
 
 ### Audio quality
-- [ ] **고배속 playback anti-alias**: CHIP/LASER에서 pre-lowpass 적용.
 
 ### 기존 기능 폴리싱
 - [ ] **파형 줌 인/아웃** (휠 + 드래그 팬).
@@ -176,6 +175,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 27 — PHASER DJ 이펙트**: 4단 allpass 체인 + 0.5Hz LFO 주파수 변조. 총 28개.
 - [x] **[2026-04-17] Loop 28 — 루프 레이어**: 🔁 버튼 3-state (녹음 / 재생 / 정지). 키프레스·DJ 이벤트 시간축 캡처 → 자동 반복. 연주 위에 즉흥 가능.
 - [x] **[2026-04-17] Loop 29 — 루프 클리어**: Shift-click on 🔁로 녹음/재생 전부 정리.
+- [x] **[2026-04-17] Loop 30 — 안티앨리어싱**: `antiAliasFilter(maxRate)` 헬퍼, CHIP/SCRATCH/POWERUP/LASER에 pre-lowpass(Nyquist/maxRate*0.88) 체인 삽입.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

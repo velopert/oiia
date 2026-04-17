@@ -486,10 +486,19 @@ function dj_deep() {
   s.start();
 }
 
+function antiAliasFilter(maxRate) {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'lowpass';
+  f.Q.value = 0.5;
+  f.frequency.value = Math.min(18000, (audioCtx.sampleRate / 2) / Math.max(1, maxRate) * 0.88);
+  return f;
+}
+
 function dj_chipmunk() {
   const s = djBufferSource();
   s.playbackRate.value = 1.9;
-  s.connect(masterOut);
+  const aa = antiAliasFilter(1.9);
+  s.connect(aa).connect(masterOut);
   s.start();
 }
 
@@ -540,7 +549,8 @@ function dj_stutter() {
 
 function dj_scratch() {
   const s = djBufferSource();
-  s.connect(masterOut);
+  const aa = antiAliasFilter(2.5);
+  s.connect(aa).connect(masterOut);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(0.2, t);
   s.playbackRate.linearRampToValueAtTime(2.5, t + 0.25);
@@ -695,7 +705,8 @@ function dj_backspin() {
 
 function dj_powerup() {
   const s = djBufferSource();
-  s.connect(masterOut);
+  const aa = antiAliasFilter(2.4);
+  s.connect(aa).connect(masterOut);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(0.4, t);
   s.playbackRate.exponentialRampToValueAtTime(2.4, t + 1.6);
@@ -752,7 +763,8 @@ function dj_overdrive() {
 
 function dj_laser() {
   const s = djBufferSource();
-  s.connect(masterOut);
+  const aa = antiAliasFilter(2.6);
+  s.connect(aa).connect(masterOut);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(2.6, t);
   s.playbackRate.exponentialRampToValueAtTime(0.35, t + 1.4);
