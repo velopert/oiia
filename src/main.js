@@ -244,6 +244,9 @@ app.innerHTML = `
   <div class="active-bar" id="active-bar"></div>
   <div class="ticker" id="ticker" aria-hidden="true"></div>
   <div class="presets" id="presets"></div>
+  <div class="seg-tools">
+    <button id="randomize-segs" class="dj-shuffle" title="세그먼트 위치를 랜덤으로 (길이 유지)">🎰 세그먼트 랜덤</button>
+  </div>
   <canvas id="waveform"></canvas>
   <div class="keys" id="keys"></div>
   <div class="segments" id="segments"></div>
@@ -1974,6 +1977,22 @@ document.getElementById('loop-btn').addEventListener('click', (e) => {
 });
 document.getElementById('metro').onclick = toggleMetro;
 document.getElementById('replay-btn').onclick = replayLast;
+document.getElementById('randomize-segs').onclick = () => {
+  if (!buffer) return;
+  segments.forEach((s) => {
+    const len = s.end - s.start;
+    const maxStart = Math.max(0, buffer.duration - len);
+    s.start = Math.random() * maxStart;
+    s.end = s.start + len;
+  });
+  clampSegments();
+  saveSegments();
+  aSubBufferCache = null;
+  renderSegments();
+  renderActiveBar();
+  drawWaveform();
+  toast('세그먼트 랜덤 이동');
+};
 document.getElementById('loop-speed').onclick = () => {
   const i = LOOP_SPEEDS.indexOf(loopSpeed);
   loopSpeed = LOOP_SPEEDS[(i + 1) % LOOP_SPEEDS.length];

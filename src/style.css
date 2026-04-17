@@ -152,6 +152,13 @@ html[data-theme="light"] .ticker-chip { color: #111; background: color-mix(in sr
 html[data-theme="light"] .preset-btn { background: #fff; color: #222; border-color: #d0d0d0; }
 html[data-theme="light"] .preset-btn:hover { background: #eaf2ff; }
 
+.seg-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
 .keys {
   margin-top: 20px;
   display: grid;
