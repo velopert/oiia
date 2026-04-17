@@ -122,7 +122,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 ### Viral (공유·기록·전파)
 - [ ] **Video session recording**: 캔버스 + 오디오를 묶어 WebM로 (현재는 오디오만).
 - [ ] **Replay mode**: 마지막 N초 키 입력 기록 → 재생 버튼으로 다시 트리거.
-- [ ] **Session stats** 화면 끝에: 가장 많이 쓴 키, 총 drop 횟수 ("당신의 메인은 ㅣ입니다").
 
 ### DJ (프로가 쓸 만한 컨트롤)
 - [ ] **Loop layer**: 현재 키 입력 시퀀스를 루프 레이어에 녹음 → 계속 반복, 그 위에 즉흥 연주.
@@ -165,6 +164,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 12 — Screen Wake Lock**: 첫 키프레스에 `navigator.wakeLock.request('screen')`, visibilitychange로 재획득. 미지원 브라우저는 무음 실패.
 - [x] **[2026-04-17] Loop 13 — Auto-beat 버튼**: 16-step 8분박 랜덤 패턴 4종 중 하나 + 중간중간 DJ 트리거 자동 발사. BPM 설정되어 있으면 거기에 맞춤.
 - [x] **[2026-04-17] Loop 14 — PWA 매니페스트**: `manifest.webmanifest` + apple-touch-icon + theme-color meta. 홈 추가 가능 (iOS/Android).
+- [x] **[2026-04-17] Loop 15 — 세션 통계 in 도움말**: 프레스 카운트 · 경과 시간 · 메인 키/DJ를 `?` 오버레이 하단에 라이브 표시.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

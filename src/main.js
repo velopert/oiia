@@ -36,12 +36,38 @@ function setupStartHint() {
 }
 setupStartHint();
 
+const sessionStats = { key: {}, dj: {}, total: 0, start: Date.now() };
+
+function bumpStat(group, id) {
+  sessionStats[group][id] = (sessionStats[group][id] || 0) + 1;
+  sessionStats.total++;
+}
+
+function renderStats() {
+  const el = document.getElementById('keyhelp-stats');
+  if (!el) return;
+  const el_total = sessionStats.total;
+  const keyEntries = Object.entries(sessionStats.key).sort((a, b) => b[1] - a[1]);
+  const djEntries = Object.entries(sessionStats.dj).sort((a, b) => b[1] - a[1]);
+  const mainKey = keyEntries[0];
+  const mainDj = djEntries[0];
+  const minutes = Math.max(1, Math.round((Date.now() - sessionStats.start) / 60000));
+  el.innerHTML = `
+    <div class="stats-title">세션 통계</div>
+    <div class="stats-row"><span>총 프레스</span><b>${el_total}</b></div>
+    <div class="stats-row"><span>경과 시간</span><b>~${minutes}분</b></div>
+    ${mainKey ? `<div class="stats-row"><span>메인 키</span><b>${mainKey[0]} · ${mainKey[1]}회</b></div>` : ''}
+    ${mainDj ? `<div class="stats-row"><span>메인 DJ</span><b>${mainDj[0].toUpperCase()} · ${mainDj[1]}회</b></div>` : ''}
+  `;
+}
+
 function setupKeyhelp() {
   const el = document.getElementById('keyhelp');
   if (!el) return;
   function toggle(show) {
     if (show === undefined) show = el.hidden;
     el.hidden = !show;
+    if (show !== false) renderStats();
   }
   el.addEventListener('click', () => toggle(false));
   document.addEventListener('keydown', (e) => {
@@ -300,6 +326,7 @@ function pressKey(code, intensity = 1) {
   requestWakeLock();
   const k = KEY_ORDER.find((x) => x.code === code);
   if (!k) return;
+  bumpStat('key', k.jamo);
   playSegmentById(k.segId);
   flashKey(code);
   const seg = segments.find((s) => s.id === k.segId);
@@ -768,6 +795,7 @@ function playDjSlot(idx) {
   const id = djMapping[idx];
   const eff = DJ_EFFECTS.find((e) => e.id === id);
   if (!eff) return;
+  bumpStat('dj', id);
   try { eff.play(); } catch (err) { console.error(err); }
   fx.drop(eff.color, eff.name);
   haptic([30, 20, 40]);

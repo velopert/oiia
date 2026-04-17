@@ -481,6 +481,27 @@ body.fx-shake { animation: fx-shake 0.5s cubic-bezier(.36,.07,.19,.97); }
   text-align: center;
   min-width: 36px;
 }
+.keyhelp-stats {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #2a2a2a;
+}
+.stats-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5af;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #ccc;
+  padding: 4px 0;
+}
+.stats-row b { color: #fff; font-weight: 700; }
 .keyhelp-close {
   margin-top: 16px;
   color: #666;
