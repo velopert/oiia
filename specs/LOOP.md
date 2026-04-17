@@ -122,7 +122,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 ### Viral (공유·기록·전파)
 - [ ] **Video session recording**: 캔버스 + 오디오를 묶어 WebM로 (현재는 오디오만).
 - [ ] **Replay mode**: 마지막 N초 키 입력 기록 → 재생 버튼으로 다시 트리거.
-- [ ] **"Auto-beat" 버튼**: 랜덤 DJ 한방 + 자동 시퀀스로 15초짜리 히트 생성 (공유용 데모).
 - [ ] **Session stats** 화면 끝에: 가장 많이 쓴 키, 총 drop 횟수 ("당신의 메인은 ㅣ입니다").
 
 ### DJ (프로가 쓸 만한 컨트롤)
@@ -164,6 +163,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 10 — BPM 퀀타이즈**: `beatSec(div)` 헬퍼로 STUTTER(16분) / ECHO(8분) / GATE(8분) / WUBWUB(4분) / TREMOLO(8분) / PINGPONG(L=8분 R=4분)이 현재 BPM에 스냅. BPM 미설정이면 기본값 유지.
 - [x] **[2026-04-17] Loop 11 — URL preset 공유**: base64url 해시로 세그먼트+DJ 매핑 인코딩, `🔗 링크 공유` 버튼이 clipboard 복사 + history replace. 페이지 로드 시 `#p=` 감지 → 자동 적용 + 토스트.
 - [x] **[2026-04-17] Loop 12 — Screen Wake Lock**: 첫 키프레스에 `navigator.wakeLock.request('screen')`, visibilitychange로 재획득. 미지원 브라우저는 무음 실패.
+- [x] **[2026-04-17] Loop 13 — Auto-beat 버튼**: 16-step 8분박 랜덤 패턴 4종 중 하나 + 중간중간 DJ 트리거 자동 발사. BPM 설정되어 있으면 거기에 맞춤.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

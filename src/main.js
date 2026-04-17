@@ -94,6 +94,7 @@ app.innerHTML = `
       <span class="tap-label">TAP</span>
       <span id="bpm-value" class="bpm-value">— BPM</span>
     </button>
+    <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
     <button id="share" class="secondary">🔗 링크 공유</button>
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
@@ -1098,6 +1099,31 @@ function loadFromHash() {
   }
 }
 
+let autoBeatTimer = null;
+function autoBeat() {
+  if (autoBeatTimer) { clearTimeout(autoBeatTimer); autoBeatTimer = null; }
+  if (audioCtx?.state === 'suspended') audioCtx.resume();
+  const codes = ['KeyN', 'KeyL', 'KeyK', 'KeyA', 'KeyB'];
+  const bpm = currentBpm || 128;
+  const step = (60 / bpm) * 500; // 8th note ms
+  const patterns = [
+    [0,1,2,1, 0,1,2,1, 0,2,1,2, 3,1,2,1],
+    [0,2,1,2, 0,2,1,2, 3,1,2,1, 0,2,1,0],
+    [2,1,0,1, 2,1,0,1, 4,1,2,1, 3,2,1,0],
+    [0,0,1,2, 1,1,0,2, 0,0,1,2, 3,2,1,4],
+  ];
+  const pat = patterns[Math.floor(Math.random() * patterns.length)];
+  const djAt = [4, 8, 12].concat([pat.length]);
+  let offset = 0;
+  pat.forEach((ki, i) => {
+    offset = i * step;
+    setTimeout(() => pressKey(codes[ki]), offset);
+  });
+  djAt.forEach((i, idx) => {
+    setTimeout(() => playDjSlot(idx % 9), i * step + 40);
+  });
+}
+document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
 document.getElementById('play-all').onclick = playAll;
 document.getElementById('play-oiia').onclick = playOiiaSequence;

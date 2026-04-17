@@ -153,6 +153,20 @@ test('share creates URL preset that reloads into app', async ({ page, context })
   expect(errors).toEqual([]);
 });
 
+test('auto-beat triggers key presses', async ({ page }) => {
+  const errors = attachConsoleGuard(page);
+  await page.goto('/');
+  await page.addInitScript(() => { window.__pressCount = 0; });
+  await page.evaluate(() => {
+    const origKey = document.dispatchEvent;
+    window.__keyCounts = 0;
+    const k = window.HTMLElement.prototype.click;
+  });
+  await page.locator('#auto-beat').click();
+  await page.waitForTimeout(500);
+  expect(errors).toEqual([]);
+});
+
 test('A key spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');
