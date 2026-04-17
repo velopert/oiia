@@ -1485,6 +1485,7 @@ function schedulePulse() {
     el.classList.remove('tap-tick');
     void el.offsetWidth;
     el.classList.add('tap-tick');
+    if (fx.beatRing) fx.beatRing('#5aaaff');
   }, period);
 }
 

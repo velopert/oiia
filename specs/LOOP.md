@@ -189,6 +189,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 42 — 슬롯별 볼륨**: 각 DJ 슬롯 카드 하단에 볼륨 바(휠/드래그). `djBus` gain 노드로 dj 이펙트 전부 라우팅, 발사 전 슬롯 볼륨으로 세트. `oiia-dj-vol-v1` localStorage.
 - [x] **[2026-04-17] Loop 43 — 다크/라이트 테마 토글**: FPS 옆 `☀️/🌙` 버튼. `html[data-theme="light"]`로 CSS vars + 35+ 오버라이드 규칙. `oiia-theme-v1` localStorage 기본 다크.
 - [x] **[2026-04-17] Loop 44 — DJ 이펙트 +2**: SIREN(피치 0.6↔1.8 반복 스윕), LOFI(로우패스 3.2kHz + 24-step 양자화 + 비닐 크래클). 총 34개.
+- [x] **[2026-04-17] Loop 45 — Beat ring visualizer**: BPM 설정 시 매 박자마다 하단 중앙에 링 펄스. `fx.beatRing()` + effects.js 새 kind 'br'.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

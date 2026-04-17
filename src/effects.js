@@ -215,6 +215,14 @@ export function createFX() {
         ctx.globalAlpha = Math.min(0.85, Math.pow(1 - t, 2) * 0.28 * (it.alphaMul || 1));
         ctx.fillStyle = it.color;
         ctx.fillRect(0, 0, w, h);
+      } else if (it.kind === 'br') {
+        const r = 18 + easeOut(t) * 110;
+        ctx.globalAlpha = Math.pow(1 - t, 1.4) * 0.8;
+        ctx.strokeStyle = it.color;
+        ctx.lineWidth = (1 - t) * 8 + 1.2;
+        ctx.beginPath();
+        ctx.arc(it.x, it.y, r, 0, Math.PI * 2);
+        ctx.stroke();
       } else if (it.kind === 'beam') {
         const len = easeOut(t) * 900 * (it.scale || 1);
         ctx.globalAlpha = a * 0.6;
@@ -261,7 +269,15 @@ export function createFX() {
     origBurst(color, label, intensity * qualityMul);
   }
 
-  return { burst: burstWithQ, drop, setQuality, canvas };
+  function beatRing(color = '#5af') {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    items.push({ kind: 'br', x: w / 2, y: h - 60, life: 0, max: 0.55, color });
+  }
+
+  const origDraw = draw;
+
+  return { burst: burstWithQ, drop, setQuality, beatRing, canvas };
 }
 
 export function createCatSpawner(url) {
