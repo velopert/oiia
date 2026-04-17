@@ -146,8 +146,34 @@ function loadSegments() {
   return structuredClone(DEFAULT_SEGMENTS);
 }
 
+const segHistory = [];
+function pushSegHistory() {
+  segHistory.push(JSON.stringify(segments));
+  if (segHistory.length > 10) segHistory.shift();
+}
+function undoSegments() {
+  if (segHistory.length < 2) return false;
+  segHistory.pop();
+  const prev = segHistory[segHistory.length - 1];
+  if (!prev) return false;
+  const restored = JSON.parse(prev);
+  segments.forEach((s, i) => {
+    if (restored[i]) {
+      s.start = restored[i].start;
+      s.end = restored[i].end;
+    }
+  });
+  localStorage.setItem('oiia-segments-v7', JSON.stringify(segments));
+  renderSegments();
+  renderActiveBar();
+  drawWaveform();
+  toast('세그먼트 되돌림');
+  return true;
+}
+
 function saveSegments() {
   localStorage.setItem('oiia-segments-v7', JSON.stringify(segments));
+  pushSegHistory();
 }
 
 let masterOut;
@@ -166,6 +192,7 @@ async function init() {
     const arr = await res.arrayBuffer();
     buffer = await audioCtx.decodeAudioData(arr);
     clampSegments();
+    pushSegHistory();
     renderKeys();
     renderActiveBar();
     renderSegments();
@@ -917,6 +944,11 @@ function flashKey(code) {
 const JAMO_TO_CODE = { 'ㅜ': 'KeyN', 'ㅣ': 'KeyL', 'ㅏ': 'KeyK' };
 
 document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+    e.preventDefault();
+    undoSegments();
+    return;
+  }
   if (e.repeat) return;
   if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
   if (e.code === 'Space') {

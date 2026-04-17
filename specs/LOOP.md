@@ -145,7 +145,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 
 ### 기존 기능 폴리싱
 - [ ] **FPS 모니터 + 자동 품질 저감**: 50fps 아래 떨어지면 파티클 수 절반.
-- [ ] **세그먼트 편집 undo** (Cmd/Ctrl+Z, 10단계).
 - [ ] **파형 줌 인/아웃** (휠 + 드래그 팬).
 - [ ] **DJ 효과 search/filter** select 위에 검색창.
 
@@ -169,6 +168,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 17 — 키 플래시 색상 매칭**: 각 키 카드에 `--c` 세그먼트 컬러 var 주입, hover/active 시 해당 컬러로 링/글로우.
 - [x] **[2026-04-17] Loop 18 — 고양이 GIF 렉 해결**: 동시 인스턴스 6개 cap(오래된 것 축출), double drop-shadow→single, `contain: layout paint` + `translate3d`로 GPU 레이어 분리, Image pool 재사용.
 - [x] **[2026-04-17] Loop 19 — DJ 이펙트 +2종**: ROBOT(링 모듈레이션 80Hz), TAPESTOP(1.2s 감속 후 정지). 총 26개로 증가.
+- [x] **[2026-04-17] Loop 20 — 세그먼트 Undo**: Cmd/Ctrl+Z로 최근 10단계 편집 되돌리기, history는 `saveSegments` 시마다 스냅샷, help 오버레이에 단축키 추가.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
