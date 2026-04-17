@@ -422,6 +422,7 @@ function renderSegments() {
     el.innerHTML = `
       <div class="seg-head">
         <span class="seg-label">${s.jamo} <span style="color:#888;font-weight:400">(${s.id})</span></span>
+        <input type="color" data-color="${i}" value="${s.color}" title="세그먼트 컬러" class="seg-color">
         <span class="seg-meta">${(s.end - s.start).toFixed(3)}s</span>
       </div>
       <div class="row"><span>start</span><span id="v-${i}-start">${s.start.toFixed(3)}s</span></div>
@@ -445,6 +446,16 @@ function renderSegments() {
   });
   segsEl.querySelectorAll('button[data-play]').forEach((btn) => {
     btn.addEventListener('click', () => playSegmentByIndex(+btn.dataset.play));
+  });
+  segsEl.querySelectorAll('input[data-color]').forEach((cp) => {
+    cp.addEventListener('input', (e) => {
+      const i = +e.target.dataset.color;
+      segments[i].color = e.target.value;
+      saveSegments();
+      drawWaveform();
+      renderKeys();
+      renderActiveBar();
+    });
   });
 }
 
@@ -1583,7 +1594,7 @@ function toast(msg, ms = 1800) {
 
 function encodePreset() {
   const data = {
-    s: segments.map((x) => ({ id: x.id, s: +x.start.toFixed(4), e: +x.end.toFixed(4) })),
+    s: segments.map((x) => ({ id: x.id, s: +x.start.toFixed(4), e: +x.end.toFixed(4), c: x.color })),
     d: djMapping,
     b: currentBpm || undefined,
   };
@@ -1609,6 +1620,7 @@ function applyPreset(p) {
       if (seg) {
         if (typeof ps.s === 'number') seg.start = ps.s;
         if (typeof ps.e === 'number') seg.end = ps.e;
+        if (typeof ps.c === 'string' && /^#[0-9a-f]{6}$/i.test(ps.c)) seg.color = ps.c;
       }
     });
     clampSegments();

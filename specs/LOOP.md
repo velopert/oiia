@@ -193,6 +193,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 48 — 프리셋 갤러리**: Basics/Club/Ether/Chaos 4종 칩 버튼, 원클릭으로 DJ 매핑+BPM 적용.
 - [x] **[2026-04-17] Loop 49 — 루프 재생 속도**: 루프 버튼 옆 `0.5× / 1× / 2×` 토글. 재생 중에도 즉시 반영 (loopRunIteration 재트리거).
 - [x] **[2026-04-17] Loop 50 — 메트로놈 클릭**: `🥁 Metro` 버튼, BPM 기반 4/4 down/up-beat 사각파 블립 (다운비트 1600Hz, 아닌 것 1100Hz).
+- [x] **[2026-04-17] Loop 51 — 세그먼트 컬러 피커**: `input[type=color]`로 각 세그먼트 컬러 편집. URL preset encode/decode에 컬러 포함. 키 카드 + 파형 + active chip 자동 리렌더.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
