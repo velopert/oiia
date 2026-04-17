@@ -191,6 +191,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 46 — Master 볼륨 슬라이더**: controls에 🔊 + range (0–1.3). `masterGain` 노드를 masterOut↔destination 사이 삽입. `oiia-master-vol-v1` persist.
 - [x] **[2026-04-17] Loop 47 — DJ 효과 검색/필터**: 헤더에 `search` 입력, 이름·설명·현재 선택 기준으로 각 select의 option을 필터. 34개 중에서 원하는 이펙트 바로 찾기.
 - [x] **[2026-04-17] Loop 48 — 프리셋 갤러리**: Basics/Club/Ether/Chaos 4종 칩 버튼, 원클릭으로 DJ 매핑+BPM 적용.
+- [x] **[2026-04-17] Loop 49 — 루프 재생 속도**: 루프 버튼 옆 `0.5× / 1× / 2×` 토글. 재생 중에도 즉시 반영 (loopRunIteration 재트리거).
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

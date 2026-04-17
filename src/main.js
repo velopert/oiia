@@ -220,6 +220,7 @@ app.innerHTML = `
     <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
     <button id="make-clip" class="make-clip-btn">🎬 Make Clip</button>
     <button id="loop-btn" class="loop-btn">🔁 루프</button>
+    <button id="loop-speed" class="secondary" title="루프 재생 속도">1×</button>
     <button id="share" class="secondary">🔗 링크 공유</button>
     <button id="share-x" class="secondary">𝕏 트윗</button>
     <button id="reset" class="secondary">↺ 기본값</button>
@@ -1643,6 +1644,8 @@ let loopStartT = 0;
 let loopPlaying = false;
 let loopTimeouts = [];
 let loopIterTimer = null;
+let loopSpeed = 1;
+const LOOP_SPEEDS = [0.5, 1, 2];
 
 function loopRec(type, arg) {
   if (!loopRecording) return;
@@ -1657,7 +1660,7 @@ function loopRunIteration() {
   if (!loopPlaying) return;
   const last = loopEvents[loopEvents.length - 1];
   if (!last) return;
-  const total = last.t + 150;
+  const total = (last.t + 150) / loopSpeed;
   loopTimeouts.forEach((id) => clearTimeout(id));
   loopTimeouts = [];
   loopEvents.forEach((e) => {
@@ -1665,7 +1668,7 @@ function loopRunIteration() {
       if (!loopPlaying) return;
       if (e.type === 'key') pressKey(e.arg, 1);
       else if (e.type === 'dj') playDjSlot(e.arg);
-    }, e.t);
+    }, e.t / loopSpeed);
     loopTimeouts.push(id);
   });
   loopIterTimer = setTimeout(loopRunIteration, total);
@@ -1794,6 +1797,12 @@ document.getElementById('loop-btn').addEventListener('click', (e) => {
   }
   loopToggle();
 });
+document.getElementById('loop-speed').onclick = () => {
+  const i = LOOP_SPEEDS.indexOf(loopSpeed);
+  loopSpeed = LOOP_SPEEDS[(i + 1) % LOOP_SPEEDS.length];
+  document.getElementById('loop-speed').textContent = loopSpeed + '×';
+  if (loopPlaying) loopRunIteration();
+};
 document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
 document.getElementById('share-x').onclick = () => {
