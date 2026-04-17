@@ -1355,6 +1355,11 @@ document.addEventListener('keydown', (e) => {
     playDjSlot(n);
     return;
   }
+  if (e.code === 'Digit0') {
+    e.preventDefault();
+    playDjSlot(Math.floor(Math.random() * 9));
+    return;
+  }
   if (e.code === 'KeyT' && !e.metaKey && !e.ctrlKey) {
     e.preventDefault();
     tapBeat();

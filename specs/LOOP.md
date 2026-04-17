@@ -194,6 +194,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 50 — 메트로놈 클릭**: `🥁 Metro` 버튼, BPM 기반 4/4 down/up-beat 사각파 블립 (다운비트 1600Hz, 아닌 것 1100Hz).
 - [x] **[2026-04-17] Loop 51 — 세그먼트 컬러 피커**: `input[type=color]`로 각 세그먼트 컬러 편집. URL preset encode/decode에 컬러 포함. 키 카드 + 파형 + active chip 자동 리렌더.
 - [x] **[2026-04-17] Loop 52 — Help 오버레이 액션**: "🎯 튜토리얼 다시 보기" + "🗑 전체 초기화" (confirm 후 localStorage 싹 비우고 리로드).
+- [x] **[2026-04-17] Loop 53 — 0 = 랜덤 DJ**: 0 키로 9개 슬롯 중 랜덤 발사. 도움말 업데이트.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
