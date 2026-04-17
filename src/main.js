@@ -249,6 +249,7 @@ function saveSegments() {
 }
 
 let masterOut;
+let djBus;
 
 async function init() {
   try {
@@ -260,6 +261,9 @@ async function init() {
     masterOut.attack.value = 0.003;
     masterOut.release.value = 0.18;
     masterOut.connect(audioCtx.destination);
+    djBus = audioCtx.createGain();
+    djBus.gain.value = 1;
+    djBus.connect(masterOut);
     const res = await fetch(oiiaUrl);
     const arr = await res.arrayBuffer();
     buffer = await audioCtx.decodeAudioData(arr);
@@ -513,7 +517,7 @@ function dj_distort() {
   ws.oversample = '4x';
   const g = audioCtx.createGain();
   g.gain.value = 0.35;
-  ws.connect(g).connect(masterOut);
+  ws.connect(g).connect(djBus);
   const s = djBufferSource();
   s.connect(ws);
   s.start();
@@ -521,7 +525,7 @@ function dj_distort() {
 
 function dj_reverse() {
   const s = djBufferSource(reverseBuffer(getDjBuffer()));
-  s.connect(masterOut);
+  s.connect(djBus);
   s.start();
 }
 
@@ -530,7 +534,7 @@ function dj_deep() {
   s.playbackRate.value = 0.55;
   const g = audioCtx.createGain();
   g.gain.value = 1.2;
-  s.connect(g).connect(masterOut);
+  s.connect(g).connect(djBus);
   s.start();
 }
 
@@ -546,7 +550,7 @@ function dj_chipmunk() {
   const s = djBufferSource();
   s.playbackRate.value = 1.9;
   const aa = antiAliasFilter(1.9);
-  s.connect(aa).connect(masterOut);
+  s.connect(aa).connect(djBus);
   s.start();
 }
 
@@ -554,7 +558,7 @@ function dj_sweep() {
   const f = audioCtx.createBiquadFilter();
   f.type = 'lowpass';
   f.Q.value = 10;
-  f.connect(masterOut);
+  f.connect(djBus);
   const t = audioCtx.currentTime;
   f.frequency.setValueAtTime(150, t);
   f.frequency.exponentialRampToValueAtTime(14000, t + 2.5);
@@ -567,7 +571,7 @@ function dj_riser() {
   const f = audioCtx.createBiquadFilter();
   f.type = 'highpass';
   f.Q.value = 6;
-  f.connect(masterOut);
+  f.connect(djBus);
   const t = audioCtx.currentTime;
   f.frequency.setValueAtTime(100, t);
   f.frequency.exponentialRampToValueAtTime(6000, t + 2.2);
@@ -590,7 +594,7 @@ function dj_stutter() {
   const base = audioCtx.currentTime;
   for (let i = 0; i < count; i++) {
     const s = djBufferSource();
-    s.connect(masterOut);
+    s.connect(djBus);
     s.start(base + i * (segLen + gap), startT, segLen);
   }
 }
@@ -598,7 +602,7 @@ function dj_stutter() {
 function dj_scratch() {
   const s = djBufferSource();
   const aa = antiAliasFilter(2.5);
-  s.connect(aa).connect(masterOut);
+  s.connect(aa).connect(djBus);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(0.2, t);
   s.playbackRate.linearRampToValueAtTime(2.5, t + 0.25);
@@ -614,7 +618,7 @@ function dj_wubwub() {
   f.type = 'lowpass';
   f.Q.value = 18;
   f.frequency.value = 1500;
-  f.connect(masterOut);
+  f.connect(djBus);
   const lfo = djOsc('sine', currentBpm ? currentBpm / 60 : 7);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 1400;
@@ -634,9 +638,9 @@ function dj_echo() {
   const wet = audioCtx.createGain();
   wet.gain.value = 0.7;
   delay.connect(fb).connect(delay);
-  delay.connect(wet).connect(masterOut);
+  delay.connect(wet).connect(djBus);
   const s = djBufferSource();
-  s.connect(masterOut);
+  s.connect(djBus);
   s.connect(delay);
   s.start();
 }
@@ -654,7 +658,7 @@ function dj_crush() {
   const f = audioCtx.createBiquadFilter();
   f.type = 'lowpass';
   f.frequency.value = 3500;
-  ws.connect(f).connect(masterOut);
+  ws.connect(f).connect(djBus);
   const s = djBufferSource();
   s.connect(ws);
   s.start();
@@ -662,7 +666,7 @@ function dj_crush() {
 
 function dj_tremolo() {
   const g = audioCtx.createGain();
-  g.connect(masterOut);
+  g.connect(djBus);
   g.gain.value = 0.5;
   const lfo = djOsc('sine', currentBpm ? currentBpm / 60 * 2 : 9);
   const lfoGain = audioCtx.createGain();
@@ -686,9 +690,9 @@ function dj_flanger() {
   lfo.connect(lfoGain).connect(delay.delayTime);
   lfo.start();
   delay.connect(fb).connect(delay);
-  delay.connect(masterOut);
+  delay.connect(djBus);
   const s = djBufferSource();
-  s.connect(masterOut);
+  s.connect(djBus);
   s.connect(delay);
   s.start();
   s.onended = () => lfo.stop();
@@ -699,7 +703,7 @@ function dj_autowah() {
   f.type = 'bandpass';
   f.Q.value = 8;
   f.frequency.value = 1500;
-  f.connect(masterOut);
+  f.connect(djBus);
   const lfo = djOsc('sine', 3);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 1200;
@@ -720,7 +724,7 @@ function dj_phone() {
   lp.frequency.value = 2800;
   const ws = audioCtx.createWaveShaper();
   ws.curve = makeDistortionCurve(40);
-  hp.connect(lp).connect(ws).connect(masterOut);
+  hp.connect(lp).connect(ws).connect(djBus);
   const s = djBufferSource();
   s.connect(hp);
   s.start();
@@ -729,7 +733,7 @@ function dj_phone() {
 function dj_gate() {
   const g = audioCtx.createGain();
   g.gain.value = 0.5;
-  g.connect(masterOut);
+  g.connect(djBus);
   const lfo = djOsc('square', currentBpm ? currentBpm / 60 * 2 : 8);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 0.5;
@@ -743,7 +747,7 @@ function dj_gate() {
 
 function dj_backspin() {
   const s = djBufferSource();
-  s.connect(masterOut);
+  s.connect(djBus);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(1.0, t);
   s.playbackRate.exponentialRampToValueAtTime(0.08, t + 0.8);
@@ -754,7 +758,7 @@ function dj_backspin() {
 function dj_powerup() {
   const s = djBufferSource();
   const aa = antiAliasFilter(2.4);
-  s.connect(aa).connect(masterOut);
+  s.connect(aa).connect(djBus);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(0.4, t);
   s.playbackRate.exponentialRampToValueAtTime(2.4, t + 1.6);
@@ -767,7 +771,7 @@ function dj_vinyl() {
   f.frequency.value = 3800;
   const g = audioCtx.createGain();
   g.gain.value = 0.85;
-  f.connect(g).connect(masterOut);
+  f.connect(g).connect(djBus);
   const lfo = djOsc('sine', 0.7);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 0.05;
@@ -784,7 +788,7 @@ function dj_hall() {
   const taps = [0.05, 0.11, 0.17, 0.23, 0.31, 0.43];
   const out = audioCtx.createGain();
   out.gain.value = 0.75;
-  out.connect(masterOut);
+  out.connect(djBus);
   const s = djBufferSource();
   s.connect(out);
   taps.forEach((d, i) => {
@@ -803,7 +807,7 @@ function dj_overdrive() {
   ws.oversample = '2x';
   const g = audioCtx.createGain();
   g.gain.value = 0.55;
-  ws.connect(g).connect(masterOut);
+  ws.connect(g).connect(djBus);
   const s = djBufferSource();
   s.connect(ws);
   s.start();
@@ -812,7 +816,7 @@ function dj_overdrive() {
 function dj_laser() {
   const s = djBufferSource();
   const aa = antiAliasFilter(2.6);
-  s.connect(aa).connect(masterOut);
+  s.connect(aa).connect(djBus);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(2.6, t);
   s.playbackRate.exponentialRampToValueAtTime(0.35, t + 1.4);
@@ -833,9 +837,9 @@ function dj_pingpong() {
   const merger = audioCtx.createChannelMerger(2);
   splitL.connect(merger, 0, 0);
   splitR.connect(merger, 0, 1);
-  merger.connect(masterOut);
+  merger.connect(djBus);
   const s = djBufferSource();
-  s.connect(masterOut);
+  s.connect(djBus);
   s.connect(splitL);
   s.start();
 }
@@ -848,7 +852,7 @@ function dj_drumroll() {
     const s = djBufferSource();
     const g = audioCtx.createGain();
     g.gain.value = 0.3 + (i / count) * 0.7;
-    s.connect(g).connect(masterOut);
+    s.connect(g).connect(djBus);
     try { s.start(base + i * unit, 0, unit * 0.9); } catch {}
   }
 }
@@ -862,7 +866,7 @@ function dj_chord() {
     const g = audioCtx.createGain();
     g.gain.value = gains[i];
     const aa = antiAliasFilter(Math.max(1, r));
-    s.connect(aa).connect(g).connect(masterOut);
+    s.connect(aa).connect(g).connect(djBus);
     s.start();
   });
 }
@@ -871,7 +875,7 @@ function dj_swell() {
   const s = djBufferSource();
   const g = audioCtx.createGain();
   g.gain.value = 0;
-  s.connect(g).connect(masterOut);
+  s.connect(g).connect(djBus);
   const t = audioCtx.currentTime;
   g.gain.setValueAtTime(0, t);
   g.gain.exponentialRampToValueAtTime(1, t + 1.4);
@@ -884,7 +888,7 @@ function dj_chop() {
   const s = djBufferSource();
   const g = audioCtx.createGain();
   g.gain.value = 1;
-  s.connect(g).connect(masterOut);
+  s.connect(g).connect(djBus);
   const t = audioCtx.currentTime;
   const step = currentBpm ? beatSec(16) : 0.1;
   const total = getDjBuffer().duration || 2;
@@ -918,8 +922,8 @@ function dj_phaser() {
   }
   const wet = audioCtx.createGain();
   wet.gain.value = 0.7;
-  prev.connect(wet).connect(masterOut);
-  s.connect(masterOut);
+  prev.connect(wet).connect(djBus);
+  s.connect(djBus);
   lfo.start();
   s.start();
 }
@@ -939,7 +943,7 @@ function dj_glitch() {
       const rev = reverseBuffer(buf);
       s.buffer = rev;
     }
-    s.connect(masterOut);
+    s.connect(djBus);
     try { s.start(base + t, offset, segLen); } catch {}
     t += segLen + Math.random() * 0.04;
   }
@@ -952,14 +956,14 @@ function dj_robot() {
   const ring = djOsc('sine', 80);
   ring.connect(modGain.gain);
   s.connect(modGain);
-  modGain.connect(masterOut);
+  modGain.connect(djBus);
   ring.start();
   s.start();
 }
 
 function dj_tapestop() {
   const s = djBufferSource();
-  s.connect(masterOut);
+  s.connect(djBus);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(1.0, t);
   s.playbackRate.linearRampToValueAtTime(0.01, t + 1.2);
@@ -974,10 +978,10 @@ function dj_reverse_echo() {
   const fb = audioCtx.createGain();
   fb.gain.value = 0.5;
   delay.connect(fb).connect(delay);
-  delay.connect(masterOut);
+  delay.connect(djBus);
   const s = djBufferSource(rev);
   s.playbackRate.value = 0.9;
-  s.connect(masterOut);
+  s.connect(djBus);
   s.connect(delay);
   s.start();
 }
@@ -1038,6 +1042,19 @@ function saveDjMapping() {
 
 let djMapping = loadDjMapping();
 
+function loadSlotVol() {
+  try {
+    const saved = localStorage.getItem('oiia-dj-vol-v1');
+    if (saved) {
+      const p = JSON.parse(saved);
+      if (Array.isArray(p) && p.length === 9) return p.map((v) => Math.max(0, Math.min(1, +v)));
+    }
+  } catch {}
+  return [1, 1, 1, 1, 1, 1, 1, 1, 1];
+}
+let slotVol = loadSlotVol();
+function saveSlotVol() { localStorage.setItem('oiia-dj-vol-v1', JSON.stringify(slotVol)); }
+
 function playDjSlot(idx) {
   if (!buffer) return;
   if (audioCtx?.state === 'suspended') audioCtx.resume();
@@ -1047,6 +1064,11 @@ function playDjSlot(idx) {
   if (!eff) return;
   loopRec('dj', idx);
   bumpStat('dj', id);
+  if (djBus) {
+    const t = audioCtx.currentTime;
+    djBus.gain.cancelScheduledValues(t);
+    djBus.gain.setValueAtTime(slotVol[idx], t);
+  }
   try { eff.play(); } catch (err) { console.error(err); }
   fx.drop(eff.color, eff.name);
   haptic([30, 20, 40]);
@@ -1067,14 +1089,19 @@ function renderDjSlots() {
       `<option value="${e.id}" title="${e.desc || ''}"${e.id === id ? ' selected' : ''}>${e.name}</option>`
     ).join('');
     const curr = DJ_EFFECTS.find((e) => e.id === id) || DJ_EFFECTS[0];
+    const vol = slotVol[i] ?? 1;
     return `
-      <div class="dj-slot-wrap" style="--c:${curr.color}">
+      <div class="dj-slot-wrap" style="--c:${curr.color}" data-wrap="${i}">
         <div class="dj-slot" title="${curr.desc || ''}">
           <span class="dj-num">${i + 1}</span>
           <select data-slot="${i}" title="${curr.desc || ''}">${opts}</select>
           <button data-test="${i}" title="${curr.desc || '테스트'}">▶</button>
         </div>
         <div class="dj-desc">${curr.desc || ''}</div>
+        <div class="dj-vol" data-vol="${i}" title="휠 / 드래그로 볼륨 조절">
+          <div class="dj-vol-fill" style="width:${Math.round(vol * 100)}%"></div>
+          <div class="dj-vol-label">${Math.round(vol * 100)}%</div>
+        </div>
       </div>
     `;
   }).join('');
@@ -1087,6 +1114,42 @@ function renderDjSlots() {
   });
   el.querySelectorAll('button[data-test]').forEach((btn) => {
     btn.addEventListener('click', () => playDjSlot(+btn.dataset.test));
+  });
+  el.querySelectorAll('.dj-vol').forEach((vb) => {
+    const i = +vb.dataset.vol;
+    vb.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const step = e.deltaY > 0 ? -0.06 : 0.06;
+      slotVol[i] = Math.max(0, Math.min(1, (slotVol[i] ?? 1) + step));
+      saveSlotVol();
+      const fill = vb.querySelector('.dj-vol-fill');
+      const lbl = vb.querySelector('.dj-vol-label');
+      const pct = Math.round(slotVol[i] * 100);
+      if (fill) fill.style.width = pct + '%';
+      if (lbl) lbl.textContent = pct + '%';
+    }, { passive: false });
+    vb.addEventListener('pointerdown', (e) => {
+      function apply(clientX) {
+        const r = vb.getBoundingClientRect();
+        const v = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+        slotVol[i] = v;
+        const fill = vb.querySelector('.dj-vol-fill');
+        const lbl = vb.querySelector('.dj-vol-label');
+        const pct = Math.round(v * 100);
+        if (fill) fill.style.width = pct + '%';
+        if (lbl) lbl.textContent = pct + '%';
+      }
+      apply(e.clientX);
+      vb.setPointerCapture(e.pointerId);
+      const onMove = (ev) => apply(ev.clientX);
+      const onUp = () => {
+        vb.removeEventListener('pointermove', onMove);
+        vb.removeEventListener('pointerup', onUp);
+        saveSlotVol();
+      };
+      vb.addEventListener('pointermove', onMove);
+      vb.addEventListener('pointerup', onUp);
+    });
   });
 }
 

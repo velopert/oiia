@@ -277,6 +277,38 @@ canvas#waveform {
 }
 .dj-slot button:hover { filter: brightness(1.15); }
 
+.dj-vol {
+  position: relative;
+  height: 14px;
+  margin: 4px 0 6px;
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  cursor: ew-resize;
+  overflow: hidden;
+  touch-action: none;
+}
+.dj-vol-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 30%, #111), var(--c));
+  pointer-events: none;
+}
+.dj-vol-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0,0,0,0.8);
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+
 .controls {
   margin-top: 20px;
   display: flex;

@@ -124,9 +124,9 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 
 ### DJ (프로가 쓸 만한 컨트롤)
 - [ ] **MIDI input**: Web MIDI API로 물리 패드/키보드 바인딩.
-- [ ] **FX dry/wet**: 각 DJ 슬롯 카드에 wet knob (마우스 휠 또는 슬라이더).
 - [ ] **Velocity-like 강도**: 홀드 시간에 따라 drop뿐 아니라 일반 재생도 음색이 변하도록.
 - [ ] **Crossfader**: clean buffer ↔ A sub-buffer 를 실시간 블렌드.
+- [ ] **Master volume slider**: 전체 출력 레벨 컨트롤.
 
 ### Mobile & cross-device
 - [ ] **풀 모바일 패드 모드**: 작은 화면에서 전체 하단 터치 바에 고정 — 현재는 인라인 + 폰트/사이즈 튜닝 단계.
@@ -186,6 +186,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 39 — 루프 녹음 라이브 카운트**: 녹음 중 버튼 텍스트에 이벤트 개수 실시간 표시.
 - [x] **[2026-04-17] Loop 40 — Esc = 패닉 정지**: Escape가 루프 재생/녹음 + 모든 DJ 노드 stopAllDj. 도움말 업데이트.
 - [x] **[2026-04-17] Loop 41 — First-run tour**: 첫 방문 1.6s 후 3-step 그라디언트 버블 + 대상에 점선 링 포인터. `건너뛰기`/`다음`. `oiia-tour-done-v1` localStorage flag.
+- [x] **[2026-04-17] Loop 42 — 슬롯별 볼륨**: 각 DJ 슬롯 카드 하단에 볼륨 바(휠/드래그). `djBus` gain 노드로 dj 이펙트 전부 라우팅, 발사 전 슬롯 볼륨으로 세트. `oiia-dj-vol-v1` localStorage.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
