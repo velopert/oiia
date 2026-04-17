@@ -728,6 +728,28 @@ function dj_pingpong() {
   s.start();
 }
 
+function dj_robot() {
+  const s = djBufferSource();
+  const modGain = audioCtx.createGain();
+  modGain.gain.value = 0;
+  const ring = djOsc('sine', 80);
+  ring.connect(modGain.gain);
+  s.connect(modGain);
+  modGain.connect(masterOut);
+  ring.start();
+  s.start();
+}
+
+function dj_tapestop() {
+  const s = djBufferSource();
+  s.connect(masterOut);
+  const t = audioCtx.currentTime;
+  s.playbackRate.setValueAtTime(1.0, t);
+  s.playbackRate.linearRampToValueAtTime(0.01, t + 1.2);
+  s.start();
+  s.stop(t + 1.3);
+}
+
 function dj_reverse_echo() {
   const rev = reverseBuffer(getDjBuffer());
   const delay = audioCtx.createDelay(2);
@@ -768,6 +790,8 @@ const DJ_EFFECTS = [
   { id: 'laser',    name: 'LASER',    color: '#ff00ff', play: dj_laser,         desc: '피치 2.6→0.35 급락 (SF 레이저)' },
   { id: 'pingpong', name: 'PINGPONG', color: '#00ff88', play: dj_pingpong,      desc: '스테레오 좌우 튀는 딜레이' },
   { id: 'revecho',  name: 'REV-ECHO', color: '#9966ff', play: dj_reverse_echo,  desc: '역재생 + 피드백 딜레이' },
+  { id: 'robot',    name: 'ROBOT',    color: '#11dd99', play: dj_robot,         desc: '80Hz 링 모듈레이션, 로봇 음성' },
+  { id: 'tapestop', name: 'TAPESTOP', color: '#ee4422', play: dj_tapestop,      desc: '1.2초에 걸쳐 서서히 정지' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
