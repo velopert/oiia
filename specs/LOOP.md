@@ -169,6 +169,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 18 — 고양이 GIF 렉 해결**: 동시 인스턴스 6개 cap(오래된 것 축출), double drop-shadow→single, `contain: layout paint` + `translate3d`로 GPU 레이어 분리, Image pool 재사용.
 - [x] **[2026-04-17] Loop 19 — DJ 이펙트 +2종**: ROBOT(링 모듈레이션 80Hz), TAPESTOP(1.2s 감속 후 정지). 총 26개로 증가.
 - [x] **[2026-04-17] Loop 20 — 세그먼트 Undo**: Cmd/Ctrl+Z로 최근 10단계 편집 되돌리기, history는 `saveSegments` 시마다 스냅샷, help 오버레이에 단축키 추가.
+- [x] **[2026-04-17] Loop 21 — Make Clip 원클릭 바이럴**: Auto-beat + 자동 녹음 콤보 버튼. 한 번 누르면 ~11초짜리 WebM 자동 생성/다운로드.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

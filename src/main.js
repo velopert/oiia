@@ -121,6 +121,7 @@ app.innerHTML = `
       <span id="bpm-value" class="bpm-value">— BPM</span>
     </button>
     <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
+    <button id="make-clip" class="make-clip-btn">🎬 Make Clip</button>
     <button id="share" class="secondary">🔗 링크 공유</button>
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
@@ -1217,6 +1218,34 @@ function autoBeat() {
     setTimeout(() => playDjSlot(idx % 9), i * step + 40);
   });
 }
+async function makeClip() {
+  const mk = document.getElementById('make-clip');
+  if (mk.disabled) return;
+  mk.disabled = true;
+  mk.textContent = '🎬 준비 중…';
+  if (audioCtx?.state === 'suspended') await audioCtx.resume();
+  setupRecorder();
+  if (!recorder) { mk.disabled = false; mk.textContent = '🎬 Make Clip'; return; }
+  if (recorder.state === 'recording') recorder.stop();
+  recChunks = [];
+  recStart = performance.now();
+  recorder.start();
+  const recBtn = document.getElementById('rec');
+  recBtn.textContent = '⏹ 녹음 중…';
+  recBtn.classList.add('recording');
+  startRecTimer();
+  mk.textContent = '🎬 녹음 중…';
+  autoBeat();
+  const bpm = currentBpm || 128;
+  const step = (60 / bpm) * 500;
+  const clipMs = step * 18 + 600;
+  await new Promise((r) => setTimeout(r, clipMs));
+  toggleRec();
+  mk.textContent = '🎬 저장됨!';
+  toast('클립 저장됨 (WebM)');
+  setTimeout(() => { mk.disabled = false; mk.textContent = '🎬 Make Clip'; }, 1600);
+}
+document.getElementById('make-clip').onclick = makeClip;
 document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
 document.getElementById('play-all').onclick = playAll;
