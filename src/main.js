@@ -794,6 +794,19 @@ function dj_pingpong() {
   s.start();
 }
 
+function dj_drumroll() {
+  const unit = currentBpm ? beatSec(32) : 0.05;
+  const count = 28;
+  const base = audioCtx.currentTime;
+  for (let i = 0; i < count; i++) {
+    const s = djBufferSource();
+    const g = audioCtx.createGain();
+    g.gain.value = 0.3 + (i / count) * 0.7;
+    s.connect(g).connect(masterOut);
+    try { s.start(base + i * unit, 0, unit * 0.9); } catch {}
+  }
+}
+
 function dj_chord() {
   const rates = [0.5, 1.0, 1.5];
   const gains = [0.6, 0.7, 0.45];
@@ -955,6 +968,7 @@ const DJ_EFFECTS = [
   { id: 'swell',    name: 'SWELL',    color: '#88ffaa', play: dj_swell,         desc: '1.4초 볼륨 스웰 인 → 급격 페이드' },
   { id: 'chop',     name: 'CHOP',     color: '#ff55bb', play: dj_chop,          desc: 'BPM 기반 랜덤 게이트 (trance gate)' },
   { id: 'chord',    name: 'CHORD',    color: '#aaff44', play: dj_chord,         desc: '옥타브 다운 + 기본 + 5도 위 동시 재생' },
+  { id: 'drumroll', name: 'DRUMROLL', color: '#ffcc66', play: dj_drumroll,      desc: '32분음 고속 반복 + 크레셴도' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
