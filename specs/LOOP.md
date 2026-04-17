@@ -137,7 +137,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **Orientation-aware**: portrait = 하단 패드, landscape = 좌우 분리.
 - [ ] **PWA**: manifest + service worker, 홈 추가 가능.
 - [ ] **iOS audio unlock**: 최초 터치에 `audioCtx.resume()` + 무음 버퍼로 wake (이미 부분 구현, 모바일 검증).
-- [ ] **Wake lock**: 재생 중 화면 꺼짐 방지 (Screen Wake Lock API).
 
 ### Onboarding / polish
 - [ ] **First-run tour**: 1회 한정 툴팁 3스텝 (키 눌러보기 → 홀드해보기 → 1키 DJ).
@@ -164,6 +163,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 9 — Tap-tempo BPM**: `t` 키/버튼 탭 → 최근 8탭 평균 → BPM, 2.5s idle 시 리셋, BPM에 맞춰 버튼 tick 펄스. 전역 `window.__getBpm()` 노출 (다음 퀀타이즈 루프용).
 - [x] **[2026-04-17] Loop 10 — BPM 퀀타이즈**: `beatSec(div)` 헬퍼로 STUTTER(16분) / ECHO(8분) / GATE(8분) / WUBWUB(4분) / TREMOLO(8분) / PINGPONG(L=8분 R=4분)이 현재 BPM에 스냅. BPM 미설정이면 기본값 유지.
 - [x] **[2026-04-17] Loop 11 — URL preset 공유**: base64url 해시로 세그먼트+DJ 매핑 인코딩, `🔗 링크 공유` 버튼이 clipboard 복사 + history replace. 페이지 로드 시 `#p=` 감지 → 자동 적용 + 토스트.
+- [x] **[2026-04-17] Loop 12 — Screen Wake Lock**: 첫 키프레스에 `navigator.wakeLock.request('screen')`, visibilitychange로 재획득. 미지원 브라우저는 무음 실패.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

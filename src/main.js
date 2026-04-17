@@ -6,6 +6,19 @@ import { createFX, createCatSpawner } from './effects.js';
 const fx = createFX();
 const catFx = createCatSpawner(catGifUrl);
 
+let wakeLock = null;
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  if (wakeLock && !wakeLock.released) return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  } catch {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') requestWakeLock();
+});
+
 function setupStartHint() {
   const hint = document.getElementById('start-hint');
   if (!hint) return;
@@ -283,6 +296,7 @@ function haptic(ms) {
 
 function pressKey(code, intensity = 1) {
   if (audioCtx?.state === 'suspended') audioCtx.resume();
+  requestWakeLock();
   const k = KEY_ORDER.find((x) => x.code === code);
   if (!k) return;
   playSegmentById(k.segId);
