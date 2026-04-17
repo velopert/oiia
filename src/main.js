@@ -381,7 +381,7 @@ function celebrate(n) {
   palette.forEach((c, i) => {
     setTimeout(() => fx.drop(c, `${n}!`), i * 90);
   });
-  toast(`🎉 ${n} 프레스 달성!`);
+  toast(t('toast.celebrate', { n }));
   haptic([40, 30, 80]);
 }
 
@@ -547,7 +547,7 @@ function undoSegments() {
   renderSegments();
   renderActiveBar();
   drawWaveform();
-  toast('세그먼트 되돌림');
+  toast(t('toast.seg.undo'));
   return true;
 }
 
@@ -2075,7 +2075,7 @@ function shareLink() {
   const url = location.origin + location.pathname + '#p=' + b64;
   try {
     navigator.clipboard.writeText(url);
-    toast('링크가 클립보드에 복사됨');
+    toast(t('toast.share.copied'));
   } catch {
     prompt('링크를 복사하세요', url);
   }
@@ -2090,7 +2090,7 @@ function loadFromHash() {
     renderSegments();
     renderDjSlots();
     drawWaveform();
-    toast('공유된 세팅 불러옴');
+    toast(t('toast.share.loaded'));
   }
 }
 
@@ -2130,9 +2130,9 @@ function tickerPush(type, arg) {
   setTimeout(() => chip.remove(), 4000);
 }
 function replayLast() {
-  if (!replayBuffer.length) { toast('재생할 이벤트 없음 — 키를 먼저 눌러보세요'); return; }
+  if (!replayBuffer.length) { toast(t('toast.replay.empty')); return; }
   const t0 = replayBuffer[0].t;
-  toast(`🎞 마지막 ${Math.round((replayBuffer[replayBuffer.length - 1].t - t0) / 1000)}초 리플레이`);
+  toast(t('toast.replay.window', { sec: Math.round((replayBuffer[replayBuffer.length - 1].t - t0) / 1000) }));
   replayBuffer.forEach((e) => {
     setTimeout(() => {
       if (e.type === 'key') pressKey(e.arg, 1);
@@ -2186,7 +2186,7 @@ function loopToggle() {
     if (loopIterTimer) clearTimeout(loopIterTimer);
     btn.textContent = '🔁 루프';
     btn.classList.remove('on', 'rec');
-    toast('루프 정지');
+    toast(t('toast.loop.stop'));
     return;
   }
   if (loopRecording) {
@@ -2194,13 +2194,13 @@ function loopToggle() {
     btn.classList.remove('rec');
     if (loopEvents.length === 0) {
       btn.textContent = '🔁 루프';
-      toast('녹음된 이벤트 없음');
+      toast(t('toast.loop.empty'));
       return;
     }
     loopPlaying = true;
     btn.textContent = `🔁 × ${loopEvents.length}`;
     btn.classList.add('on');
-    toast(`${loopEvents.length}개 이벤트 루프 재생`);
+    toast(t('toast.loop.play', { n: loopEvents.length }));
     loopRunIteration();
     return;
   }
@@ -2210,7 +2210,7 @@ function loopToggle() {
   loopRecording = true;
   btn.textContent = '⏺ 녹음 중 (다시 눌러 종료)';
   btn.classList.add('rec');
-  toast('루프 녹음 중…');
+  toast(t('toast.loop.rec'));
 }
 
 async function countdown(steps = ['3', '2', '1', 'REC']) {
@@ -2252,7 +2252,7 @@ async function makeClip() {
   await new Promise((r) => setTimeout(r, clipMs));
   toggleRec();
   mk.textContent = '🎬 저장됨!';
-  toast('클립 저장됨 (WebM)');
+  toast(t('toast.clip.saved'));
   setTimeout(() => { mk.disabled = false; mk.textContent = '🎬 Make Clip'; }, 1600);
 }
 function shuffleDj() {
@@ -2268,7 +2268,7 @@ function shuffleDj() {
   }
   saveDjMapping();
   renderDjSlots();
-  toast('DJ 슬롯 랜덤 셔플됨');
+  toast(t('toast.dj.shuffled'));
 }
 document.getElementById('dj-filter').addEventListener('input', (e) => {
   djFilter = e.target.value;
@@ -2281,7 +2281,7 @@ document.getElementById('reset-dj').onclick = () => {
   djMapping = [...DEFAULT_DJ_MAPPING];
   saveDjMapping();
   renderDjSlots();
-  toast('DJ 슬롯 기본값 복원');
+  toast(t('toast.dj.reset'));
 };
 document.getElementById('make-clip').onclick = makeClip;
 document.getElementById('loop-btn').addEventListener('click', (e) => {
@@ -2295,7 +2295,7 @@ document.getElementById('loop-btn').addEventListener('click', (e) => {
     const btn = document.getElementById('loop-btn');
     btn.textContent = '🔁 루프';
     btn.classList.remove('on', 'rec');
-    toast('루프 클리어');
+    toast(t('toast.loop.clear'));
     return;
   }
   loopToggle();
@@ -2332,7 +2332,7 @@ document.getElementById('export').onclick = () => {
   const text = JSON.stringify(data, null, 2);
   navigator.clipboard.writeText(text).catch(() => {});
   console.log(text);
-  toast('타임스탬프 JSON이 클립보드 · 콘솔에 복사됨');
+  toast(t('toast.export.copied'));
 };
 
 const PRESETS = [
@@ -2353,7 +2353,7 @@ function applyNamedPreset(p) {
     if (bv) bv.textContent = p.bpm + ' BPM';
     schedulePulse();
   }
-  toast('프리셋: ' + p.name);
+  toast(t('toast.preset', { name: p.name }));
 }
 
 function renderPresets() {
