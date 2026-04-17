@@ -254,6 +254,7 @@ function setupDjMode() {
   onLocaleChange(() => {
     KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
     if (typeof renderKeys === 'function') renderKeys();
+    if (typeof renderDjSlots === 'function') renderDjSlots();
     refreshLabels();
     refreshLang();
     applyAllI18n();
@@ -1533,27 +1534,29 @@ function playDjSlot(idx) {
 }
 
 let djFilter = '';
+function djDesc(id) { return t('dj.desc.' + id); }
 function renderDjSlots() {
   const el = document.getElementById('dj-slots');
   if (!el) return;
   const q = djFilter.trim().toLowerCase();
   el.innerHTML = djMapping.map((id, i) => {
     const opts = DJ_EFFECTS.filter((e) =>
-      !q || e.name.toLowerCase().includes(q) || (e.desc || '').toLowerCase().includes(q) || e.id === id
+      !q || e.name.toLowerCase().includes(q) || djDesc(e.id).toLowerCase().includes(q) || e.id === id
     ).map((e) =>
-      `<option value="${e.id}" title="${e.desc || ''}"${e.id === id ? ' selected' : ''}>${e.name}</option>`
+      `<option value="${e.id}" title="${djDesc(e.id)}"${e.id === id ? ' selected' : ''}>${e.name}</option>`
     ).join('');
     const curr = DJ_EFFECTS.find((e) => e.id === id) || DJ_EFFECTS[0];
+    const desc = djDesc(curr.id);
     const vol = slotVol[i] ?? 1;
     return `
       <div class="dj-slot-wrap" style="--c:${curr.color}" data-wrap="${i}">
-        <div class="dj-slot" title="${curr.desc || ''}">
+        <div class="dj-slot" title="${desc}">
           <span class="dj-num">${i + 1}</span>
-          <select data-slot="${i}" title="${curr.desc || ''}">${opts}</select>
-          <button data-test="${i}" title="${curr.desc || '테스트'}">▶</button>
+          <select data-slot="${i}" title="${desc}">${opts}</select>
+          <button data-test="${i}" title="${desc}">▶</button>
         </div>
-        <div class="dj-desc">${curr.desc || ''}</div>
-        <div class="dj-vol" data-vol="${i}" title="휠 / 드래그로 볼륨 조절">
+        <div class="dj-desc">${desc}</div>
+        <div class="dj-vol" data-vol="${i}" title="${t('aria.volTitle') || ''}">
           <div class="dj-vol-fill" style="width:${Math.round(vol * 100)}%"></div>
           <div class="dj-vol-label">${Math.round(vol * 100)}%</div>
         </div>
