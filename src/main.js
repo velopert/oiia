@@ -250,6 +250,7 @@ app.innerHTML = `
     <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
     <button id="metro" class="secondary" title="BPM 클릭 트랙 (BPM 설정 필요)">🥁 Metro</button>
     <button id="make-clip" class="make-clip-btn">🎬 Make Clip</button>
+    <button id="replay-btn" class="secondary" title="마지막 10초를 리플레이">🎞 리플레이</button>
     <button id="loop-btn" class="loop-btn">🔁 루프</button>
     <button id="loop-speed" class="secondary" title="루프 재생 속도">1×</button>
     <button id="share" class="secondary">🔗 링크 공유</button>
@@ -522,6 +523,7 @@ function pressKey(code, intensity = 1) {
   const k = KEY_ORDER.find((x) => x.code === code);
   if (!k) return;
   loopRec('key', code);
+  replayRec('key', code);
   bumpStat('key', k.jamo);
   playSegmentById(k.segId);
   flashKey(code);
@@ -1204,6 +1206,7 @@ function playDjSlot(idx) {
   const eff = DJ_EFFECTS.find((e) => e.id === id);
   if (!eff) return;
   loopRec('dj', idx);
+  replayRec('dj', idx);
   bumpStat('dj', id);
   if (djBus) {
     const t = audioCtx.currentTime;
@@ -1722,6 +1725,25 @@ function autoBeat() {
     setTimeout(() => playDjSlot(idx % 9), i * step + 40);
   });
 }
+const REPLAY_WINDOW_MS = 10000;
+let replayBuffer = [];
+function replayRec(type, arg) {
+  const now = performance.now();
+  replayBuffer.push({ t: now, type, arg });
+  while (replayBuffer.length && now - replayBuffer[0].t > REPLAY_WINDOW_MS) replayBuffer.shift();
+}
+function replayLast() {
+  if (!replayBuffer.length) { toast('재생할 이벤트 없음 — 키를 먼저 눌러보세요'); return; }
+  const t0 = replayBuffer[0].t;
+  toast(`🎞 마지막 ${Math.round((replayBuffer[replayBuffer.length - 1].t - t0) / 1000)}초 리플레이`);
+  replayBuffer.forEach((e) => {
+    setTimeout(() => {
+      if (e.type === 'key') pressKey(e.arg, 1);
+      else if (e.type === 'dj') playDjSlot(e.arg);
+    }, e.t - t0);
+  });
+}
+
 let loopEvents = [];
 let loopRecording = false;
 let loopStartT = 0;
@@ -1882,6 +1904,7 @@ document.getElementById('loop-btn').addEventListener('click', (e) => {
   loopToggle();
 });
 document.getElementById('metro').onclick = toggleMetro;
+document.getElementById('replay-btn').onclick = replayLast;
 document.getElementById('loop-speed').onclick = () => {
   const i = LOOP_SPEEDS.indexOf(loopSpeed);
   loopSpeed = LOOP_SPEEDS[(i + 1) % LOOP_SPEEDS.length];

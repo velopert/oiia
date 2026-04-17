@@ -120,7 +120,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 ## Backlog
 
 ### Viral (공유·기록·전파)
-- [ ] **Replay mode**: 마지막 N초 키 입력 기록 → 재생 버튼으로 다시 트리거.
 
 ### DJ (프로가 쓸 만한 컨트롤)
 - [ ] **MIDI input**: Web MIDI API로 물리 패드/키보드 바인딩.
@@ -197,6 +196,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 53 — 0 = 랜덤 DJ**: 0 키로 9개 슬롯 중 랜덤 발사. 도움말 업데이트.
 - [x] **[2026-04-17] Loop 54 — FX 강도 슬라이더**: help 오버레이 하단 range (0.2–1.8x), `fx.setIntensity` 곱셈. `oiia-fx-intensity-v1` persist.
 - [x] **[2026-04-17] Loop 55 — 세션 stats v2**: 상위 3개 키/DJ 칩, 분당 프레스 카운트. help 오버레이의 한 눈에 보는 세션 요약.
+- [x] **[2026-04-17] Loop 56 — Replay 버튼**: 마지막 10초 링 버퍼 (키+DJ 이벤트), 🎞 버튼으로 원래 타이밍 그대로 다시 발사.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
