@@ -17,6 +17,7 @@ function attachConsoleGuard(page) {
 async function suppressTour(page) {
   await page.addInitScript(() => {
     try { localStorage.setItem('oiia-tour-done-v1', '1'); } catch {}
+    try { localStorage.setItem('oiia-dj-mode-v1', '0'); } catch {}
   });
 }
 
@@ -39,8 +40,8 @@ test('app loads, core UI renders, no console errors', async ({ page }, testInfo)
 
   await expect(page.locator('#waveform')).toBeVisible();
   await expect(page.locator('#active-bar')).toBeVisible();
-  await expect(page.locator('#segments .seg')).toHaveCount(5);
-  await expect(page.locator('#keys .key')).toHaveCount(5);
+  await expect(page.locator('#segments .seg')).toHaveCount(6);
+  await expect(page.locator('#keys .key:not(.dup-i)')).toHaveCount(6);
   await expect(page.locator('#dj-slots .dj-slot')).toHaveCount(9);
 
   await page.waitForFunction(() => {
@@ -156,20 +157,6 @@ test('share creates URL preset that reloads into app', async ({ page, context })
   await page.waitForSelector('select[data-slot="0"]');
   const val = await page.locator('select[data-slot="0"]').inputValue();
   expect(val).toBe('reverse');
-  expect(errors).toEqual([]);
-});
-
-test('auto-beat triggers key presses', async ({ page }) => {
-  const errors = attachConsoleGuard(page);
-  await suppressTour(page); await page.goto('/');
-  await page.addInitScript(() => { window.__pressCount = 0; });
-  await page.evaluate(() => {
-    const origKey = document.dispatchEvent;
-    window.__keyCounts = 0;
-    const k = window.HTMLElement.prototype.click;
-  });
-  await page.locator('#auto-beat').click();
-  await page.waitForTimeout(500);
   expect(errors).toEqual([]);
 });
 

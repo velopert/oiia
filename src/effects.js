@@ -192,15 +192,21 @@ export function createFX() {
         ctx.stroke();
         ctx.shadowBlur = 0;
       } else if (it.kind === 't') {
-        const scale = (0.3 + easeOut(t) * 2.2) * (it.scale || 1);
+        const baseScale = (0.3 + easeOut(t) * 2.2) * (it.scale || 1);
+        ctx.font = 'bold 140px -apple-system, BlinkMacSystemFont, sans-serif';
+        if (it._natW == null) it._natW = ctx.measureText(it.text).width;
+        const maxScale = (w * 0.88) / Math.max(1, it._natW);
+        const scale = Math.min(baseScale, maxScale);
+        const halfW = (it._natW * scale) / 2;
+        const drawX = Math.max(halfW + 6, Math.min(w - halfW - 6, it.x));
+        const drawY = Math.max(60 * scale, Math.min(h - 60 * scale, it.y));
         const alpha = t < 0.18 ? t / 0.18 : Math.pow(1 - (t - 0.18) / 0.82, 1.5);
         ctx.globalAlpha = alpha;
         ctx.save();
-        ctx.translate(it.x, it.y);
+        ctx.translate(drawX, drawY);
         ctx.rotate(it.rot * (1 + t));
         ctx.scale(scale, scale);
         ctx.fillStyle = it.color;
-        ctx.font = 'bold 140px -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.shadowColor = it.color;
@@ -321,6 +327,55 @@ export function createCatSpawner(url) {
     }, lifetime);
   }
 
-  return { spawn };
+  function spawnBig() {
+    while (layer.childElementCount >= MAX_CATS && layer.firstElementChild) {
+      layer.firstElementChild.remove();
+    }
+    const img = new Image();
+    img.src = url;
+    img.className = 'cat-pop cat-pop-slow';
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const size = Math.min(w, h) * 0.72;
+    const x = (w - size) / 2 + (Math.random() - 0.5) * w * 0.08;
+    const y = (h - size) / 2 + (Math.random() - 0.5) * h * 0.04;
+    const rot = (Math.random() - 0.5) * 14;
+    img.style.cssText = `
+      position:absolute;
+      left:${x}px;top:${y}px;
+      width:${size}px;height:auto;
+      --rot:${rot}deg;
+      z-index: 2;
+    `;
+    layer.appendChild(img);
+    setTimeout(() => { if (img.parentNode) img.remove(); }, 3200);
+  }
+
+  function spawnRotate() {
+    while (layer.childElementCount >= MAX_CATS && layer.firstElementChild) {
+      layer.firstElementChild.remove();
+    }
+    const img = new Image();
+    img.src = url;
+    img.className = 'cat-pop cat-pop-rotate';
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const size = 140 + Math.random() * 140;
+    const x = Math.random() * Math.max(0, w - size);
+    const y = Math.random() * Math.max(0, h - size);
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const spinSec = 2.2 + Math.random() * 1.4;
+    img.style.cssText = `
+      position:absolute;
+      left:${x}px;top:${y}px;
+      width:${size}px;height:auto;
+      --spin-dir:${dir};
+      --spin-sec:${spinSec.toFixed(2)}s;
+    `;
+    layer.appendChild(img);
+    setTimeout(() => { if (img.parentNode) img.remove(); }, 2800);
+  }
+
+  return { spawn, spawnBig, spawnRotate };
 }
 

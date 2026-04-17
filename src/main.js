@@ -47,10 +47,36 @@ function setupStartHint() {
     hint.classList.add('hiding');
     setTimeout(() => hint.remove(), 500);
     document.removeEventListener('keydown', dismiss, true);
-    document.removeEventListener('pointerdown', dismiss, true);
+    document.removeEventListener('pointerdown', onPointer, true);
+  }
+  function onPointer(e) {
+    if (e.target && e.target.closest && e.target.closest('#start-hint-btn')) return;
+    dismiss();
+  }
+  const btn = document.getElementById('start-hint-btn');
+  if (btn) {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      try { if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume(); } catch {}
+      const tryPress = () => {
+        if (typeof audioCtx !== 'undefined' && audioCtx && typeof buffer !== 'undefined' && buffer) {
+          pressKey('KeyA');
+          return true;
+        }
+        return false;
+      };
+      if (!tryPress()) {
+        let tries = 0;
+        const iv = setInterval(() => {
+          tries++;
+          if (tryPress() || tries > 40) clearInterval(iv);
+        }, 50);
+      }
+      dismiss();
+    });
   }
   document.addEventListener('keydown', dismiss, true);
-  document.addEventListener('pointerdown', dismiss, true);
+  document.addEventListener('pointerdown', onPointer, true);
 }
 setupStartHint();
 
@@ -63,10 +89,14 @@ function setupTour() {
   const nEl = document.getElementById('tour-n');
   const arrow = document.getElementById('tour-arrow');
   const steps = [
-    { title: '키를 눌러보세요', body: 'ㅜ(N) · ㅣ(L) · ㅏ(K) 각 자모가 소리와 파티클을 터뜨립니다.', target: '#keys .key' },
-    { title: '꾹 눌러보세요', body: '키를 1초 이상 유지 → EDM 빌드업 → 드롭 폭발.', target: '#keys .key' },
-    { title: 'DJ 슬롯 1–9', body: '숫자 키 또는 ▶ 버튼으로 DJ 이펙트 발사. 🎲 셔플 해보세요.', target: '#dj-slots .dj-slot-wrap' },
+    { title: '오이아이 키 6개', body: 'ㅜ ㅣ ㅏ A B C 자모 키를 탭(또는 N/L/K/A/B/C). 꾹 누르면 EDM 빌드업 → 드롭 폭발!', target: '#keys .key' },
+    { title: '1–9 DJ 이펙트 패드', body: '숫자패드를 탭하거나 키보드 1–9로 9가지 DJ 이펙트를 발사하세요.', target: '#dj-slots .dj-slot-wrap' },
+    { title: '🎲 이펙트 셔플', body: '패드 아래 셔플 버튼 한 번으로 9개 슬롯을 전부 랜덤 이펙트로 교체.', target: '#dj-shuffle-inline' },
+    { title: '⚙ Advanced 모드', body: '우측 상단 버튼으로 파형·세그먼트 편집·녹음·루프 등 고급 기능 전환.', target: '#dj-mode-toggle' },
   ];
+  const bubble = root.querySelector('.tour-bubble');
+  const totalEl = document.getElementById('tour-total');
+  if (totalEl) totalEl.textContent = String(steps.length);
   let i = 0;
   function position() {
     const tgt = document.querySelector(steps[i].target);
@@ -74,6 +104,19 @@ function setupTour() {
     const r = tgt.getBoundingClientRect();
     arrow.style.left = (r.left + r.width / 2 - 24) + 'px';
     arrow.style.top = (r.top + r.height / 2 - 24) + 'px';
+    if (bubble) {
+      const targetCenterY = r.top + r.height / 2;
+      const vh = window.innerHeight;
+      if (targetCenterY >= vh / 2) {
+        bubble.style.top = '24px';
+        bubble.style.bottom = 'auto';
+        bubble.style.transform = 'translateX(-50%)';
+      } else {
+        bubble.style.top = 'auto';
+        bubble.style.bottom = '24px';
+        bubble.style.transform = 'translateX(-50%)';
+      }
+    }
   }
   function render() {
     titleEl.textContent = steps[i].title;
@@ -90,13 +133,11 @@ function setupTour() {
   function keyHandler(e) {
     if (root.hidden) return;
     if (e.key === 'Escape') { done(); return; }
-    if (e.key === 'ArrowRight' || e.key === 'Enter' || e.code === 'Space') {
+    if (e.key === 'ArrowRight') {
       e.preventDefault();
       i++;
       if (i >= steps.length) done();
       else render();
-    } else if (e.key.length === 1 || /^Key|^Digit/.test(e.code)) {
-      done();
     }
   }
   document.getElementById('tour-skip').onclick = done;
@@ -141,6 +182,52 @@ function setupTheme() {
 }
 setupTheme();
 
+function setupDjMode() {
+  const stored = localStorage.getItem('oiia-dj-mode-v1');
+  const saved = stored === null ? true : stored === '1';
+  const bar = document.createElement('div');
+  bar.className = 'top-tools';
+  bar.id = 'top-tools';
+
+  const tapFloat = document.createElement('button');
+  tapFloat.className = 'dj-only-btn dj-tap-float';
+  tapFloat.id = 'dj-tap-float';
+  tapFloat.title = 'TAP: BPM 탭 (T)';
+  tapFloat.innerHTML = `<span class="tap-label">TAP</span><span id="dj-tap-bpm">— BPM</span>`;
+  tapFloat.onclick = () => { const b = document.getElementById('tap'); if (b) b.click(); };
+
+  const quantFloat = document.createElement('button');
+  quantFloat.className = 'dj-only-btn dj-quant-float';
+  quantFloat.id = 'dj-quant-float';
+  quantFloat.title = '비트 보완 (1/16 스냅)';
+  quantFloat.textContent = '🧲 비트보완';
+  quantFloat.onclick = () => { const b = document.getElementById('quantize'); if (b) b.click(); };
+
+  const btn = document.createElement('button');
+  btn.className = 'dj-mode-toggle';
+  btn.id = 'dj-mode-toggle';
+  btn.setAttribute('aria-label', '모드 전환');
+  function apply(on) {
+    document.body.classList.toggle('dj-mode', on);
+    btn.classList.toggle('on', on);
+    btn.textContent = on ? '⚙ Advanced' : '🎛 DJ';
+    btn.title = on ? '고급 모드로 (파형·세그먼트·녹음)' : 'DJ 모드로 (키 + 1–9 슬롯)';
+  }
+  apply(saved);
+  btn.onclick = () => {
+    const on = !document.body.classList.contains('dj-mode');
+    apply(on);
+    localStorage.setItem('oiia-dj-mode-v1', on ? '1' : '0');
+    if (typeof toast === 'function') toast(on ? 'DJ 모드' : 'Advanced 모드');
+  };
+
+  bar.appendChild(tapFloat);
+  bar.appendChild(quantFloat);
+  bar.appendChild(btn);
+  document.body.appendChild(bar);
+}
+setupDjMode();
+
 (function setupFxIntensity() {
   const slider = document.getElementById('fx-intensity');
   const val = document.getElementById('fx-intensity-val');
@@ -166,7 +253,7 @@ document.getElementById('replay-tour')?.addEventListener('click', (e) => {
 document.getElementById('reset-storage')?.addEventListener('click', (e) => {
   e.stopPropagation();
   if (!confirm('세그먼트·DJ 매핑·볼륨·테마·튜토리얼 기록을 모두 지우고 새로고침합니다. 진행?')) return;
-  ['oiia-segments-v7', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
+  ['oiia-segments-v10', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
   location.href = location.origin + location.pathname;
 });
 
@@ -234,7 +321,8 @@ const DEFAULT_SEGMENTS = [
   { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },
   { id: 'a', jamo: 'ㅏ', latin: 'A', code: 'KeyK', key: 'ㅏ', start: 0.831, end: 1.017, color: '#6bcf7f' },
   { id: 'ka', jamo: 'A', latin: 'A', code: 'KeyA', key: 'a', start: 0.440, end: 2.041, color: '#4d96ff' },
-  { id: 'kb', jamo: 'B', latin: 'B', code: 'KeyB', key: 'b', start: 3.268, end: 5.304, color: '#c86bff' },
+  { id: 'kb', jamo: 'B', latin: 'B', code: 'KeyB', key: 'b', start: 3.272, end: 5.304, color: '#c86bff' },
+  { id: 'kc', jamo: 'C', latin: 'C', code: 'KeyC', key: 'c', start: 0.852, end: 1.257, color: '#4dd0e1' },
 ];
 
 const KEY_ORDER = [
@@ -243,6 +331,7 @@ const KEY_ORDER = [
   { jamo: 'ㅏ', latin: 'A', code: 'KeyK', segId: 'a' },
   { jamo: 'A', latin: 'A', code: 'KeyA', segId: 'ka' },
   { jamo: 'B', latin: 'B', code: 'KeyB', segId: 'kb' },
+  { jamo: 'C', latin: 'C', code: 'KeyC', segId: 'kc' },
 ];
 
 const app = document.getElementById('app');
@@ -256,9 +345,6 @@ app.innerHTML = `
   <div class="active-bar" id="active-bar"></div>
   <div class="ticker" id="ticker" aria-hidden="true"></div>
   <div class="presets" id="presets"></div>
-  <div class="seg-tools">
-    <button id="randomize-segs" class="dj-shuffle" title="세그먼트 위치를 랜덤으로 (길이 유지)">🎰 세그먼트 랜덤</button>
-  </div>
   <canvas id="waveform"></canvas>
   <div class="keys" id="keys"></div>
   <div class="segments" id="segments"></div>
@@ -269,6 +355,7 @@ app.innerHTML = `
     <button id="reset-dj" class="dj-shuffle" title="DJ 슬롯을 기본값으로">↺ 기본</button>
   </div>
   <div class="dj-slots" id="dj-slots"></div>
+  <div class="dj-slots-bar" id="dj-slots-bar"><button id="dj-shuffle-inline" type="button" title="9개 슬롯을 랜덤 이펙트로">🎲 이펙트 셔플</button></div>
   <div class="controls">
     <button id="play-all">▶ 전체 재생 (Space)</button>
     <button id="play-oiia" class="secondary">▶ ㅜㅣㅣㅏ 순서로</button>
@@ -277,8 +364,8 @@ app.innerHTML = `
       <span class="tap-label">TAP</span>
       <span id="bpm-value" class="bpm-value">— BPM</span>
     </button>
-    <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
     <button id="metro" class="secondary" title="BPM 클릭 트랙 (BPM 설정 필요)">🥁 Metro</button>
+    <button id="quantize" class="secondary" title="세그먼트를 1/16 비트로 스냅 (BPM 필요)">🧲 비트 보완</button>
     <button id="make-clip" class="make-clip-btn">🎬 Make Clip</button>
     <button id="replay-btn" class="secondary" title="마지막 10초를 리플레이">🎞 리플레이</button>
     <button id="loop-btn" class="loop-btn">🔁 루프</button>
@@ -308,7 +395,7 @@ const segsEl = document.getElementById('segments');
 
 function loadSegments() {
   try {
-    const saved = localStorage.getItem('oiia-segments-v7');
+    const saved = localStorage.getItem('oiia-segments-v10');
     if (saved) return JSON.parse(saved);
   } catch {}
   return structuredClone(DEFAULT_SEGMENTS);
@@ -331,7 +418,7 @@ function undoSegments() {
       s.end = restored[i].end;
     }
   });
-  localStorage.setItem('oiia-segments-v7', JSON.stringify(segments));
+  localStorage.setItem('oiia-segments-v10', JSON.stringify(segments));
   renderSegments();
   renderActiveBar();
   drawWaveform();
@@ -340,7 +427,7 @@ function undoSegments() {
 }
 
 function saveSegments() {
-  localStorage.setItem('oiia-segments-v7', JSON.stringify(segments));
+  localStorage.setItem('oiia-segments-v10', JSON.stringify(segments));
   pushSegHistory();
 }
 
@@ -453,19 +540,30 @@ function drawWaveform() {
 
 function renderKeys() {
   keysEl.innerHTML = '';
-  KEY_ORDER.forEach((k) => {
+  KEY_ORDER.forEach((k, idx) => {
     const seg = segments.find((s) => s.id === k.segId);
     const color = seg ? seg.color : '#888';
     const el = document.createElement('div');
     el.className = 'key';
     el.id = 'key-' + k.code;
+    el.dataset.code = k.code;
     el.style.setProperty('--c', color);
     el.innerHTML = `
       <div class="jamo">${k.jamo}</div>
       <div class="latin">${k.latin}</div>
       <div class="bind">${k.code.replace('Key', '')} · ${k.jamo}</div>
     `;
-    el.addEventListener('pointerdown', () => pressKey(k.code));
+    el.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      try { el.setPointerCapture(e.pointerId); } catch {}
+      startHold(k.code);
+    });
+    const release = (e) => {
+      try { el.releasePointerCapture(e.pointerId); } catch {}
+      endHold(k.code);
+    };
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
     keysEl.appendChild(el);
   });
 }
@@ -520,6 +618,8 @@ function renderSegments() {
   });
 }
 
+const activeSoloNodes = { ka: null, kb: null, kc: null };
+
 function playSegmentByIndex(i) {
   const s = segments[i];
   if (!s) return;
@@ -530,12 +630,33 @@ function playSegmentByIndex(i) {
   const g = audioCtx.createGain();
   g.connect(masterOut);
   src.connect(g);
-  const t = audioCtx.currentTime;
+  const now = audioCtx.currentTime;
+  const t = nextGrid16(now);
+  const isSolo = s.id === 'ka' || s.id === 'kb' || s.id === 'kc';
+  if (isSolo) {
+    stopAllDj();
+    for (const key of Object.keys(activeSoloNodes)) {
+      const node = activeSoloNodes[key];
+      if (!node) continue;
+      const { src: oldSrc, g: oldG } = node;
+      const cutEnd = Math.max(t, now + 0.02);
+      oldG.gain.cancelScheduledValues(now);
+      oldG.gain.setValueAtTime(oldG.gain.value, now);
+      oldG.gain.linearRampToValueAtTime(0, cutEnd);
+      try { oldSrc.stop(cutEnd + 0.005); } catch {}
+      activeSoloNodes[key] = null;
+    }
+  }
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(1, t + fadeDur);
   g.gain.setValueAtTime(1, t + Math.max(fadeDur, dur - fadeDur));
   g.gain.linearRampToValueAtTime(0, t + dur);
-  src.start(0, s.start, dur);
+  src.start(t, s.start, dur);
+  if (isSolo) {
+    const node = { src, g };
+    activeSoloNodes[s.id] = node;
+    src.onended = () => { if (activeSoloNodes[s.id] === node) activeSoloNodes[s.id] = null; };
+  }
 }
 
 function playSegmentById(id) {
@@ -560,6 +681,8 @@ function pressKey(code, intensity = 1) {
   const seg = segments.find((s) => s.id === k.segId);
   if (seg) fx.burst(seg.color, seg.jamo, intensity);
   if (code === 'KeyA') catFx.spawn();
+  if (code === 'KeyB') catFx.spawnBig();
+  if (code === 'KeyC') catFx.spawnRotate();
   haptic(Math.min(30, 12 + intensity * 6));
 }
 
@@ -1228,10 +1351,27 @@ function loadSlotVol() {
 let slotVol = loadSlotVol();
 function saveSlotVol() { localStorage.setItem('oiia-dj-vol-v1', JSON.stringify(slotVol)); }
 
+function stopAllSolo() {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  for (const key of Object.keys(activeSoloNodes)) {
+    const node = activeSoloNodes[key];
+    if (!node) continue;
+    const { src: oldSrc, g: oldG } = node;
+    const cutEnd = now + 0.02;
+    oldG.gain.cancelScheduledValues(now);
+    oldG.gain.setValueAtTime(oldG.gain.value, now);
+    oldG.gain.linearRampToValueAtTime(0, cutEnd);
+    try { oldSrc.stop(cutEnd + 0.005); } catch {}
+    activeSoloNodes[key] = null;
+  }
+}
+
 function playDjSlot(idx) {
   if (!buffer) return;
   if (audioCtx?.state === 'suspended') audioCtx.resume();
   stopAllDj();
+  stopAllSolo();
   const id = djMapping[idx];
   const eff = DJ_EFFECTS.find((e) => e.id === id);
   if (!eff) return;
@@ -1280,6 +1420,10 @@ function renderDjSlots() {
           <div class="dj-vol-fill" style="width:${Math.round(vol * 100)}%"></div>
           <div class="dj-vol-label">${Math.round(vol * 100)}%</div>
         </div>
+        <div class="dj-pad">
+          <span class="dj-pad-num">${i + 1}</span>
+          <span class="dj-pad-name">${curr.name}</span>
+        </div>
       </div>
     `;
   }).join('');
@@ -1292,6 +1436,14 @@ function renderDjSlots() {
   });
   el.querySelectorAll('button[data-test]').forEach((btn) => {
     btn.addEventListener('click', () => playDjSlot(+btn.dataset.test));
+  });
+  el.querySelectorAll('.dj-pad').forEach((pad) => {
+    pad.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      const wrap = pad.closest('.dj-slot-wrap');
+      if (!wrap) return;
+      playDjSlot(+wrap.dataset.wrap);
+    });
   });
   el.querySelectorAll('.dj-vol').forEach((vb) => {
     const i = +vb.dataset.vol;
@@ -1373,10 +1525,11 @@ function endHold(code) {
 }
 
 function flashKey(code) {
-  const el = document.getElementById('key-' + code);
-  if (!el) return;
-  el.classList.add('active');
-  setTimeout(() => el.classList.remove('active'), 120);
+  const els = keysEl.querySelectorAll(`.key[data-code="${code}"]`);
+  els.forEach((el) => {
+    el.classList.add('active');
+    setTimeout(() => el.classList.remove('active'), 120);
+  });
 }
 
 const JAMO_TO_CODE = { 'ㅜ': 'KeyN', 'ㅣ': 'KeyL', 'ㅏ': 'KeyK' };
@@ -1586,8 +1739,19 @@ function stopRecTimer() {
 }
 
 let tapTimes = [];
-let currentBpm = null;
+let currentBpm = (() => {
+  const v = parseInt(localStorage.getItem('oiia-bpm-v1') || '');
+  return isFinite(v) && v >= 40 && v <= 240 ? v : null;
+})();
+if (currentBpm) {
+  const bv = document.getElementById('bpm-value');
+  if (bv) bv.textContent = currentBpm + ' BPM';
+  const fl = document.getElementById('dj-tap-bpm');
+  if (fl) fl.textContent = currentBpm + ' BPM';
+}
 let bpmPulseTimer = null;
+let beatAnchorAudio = null;
+let quantizeEnabled = localStorage.getItem('oiia-quantize-v1') === '1';
 
 function tapBeat() {
   const now = performance.now();
@@ -1598,6 +1762,8 @@ function tapBeat() {
   btn.classList.remove('tap-pulse');
   void btn.offsetWidth;
   btn.classList.add('tap-pulse');
+  if (audioCtx) beatAnchorAudio = audioCtx.currentTime;
+  if (fx.beatRing) fx.beatRing('#ff3344');
   if (tapTimes.length >= 2) {
     const diffs = [];
     for (let i = 1; i < tapTimes.length; i++) diffs.push(tapTimes[i] - tapTimes[i - 1]);
@@ -1605,8 +1771,19 @@ function tapBeat() {
     const raw = 60000 / avg;
     currentBpm = Math.round(Math.max(40, Math.min(240, raw)));
     document.getElementById('bpm-value').textContent = currentBpm + ' BPM';
+    const fl = document.getElementById('dj-tap-bpm'); if (fl) fl.textContent = currentBpm + ' BPM';
+    localStorage.setItem('oiia-bpm-v1', String(currentBpm));
     schedulePulse();
   }
+}
+
+function nextGrid16(now) {
+  if (!quantizeEnabled || !currentBpm || beatAnchorAudio == null) return now;
+  const step = 60 / currentBpm / 4;
+  const elapsed = now - beatAnchorAudio;
+  if (elapsed < 0) return now;
+  const k = Math.ceil(elapsed / step - 1e-6);
+  return beatAnchorAudio + k * step;
 }
 
 function schedulePulse() {
@@ -1624,13 +1801,14 @@ function schedulePulse() {
 
 window.__getBpm = () => currentBpm;
 
-let metroTimer = null;
+let metroLookahead = null;
+let metroNextBeatTime = 0;
 let metroCount = 0;
 function toggleMetro() {
   const btn = document.getElementById('metro');
-  if (metroTimer) {
-    clearInterval(metroTimer);
-    metroTimer = null;
+  if (metroLookahead) {
+    clearInterval(metroLookahead);
+    metroLookahead = null;
     btn.classList.remove('on');
     btn.textContent = '🥁 Metro';
     return;
@@ -1641,23 +1819,37 @@ function toggleMetro() {
   metroCount = 0;
   btn.classList.add('on');
   btn.textContent = '🥁 …';
-  function click() {
+  const period = 60 / currentBpm;
+  const now = audioCtx.currentTime;
+  if (beatAnchorAudio != null) {
+    const elapsed = Math.max(0, now - beatAnchorAudio);
+    const k = Math.ceil(elapsed / period - 1e-6);
+    metroNextBeatTime = beatAnchorAudio + k * period;
+  } else {
+    metroNextBeatTime = now + 0.05;
+  }
+  function scheduleClick(time) {
     const downbeat = metroCount % 4 === 0;
-    const t = audioCtx.currentTime;
     const o = audioCtx.createOscillator();
     o.type = 'square';
     o.frequency.value = downbeat ? 1600 : 1100;
     const g = audioCtx.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(downbeat ? 0.4 : 0.22, t + 0.002);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(downbeat ? 0.4 : 0.22, time + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
     o.connect(g).connect(masterOut);
-    o.start(t);
-    o.stop(t + 0.08);
+    o.start(time);
+    o.stop(time + 0.08);
     metroCount++;
   }
-  click();
-  metroTimer = setInterval(click, 60000 / currentBpm);
+  function tick() {
+    while (metroNextBeatTime < audioCtx.currentTime + 0.12) {
+      scheduleClick(metroNextBeatTime);
+      metroNextBeatTime += period;
+    }
+  }
+  tick();
+  metroLookahead = setInterval(tick, 25);
 }
 
 document.getElementById('bpm-value').addEventListener('dblclick', (e) => {
@@ -1669,12 +1861,29 @@ document.getElementById('bpm-value').addEventListener('dblclick', (e) => {
   if (!isNaN(n) && n >= 40 && n <= 240) {
     currentBpm = n;
     tapTimes = [];
+    beatAnchorAudio = audioCtx ? audioCtx.currentTime : null;
     document.getElementById('bpm-value').textContent = n + ' BPM';
+    const fl = document.getElementById('dj-tap-bpm'); if (fl) fl.textContent = n + ' BPM';
+    localStorage.setItem('oiia-bpm-v1', String(n));
     schedulePulse();
     toast('BPM ' + n + '으로 설정');
   }
 });
 document.getElementById('tap').onclick = tapBeat;
+function refreshQuantizeBtn() {
+  const b = document.getElementById('quantize');
+  if (b) b.classList.toggle('on', quantizeEnabled);
+  const f = document.getElementById('dj-quant-float');
+  if (f) f.classList.toggle('on', quantizeEnabled);
+}
+refreshQuantizeBtn();
+document.getElementById('quantize').onclick = () => {
+  quantizeEnabled = !quantizeEnabled;
+  localStorage.setItem('oiia-quantize-v1', quantizeEnabled ? '1' : '0');
+  refreshQuantizeBtn();
+  if (quantizeEnabled && !currentBpm) toast('먼저 BPM 설정 (T로 탭)');
+  else toast(quantizeEnabled ? '비트 보완 ON (1/16)' : '비트 보완 OFF');
+};
 document.getElementById('rec').onclick = toggleRec;
 
 function toast(msg, ms = 1800) {
@@ -1760,30 +1969,6 @@ function loadFromHash() {
   }
 }
 
-let autoBeatTimer = null;
-function autoBeat() {
-  if (autoBeatTimer) { clearTimeout(autoBeatTimer); autoBeatTimer = null; }
-  if (audioCtx?.state === 'suspended') audioCtx.resume();
-  const codes = ['KeyN', 'KeyL', 'KeyK', 'KeyA', 'KeyB'];
-  const bpm = currentBpm || 128;
-  const step = (60 / bpm) * 500; // 8th note ms
-  const patterns = [
-    [0,1,2,1, 0,1,2,1, 0,2,1,2, 3,1,2,1],
-    [0,2,1,2, 0,2,1,2, 3,1,2,1, 0,2,1,0],
-    [2,1,0,1, 2,1,0,1, 4,1,2,1, 3,2,1,0],
-    [0,0,1,2, 1,1,0,2, 0,0,1,2, 3,2,1,4],
-  ];
-  const pat = patterns[Math.floor(Math.random() * patterns.length)];
-  const djAt = [4, 8, 12].concat([pat.length]);
-  let offset = 0;
-  pat.forEach((ki, i) => {
-    offset = i * step;
-    setTimeout(() => pressKey(codes[ki]), offset);
-  });
-  djAt.forEach((i, idx) => {
-    setTimeout(() => playDjSlot(idx % 9), i * step + 40);
-  });
-}
 const REPLAY_WINDOW_MS = 10000;
 let replayBuffer = [];
 function replayRec(type, arg) {
@@ -1814,6 +1999,9 @@ function tickerPush(type, arg) {
   chip.textContent = label;
   el.appendChild(chip);
   while (el.childElementCount > 16) el.firstElementChild.remove();
+  requestAnimationFrame(() => {
+    try { chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); } catch {}
+  });
   setTimeout(() => chip.remove(), 4000);
 }
 function replayLast() {
@@ -1933,7 +2121,6 @@ async function makeClip() {
   recBtn.classList.add('recording');
   startRecTimer();
   mk.textContent = '🎬 녹음 중…';
-  autoBeat();
   const bpm = currentBpm || 128;
   const step = (60 / bpm) * 500;
   const clipMs = step * 18 + 600;
@@ -1964,6 +2151,7 @@ document.getElementById('dj-filter').addEventListener('input', (e) => {
   document.getElementById('dj-filter').focus();
 });
 document.getElementById('shuffle-dj').onclick = shuffleDj;
+document.getElementById('dj-shuffle-inline').onclick = shuffleDj;
 document.getElementById('reset-dj').onclick = () => {
   djMapping = [...DEFAULT_DJ_MAPPING];
   saveDjMapping();
@@ -1989,29 +2177,12 @@ document.getElementById('loop-btn').addEventListener('click', (e) => {
 });
 document.getElementById('metro').onclick = toggleMetro;
 document.getElementById('replay-btn').onclick = replayLast;
-document.getElementById('randomize-segs').onclick = () => {
-  if (!buffer) return;
-  segments.forEach((s) => {
-    const len = s.end - s.start;
-    const maxStart = Math.max(0, buffer.duration - len);
-    s.start = Math.random() * maxStart;
-    s.end = s.start + len;
-  });
-  clampSegments();
-  saveSegments();
-  aSubBufferCache = null;
-  renderSegments();
-  renderActiveBar();
-  drawWaveform();
-  toast('세그먼트 랜덤 이동');
-};
 document.getElementById('loop-speed').onclick = () => {
   const i = LOOP_SPEEDS.indexOf(loopSpeed);
   loopSpeed = LOOP_SPEEDS[(i + 1) % LOOP_SPEEDS.length];
   document.getElementById('loop-speed').textContent = loopSpeed + '×';
   if (loopPlaying) loopRunIteration();
 };
-document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
 document.getElementById('share-x').onclick = () => {
   const b64 = encodePreset();
