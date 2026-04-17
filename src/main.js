@@ -723,6 +723,15 @@ function renderKeys() {
     el.className = 'key';
     el.id = 'key-' + k.code;
     el.dataset.code = k.code;
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('aria-label', k.jamo + ' — ' + k.code.replace('Key', ''));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startHold(k.code); }
+    });
+    el.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); endHold(k.code); }
+    });
     el.style.setProperty('--c', color);
     el.innerHTML = `
       <div class="jamo">${k.jamo}</div>
@@ -1590,15 +1599,15 @@ function renderDjSlots() {
       <div class="dj-slot-wrap" style="--c:${curr.color}" data-wrap="${i}">
         <div class="dj-slot" title="${desc}">
           <span class="dj-num">${i + 1}</span>
-          <select data-slot="${i}" title="${desc}">${opts}</select>
-          <button data-test="${i}" title="${desc}">▶</button>
+          <select data-slot="${i}" title="${desc}" aria-label="${t('dj.slotAria', { n: i + 1 })}">${opts}</select>
+          <button data-test="${i}" title="${desc}" aria-label="${t('dj.playAria', { name: curr.name })}">▶</button>
         </div>
         <div class="dj-desc">${desc}</div>
-        <div class="dj-vol" data-vol="${i}" title="${t('aria.volTitle') || ''}">
+        <div class="dj-vol" data-vol="${i}" title="${t('aria.volTitle') || ''}" aria-label="${t('aria.volTitle')}">
           <div class="dj-vol-fill" style="width:${Math.round(vol * 100)}%"></div>
           <div class="dj-vol-label">${Math.round(vol * 100)}%</div>
         </div>
-        <div class="dj-pad">
+        <div class="dj-pad" role="button" tabindex="0" aria-label="${i + 1} — ${curr.name}">
           <span class="dj-pad-num">${i + 1}</span>
           <span class="dj-pad-name">${curr.name}</span>
         </div>
@@ -1621,6 +1630,13 @@ function renderDjSlots() {
       const wrap = pad.closest('.dj-slot-wrap');
       if (!wrap) return;
       playDjSlot(+wrap.dataset.wrap);
+    });
+    pad.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const wrap = pad.closest('.dj-slot-wrap');
+        if (wrap) playDjSlot(+wrap.dataset.wrap);
+      }
     });
   });
   el.querySelectorAll('.dj-vol').forEach((vb) => {
