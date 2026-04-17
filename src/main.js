@@ -794,6 +794,20 @@ function dj_pingpong() {
   s.start();
 }
 
+function dj_chord() {
+  const rates = [0.5, 1.0, 1.5];
+  const gains = [0.6, 0.7, 0.45];
+  rates.forEach((r, i) => {
+    const s = djBufferSource();
+    s.playbackRate.value = r;
+    const g = audioCtx.createGain();
+    g.gain.value = gains[i];
+    const aa = antiAliasFilter(Math.max(1, r));
+    s.connect(aa).connect(g).connect(masterOut);
+    s.start();
+  });
+}
+
 function dj_swell() {
   const s = djBufferSource();
   const g = audioCtx.createGain();
@@ -940,6 +954,7 @@ const DJ_EFFECTS = [
   { id: 'phaser',   name: 'PHASER',   color: '#66aaff', play: dj_phaser,        desc: '4단 allpass 위상 시프트 + 0.5Hz LFO' },
   { id: 'swell',    name: 'SWELL',    color: '#88ffaa', play: dj_swell,         desc: '1.4초 볼륨 스웰 인 → 급격 페이드' },
   { id: 'chop',     name: 'CHOP',     color: '#ff55bb', play: dj_chop,          desc: 'BPM 기반 랜덤 게이트 (trance gate)' },
+  { id: 'chord',    name: 'CHORD',    color: '#aaff44', play: dj_chord,         desc: '옥타브 다운 + 기본 + 5도 위 동시 재생' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
