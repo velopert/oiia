@@ -157,6 +157,13 @@ function setupTour() {
   };
   document.addEventListener('keydown', keyHandler, true);
   window.addEventListener('resize', position);
+  onLocaleChange(() => {
+    if (!root.hidden) render();
+    const ts = document.getElementById('tour-skip');
+    const tn = document.getElementById('tour-next');
+    if (ts) ts.textContent = t('tour.skip');
+    if (tn) tn.textContent = t('tour.next');
+  });
   setTimeout(() => {
     root.hidden = false;
     render();
