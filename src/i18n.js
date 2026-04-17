@@ -1,7 +1,7 @@
 const DICT = {
   ko: {
     'start.button': '시작하기',
-    'start.hint': '또는 아무 키나 눌러서 시작',
+    'start.hint': '또는 아무데나 탭/키 눌러서 시작',
     'dj.toggle.off': '🎛 DJ',
     'dj.toggle.on': '⚙ Advanced',
     'dj.toggle.title.off': 'DJ 모드로 (키 + 1–9 슬롯)',
@@ -164,7 +164,7 @@ const DICT = {
   },
   en: {
     'start.button': 'Start',
-    'start.hint': 'Or press any key to begin',
+    'start.hint': 'Or tap / press any key to begin',
     'dj.toggle.off': '🎛 DJ',
     'dj.toggle.on': '⚙ Advanced',
     'dj.toggle.title.off': 'Switch to DJ mode (keys + 1–9 pads)',
