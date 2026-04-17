@@ -135,7 +135,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **Crossfader**: clean buffer ↔ A sub-buffer 를 실시간 블렌드.
 
 ### Mobile & cross-device
-- [ ] **터치 패드 레이아웃**: 하단에 큰 컬러 패드, multi-touch (`Touch.identifier` 추적).
+- [ ] **풀 모바일 패드 모드**: 작은 화면에서 전체 하단 터치 바에 고정 — 현재는 인라인 + 폰트/사이즈 튜닝 단계.
 - [ ] **Orientation-aware**: portrait = 하단 패드, landscape = 좌우 분리.
 - [ ] **PWA**: manifest + service worker, 홈 추가 가능.
 - [ ] **iOS audio unlock**: 최초 터치에 `audioCtx.resume()` + 무음 버퍼로 wake (이미 부분 구현, 모바일 검증).
@@ -162,6 +162,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 5 — 세그먼트 재생 fade envelope**: 6ms linear ramp in/out GainNode로 click/pop 제거.
 - [x] **[2026-04-17] Loop 6 — Haptic vibrate**: `navigator.vibrate` 래퍼로 키프레스(강도 비례) + DJ 슬롯(3-pulse 패턴).
 - [x] **[2026-04-17] Loop 7 — 오디오 세션 녹음**: `MediaStreamDestination` + `MediaRecorder` opus, 빨간 blink 버튼 + mm:ss 타이머, 중지 시 WebM 자동 다운로드.
+- [x] **[2026-04-17] Loop 8 — 모바일 터치 패드 & 반응형**: `.keys` 5-col auto-fit, 최소 92px(데스크탑)/78px(모바일), `touch-action: manipulation`, `-webkit-tap-highlight-color: transparent`. Playwright mobile 프로젝트는 chromium + iPhone 14 viewport 에뮬레이트로 전환 — 18/18 통과.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

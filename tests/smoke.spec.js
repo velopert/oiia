@@ -109,6 +109,13 @@ test('record button toggles state', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('touch key pads are rendered at touchable size', async ({ page }) => {
+  await page.goto('/');
+  const first = page.locator('#keys .key').first();
+  const box = await first.boundingBox();
+  expect(box.height).toBeGreaterThanOrEqual(72);
+});
+
 test('A key spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');

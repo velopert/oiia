@@ -81,18 +81,25 @@ canvas#waveform {
 .keys {
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 10px;
 }
 .key {
   background: #1e1e1e;
   border: 2px solid #2a2a2a;
-  border-radius: 12px;
-  padding: 18px 14px;
+  border-radius: 14px;
+  padding: 18px 10px;
   text-align: center;
   transition: transform 0.06s, border-color 0.1s, background 0.1s;
   cursor: pointer;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .key:hover { background: #262626; }
 .key.active {
@@ -101,20 +108,28 @@ canvas#waveform {
   border-color: #5af;
 }
 .key .jamo {
-  font-size: 42px;
+  font-size: 44px;
   font-weight: 700;
   line-height: 1;
 }
 .key .latin {
-  font-size: 13px;
+  font-size: 12px;
   color: #888;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .key .bind {
-  margin-top: 10px;
+  margin-top: 8px;
   font-family: ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 10px;
   color: #666;
+}
+@media (max-width: 640px) {
+  #app { padding: 16px 12px 120px; }
+  .key { min-height: 78px; padding: 12px 6px; border-radius: 12px; }
+  .key .jamo { font-size: 36px; }
+  .key .bind { display: none; }
+  canvas#waveform { height: 140px; }
+  .dj-slots { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 }
 
 .segments {
@@ -226,6 +241,10 @@ canvas#waveform {
   font-weight: 700;
   font-size: 11px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 34px;
+  min-width: 34px;
 }
 .dj-slot button:hover { filter: brightness(1.15); }
 
