@@ -175,6 +175,18 @@ const sessionStats = { key: {}, dj: {}, total: 0, start: Date.now() };
 function bumpStat(group, id) {
   sessionStats[group][id] = (sessionStats[group][id] || 0) + 1;
   sessionStats.total++;
+  if (sessionStats.total > 0 && sessionStats.total % 100 === 0) {
+    celebrate(sessionStats.total);
+  }
+}
+
+function celebrate(n) {
+  const palette = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#c86bff'];
+  palette.forEach((c, i) => {
+    setTimeout(() => fx.drop(c, `${n}!`), i * 90);
+  });
+  toast(`🎉 ${n} 프레스 달성!`);
+  haptic([40, 30, 80]);
 }
 
 function renderStats() {
