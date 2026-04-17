@@ -161,9 +161,10 @@ canvas#waveform {
 
 .dj-slots {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 8px;
 }
+.dj-slot-wrap { display: flex; flex-direction: column; }
 .dj-slot {
   display: flex;
   align-items: center;
@@ -171,8 +172,23 @@ canvas#waveform {
   background: #1a1a1a;
   border: 1px solid #2a2a2a;
   border-left: 4px solid var(--c, #555);
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   padding: 6px 8px;
+}
+.dj-desc {
+  font-size: 10.5px;
+  color: #888;
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-left: 4px solid var(--c, #555);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 4px 10px 6px 12px;
+  margin-top: -1px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dj-num {
   background: #2a2a2a;

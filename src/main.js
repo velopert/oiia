@@ -652,30 +652,30 @@ function dj_reverse_echo() {
 }
 
 const DJ_EFFECTS = [
-  { id: 'distort',  name: 'DISTORT',  color: '#ff3355', play: dj_distort },
-  { id: 'reverse',  name: 'REVERSE',  color: '#55ffaa', play: dj_reverse },
-  { id: 'deep',     name: 'DEEP',     color: '#ff8800', play: dj_deep },
-  { id: 'chip',     name: 'CHIP',     color: '#ffee55', play: dj_chipmunk },
-  { id: 'sweep',    name: 'SWEEP',    color: '#3388ff', play: dj_sweep },
-  { id: 'riser',    name: 'RISER',    color: '#ff55ee', play: dj_riser },
-  { id: 'stutter',  name: 'STUTTER',  color: '#ffffff', play: dj_stutter },
-  { id: 'scratch',  name: 'SCRATCH',  color: '#00ffff', play: dj_scratch },
-  { id: 'wubwub',   name: 'WUBWUB',   color: '#aa33ff', play: dj_wubwub },
-  { id: 'echo',     name: 'ECHO',     color: '#77ffdd', play: dj_echo },
-  { id: 'crush',    name: 'CRUSH',    color: '#ff99cc', play: dj_crush },
-  { id: 'tremolo',  name: 'TREMOLO',  color: '#ffaa33', play: dj_tremolo },
-  { id: 'flanger',  name: 'FLANGER',  color: '#44ddff', play: dj_flanger },
-  { id: 'autowah',  name: 'AUTOWAH',  color: '#ccff33', play: dj_autowah },
-  { id: 'phone',    name: 'PHONE',    color: '#888888', play: dj_phone },
-  { id: 'gate',     name: 'GATE',     color: '#ff4488', play: dj_gate },
-  { id: 'backspin', name: 'BACKSPIN', color: '#ff6600', play: dj_backspin },
-  { id: 'powerup',  name: 'POWERUP',  color: '#ffff00', play: dj_powerup },
-  { id: 'vinyl',    name: 'VINYL',    color: '#cc8866', play: dj_vinyl },
-  { id: 'hall',     name: 'HALL',     color: '#99ddff', play: dj_hall },
-  { id: 'drive',    name: 'OVERDRIVE',color: '#dd3300', play: dj_overdrive },
-  { id: 'laser',    name: 'LASER',    color: '#ff00ff', play: dj_laser },
-  { id: 'pingpong', name: 'PINGPONG', color: '#00ff88', play: dj_pingpong },
-  { id: 'revecho',  name: 'REV-ECHO', color: '#9966ff', play: dj_reverse_echo },
+  { id: 'distort',  name: 'DISTORT',  color: '#ff3355', play: dj_distort,       desc: '하드클립 왜곡, 찌그러지고 공격적' },
+  { id: 'reverse',  name: 'REVERSE',  color: '#55ffaa', play: dj_reverse,       desc: '거꾸로 재생' },
+  { id: 'deep',     name: 'DEEP',     color: '#ff8800', play: dj_deep,          desc: '0.55배속, 저음 묵직' },
+  { id: 'chip',     name: 'CHIP',     color: '#ffee55', play: dj_chipmunk,      desc: '1.9배속, 칩멍크' },
+  { id: 'sweep',    name: 'SWEEP',    color: '#3388ff', play: dj_sweep,         desc: '로우패스 150Hz→14kHz 오픈 (빌드업)' },
+  { id: 'riser',    name: 'RISER',    color: '#ff55ee', play: dj_riser,         desc: '하이패스 100Hz→6kHz 상승 (스릴러)' },
+  { id: 'stutter',  name: 'STUTTER',  color: '#ffffff', play: dj_stutter,       desc: '같은 조각 14번 연타' },
+  { id: 'scratch',  name: 'SCRATCH',  color: '#00ffff', play: dj_scratch,       desc: '턴테이블 스크래치 (rate 오락가락)' },
+  { id: 'wubwub',   name: 'WUBWUB',   color: '#aa33ff', play: dj_wubwub,        desc: '덥스텝 LFO 필터' },
+  { id: 'echo',     name: 'ECHO',     color: '#77ffdd', play: dj_echo,          desc: '피드백 딜레이' },
+  { id: 'crush',    name: 'CRUSH',    color: '#ff99cc', play: dj_crush,         desc: '8단계 양자화 + 저역 (비트크러시)' },
+  { id: 'tremolo',  name: 'TREMOLO',  color: '#ffaa33', play: dj_tremolo,       desc: '9Hz 볼륨 흔들림' },
+  { id: 'flanger',  name: 'FLANGER',  color: '#44ddff', play: dj_flanger,       desc: '딜레이 LFO 변조' },
+  { id: 'autowah',  name: 'AUTOWAH',  color: '#ccff33', play: dj_autowah,       desc: '밴드패스 스윕 (와우)' },
+  { id: 'phone',    name: 'PHONE',    color: '#888888', play: dj_phone,         desc: '전화기 음질 (밴드제한 + 왜곡)' },
+  { id: 'gate',     name: 'GATE',     color: '#ff4488', play: dj_gate,          desc: '8Hz 사각파 on/off 게이트' },
+  { id: 'backspin', name: 'BACKSPIN', color: '#ff6600', play: dj_backspin,      desc: '감속 → 정지 (턴테이블 제동)' },
+  { id: 'powerup',  name: 'POWERUP',  color: '#ffff00', play: dj_powerup,       desc: '저속에서 고속으로 가속' },
+  { id: 'vinyl',    name: 'VINYL',    color: '#cc8866', play: dj_vinyl,         desc: '저역 + 살짝 워블 (LP판)' },
+  { id: 'hall',     name: 'HALL',     color: '#99ddff', play: dj_hall,          desc: '멀티탭 딜레이 잔향 (홀)' },
+  { id: 'drive',    name: 'OVERDRIVE',color: '#dd3300', play: dj_overdrive,     desc: '따뜻한 소프트 드라이브' },
+  { id: 'laser',    name: 'LASER',    color: '#ff00ff', play: dj_laser,         desc: '피치 2.6→0.35 급락 (SF 레이저)' },
+  { id: 'pingpong', name: 'PINGPONG', color: '#00ff88', play: dj_pingpong,      desc: '스테레오 좌우 튀는 딜레이' },
+  { id: 'revecho',  name: 'REV-ECHO', color: '#9966ff', play: dj_reverse_echo,  desc: '역재생 + 피드백 딜레이' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
@@ -715,14 +715,17 @@ function renderDjSlots() {
   if (!el) return;
   el.innerHTML = djMapping.map((id, i) => {
     const opts = DJ_EFFECTS.map((e) =>
-      `<option value="${e.id}"${e.id === id ? ' selected' : ''}>${e.name}</option>`
+      `<option value="${e.id}" title="${e.desc || ''}"${e.id === id ? ' selected' : ''}>${e.name}</option>`
     ).join('');
     const curr = DJ_EFFECTS.find((e) => e.id === id) || DJ_EFFECTS[0];
     return `
-      <div class="dj-slot" style="--c:${curr.color}">
-        <span class="dj-num">${i + 1}</span>
-        <select data-slot="${i}">${opts}</select>
-        <button data-test="${i}" title="테스트">▶</button>
+      <div class="dj-slot-wrap" style="--c:${curr.color}">
+        <div class="dj-slot" title="${curr.desc || ''}">
+          <span class="dj-num">${i + 1}</span>
+          <select data-slot="${i}" title="${curr.desc || ''}">${opts}</select>
+          <button data-test="${i}" title="${curr.desc || '테스트'}">▶</button>
+        </div>
+        <div class="dj-desc">${curr.desc || ''}</div>
       </div>
     `;
   }).join('');
