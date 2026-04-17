@@ -271,10 +271,21 @@ function setupDjMode() {
   devlogLink.title = 'Devlog';
   devlogLink.textContent = '📓';
 
+  const githubLink = document.createElement('a');
+  githubLink.className = 'devlog-link github-link';
+  githubLink.id = 'github-link';
+  githubLink.href = 'https://github.com/velopert/oiia';
+  githubLink.target = '_blank';
+  githubLink.rel = 'noopener noreferrer';
+  githubLink.setAttribute('aria-label', 'GitHub repository');
+  githubLink.title = 'GitHub';
+  githubLink.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>';
+
   bar.appendChild(tapFloat);
   bar.appendChild(quantFloat);
   bar.appendChild(langBtn);
   bar.appendChild(devlogLink);
+  bar.appendChild(githubLink);
   bar.appendChild(btn);
   document.body.appendChild(bar);
 
@@ -497,9 +508,9 @@ const DEFAULT_SEGMENTS = [
   { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },
   { id: 'a', jamo: 'ㅏ', latin: 'A', code: 'KeyK', key: 'ㅏ', start: 0.831, end: 1.017, color: '#6bcf7f' },
   { id: 'ka', jamo: 'q', latin: 'q', code: 'KeyQ', key: 'q', start: 0.440, end: 2.041, color: '#4d96ff' },
-  { id: 'kb', jamo: 'w', latin: 'w', code: 'KeyW', key: 'w', start: 3.272, end: 5.304, color: '#c86bff' },
+  { id: 'kb', jamo: 'w', latin: 'w', code: 'KeyW', key: 'w', start: 3.268, end: 5.304, color: '#c86bff' },
   { id: 'kc', jamo: 'e', latin: 'e', code: 'KeyE', key: 'e', start: 0.852, end: 1.257, color: '#4dd0e1' },
-  { id: 'kd', jamo: 'r', latin: 'r', code: 'KeyR', key: 'r', start: 2.050, end: 3.250, color: '#ff6ab8' },
+  { id: 'kd', jamo: 'r', latin: 'r', code: 'KeyR', key: 'r', start: 1.166, end: 1.669, color: '#ff6ab8' },
 ];
 
 const KEY_LAYOUT = {
