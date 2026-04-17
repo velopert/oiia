@@ -419,9 +419,15 @@ function dj_riser() {
   s.start();
 }
 
+function beatSec(div) {
+  const bpm = currentBpm || 120;
+  return (60 / bpm) * (4 / div);
+}
+
 function dj_stutter() {
-  const segLen = 0.09;
-  const gap = 0.015;
+  const unit = currentBpm ? beatSec(16) : 0.105;
+  const segLen = unit * 0.82;
+  const gap = unit * 0.18;
   const count = 14;
   const startT = 0;
   const base = audioCtx.currentTime;
@@ -451,7 +457,7 @@ function dj_wubwub() {
   f.Q.value = 18;
   f.frequency.value = 1500;
   f.connect(masterOut);
-  const lfo = djOsc('sine', 7);
+  const lfo = djOsc('sine', currentBpm ? currentBpm / 60 : 7);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 1400;
   lfo.connect(lfoGain).connect(f.frequency);
@@ -464,7 +470,7 @@ function dj_wubwub() {
 
 function dj_echo() {
   const delay = audioCtx.createDelay(2);
-  delay.delayTime.value = 0.22;
+  delay.delayTime.value = currentBpm ? beatSec(8) : 0.22;
   const fb = audioCtx.createGain();
   fb.gain.value = 0.55;
   const wet = audioCtx.createGain();
@@ -500,7 +506,7 @@ function dj_tremolo() {
   const g = audioCtx.createGain();
   g.connect(masterOut);
   g.gain.value = 0.5;
-  const lfo = djOsc('sine', 9);
+  const lfo = djOsc('sine', currentBpm ? currentBpm / 60 * 2 : 9);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 0.5;
   lfo.connect(lfoGain).connect(g.gain);
@@ -566,7 +572,7 @@ function dj_gate() {
   const g = audioCtx.createGain();
   g.gain.value = 0.5;
   g.connect(masterOut);
-  const lfo = djOsc('square', 8);
+  const lfo = djOsc('square', currentBpm ? currentBpm / 60 * 2 : 8);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 0.5;
   lfo.connect(lfoGain).connect(g.gain);
@@ -656,8 +662,8 @@ function dj_laser() {
 function dj_pingpong() {
   const splitL = audioCtx.createDelay(1);
   const splitR = audioCtx.createDelay(1);
-  splitL.delayTime.value = 0.18;
-  splitR.delayTime.value = 0.36;
+  splitL.delayTime.value = currentBpm ? beatSec(8)  : 0.18;
+  splitR.delayTime.value = currentBpm ? beatSec(4)  : 0.36;
   const fbL = audioCtx.createGain();
   const fbR = audioCtx.createGain();
   fbL.gain.value = 0.5;

@@ -127,7 +127,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **Session stats** 화면 끝에: 가장 많이 쓴 키, 총 drop 횟수 ("당신의 메인은 ㅣ입니다").
 
 ### DJ (프로가 쓸 만한 컨트롤)
-- [ ] **BPM 기반 이펙트 퀀타이즈**: STUTTER/GATE/ECHO 딜레이 시간을 현재 BPM에 스냅 (`window.__getBpm()`).
 - [ ] **Loop layer**: 현재 키 입력 시퀀스를 루프 레이어에 녹음 → 계속 반복, 그 위에 즉흥 연주.
 - [ ] **MIDI input**: Web MIDI API로 물리 패드/키보드 바인딩.
 - [ ] **FX dry/wet**: 각 DJ 슬롯 카드에 wet knob (마우스 휠 또는 슬라이더).
@@ -164,6 +163,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 7 — 오디오 세션 녹음**: `MediaStreamDestination` + `MediaRecorder` opus, 빨간 blink 버튼 + mm:ss 타이머, 중지 시 WebM 자동 다운로드.
 - [x] **[2026-04-17] Loop 8 — 모바일 터치 패드 & 반응형**: `.keys` 5-col auto-fit, 최소 92px(데스크탑)/78px(모바일), `touch-action: manipulation`, `-webkit-tap-highlight-color: transparent`. Playwright mobile 프로젝트는 chromium + iPhone 14 viewport 에뮬레이트로 전환 — 18/18 통과.
 - [x] **[2026-04-17] Loop 9 — Tap-tempo BPM**: `t` 키/버튼 탭 → 최근 8탭 평균 → BPM, 2.5s idle 시 리셋, BPM에 맞춰 버튼 tick 펄스. 전역 `window.__getBpm()` 노출 (다음 퀀타이즈 루프용).
+- [x] **[2026-04-17] Loop 10 — BPM 퀀타이즈**: `beatSec(div)` 헬퍼로 STUTTER(16분) / ECHO(8분) / GATE(8분) / WUBWUB(4분) / TREMOLO(8분) / PINGPONG(L=8분 R=4분)이 현재 BPM에 스냅. BPM 미설정이면 기본값 유지.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
