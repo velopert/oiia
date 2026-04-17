@@ -377,6 +377,8 @@ function renderKeyhelp() {
   if (close) close.textContent = t('keyhelp.close');
   const replayBtn = document.getElementById('replay-tour');
   if (replayBtn) replayBtn.textContent = t('keyhelp.tour');
+  const devlogLink = document.getElementById('open-devlog');
+  if (devlogLink) devlogLink.textContent = t('keyhelp.devlog');
   const resetBtn = document.getElementById('reset-storage');
   if (resetBtn) { resetBtn.textContent = t('keyhelp.reset'); resetBtn.title = t('keyhelp.resetTitle'); }
   const intensityLabel = document.querySelector('.keyhelp-intensity');
