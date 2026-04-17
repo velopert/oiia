@@ -261,28 +261,38 @@ export function createCatSpawner(url) {
   layer.className = 'cat-layer';
   document.body.appendChild(layer);
 
+  const MAX_CATS = 6;
+  const pool = [];
+
   function spawn() {
-    const img = document.createElement('img');
+    while (layer.childElementCount >= MAX_CATS && layer.firstElementChild) {
+      layer.firstElementChild.remove();
+    }
+    const img = pool.pop() || new Image();
     img.src = url;
     img.className = 'cat-pop cat-pop-v' + (1 + Math.floor(Math.random() * 3));
-    const minS = 110, maxS = 340;
+    const minS = 110, maxS = 300;
     const size = minS + Math.random() * (maxS - minS);
     const w = window.innerWidth;
     const h = window.innerHeight;
     const x = Math.random() * Math.max(0, w - size);
     const y = Math.random() * Math.max(0, h - size);
-    const rot = (Math.random() - 0.5) * 40;
+    const rot = (Math.random() - 0.5) * 36;
     const hue = Math.floor(Math.random() * 360);
     img.style.cssText = `
       position:absolute;
       left:${x}px;top:${y}px;
       width:${size}px;height:auto;
       --rot:${rot}deg;
-      filter: drop-shadow(0 10px 24px rgba(0,0,0,0.55)) drop-shadow(0 0 28px hsla(${hue},90%,60%,0.55));
+      --glow:${hue};
+      transform: translate3d(0,0,0);
     `;
     layer.appendChild(img);
-    const lifetime = 1600 + Math.random() * 600;
-    setTimeout(() => img.remove(), lifetime);
+    const lifetime = 1500 + Math.random() * 400;
+    setTimeout(() => {
+      if (img.parentNode) img.remove();
+      if (pool.length < MAX_CATS) pool.push(img);
+    }, lifetime);
   }
 
   return { spawn };

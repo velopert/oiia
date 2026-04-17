@@ -380,6 +380,9 @@ body.fx-shake { animation: fx-shake 0.5s cubic-bezier(.36,.07,.19,.97); }
 .cat-pop {
   transform-origin: center;
   will-change: transform, opacity;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.55));
+  backface-visibility: hidden;
+  contain: layout paint;
 }
 @keyframes cat-pop-1 {
   0%   { transform: rotate(var(--rot)) scale(0);       opacity: 0; }
