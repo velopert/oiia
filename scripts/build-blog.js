@@ -14,7 +14,17 @@ const ASSETS_OUT = join(OUT, 'assets');
 const SITE = {
   // Site root path (where /blog/ is mounted). Must be absolute.
   base: '/blog',
+  gaId: 'G-5Z8YL7SW9T',
 };
+
+const GA_SNIPPET = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${SITE.gaId}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${SITE.gaId}');
+</script>`;
 
 function ensureDir(p) { if (!existsSync(p)) mkdirSync(p, { recursive: true }); }
 
@@ -267,6 +277,7 @@ function layout({ lang, title, description, body, pagePath, counterpartPath, pos
 <meta name="twitter:image" content="/og.png">
 <link rel="icon" href="/oia-uia.gif">
 <link rel="stylesheet" href="${SITE.base}/assets/blog.css">
+${GA_SNIPPET}
 <script>
   (function () {
     try {
@@ -408,6 +419,7 @@ function buildRedirector() {
 <meta name="twitter:description" content="Loop notes from a cat-keyboard project.">
 <meta name="twitter:image" content="/og.png">
 <link rel="icon" href="/oia-uia.gif">
+${GA_SNIPPET}
 <meta http-equiv="refresh" content="0;url=${enHome}">
 <script>
   (function () {
