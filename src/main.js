@@ -496,7 +496,7 @@ const KEY_LAYOUT = {
     { segId: 'kc', jamo: 'C',  latin: 'C', code: 'KeyE' },
   ],
   en: [
-    { segId: 'o',  jamo: 'n', latin: 'N', code: 'KeyN' },
+    { segId: 'o',  jamo: 'o', latin: 'O', code: 'KeyN' },
     { segId: 'i',  jamo: 'i', latin: 'I', code: 'KeyI' },
     { segId: 'a',  jamo: 'a', latin: 'A', code: 'KeyA' },
     { segId: 'ka', jamo: 'A', latin: 'A', code: 'KeyQ' },
@@ -2455,8 +2455,9 @@ function setActiveSegment(i) {
 function renderActiveBar() {
   const bar = document.getElementById('active-bar');
   if (!bar) return;
+  bar.setAttribute('role', 'tablist');
   bar.innerHTML = segments.map((s, i) => `
-    <button class="active-chip${i === activeSegIndex ? ' on' : ''}" data-sel="${i}" style="--c:${s.color}">
+    <button class="active-chip${i === activeSegIndex ? ' on' : ''}" data-sel="${i}" style="--c:${s.color}" role="tab" aria-selected="${i === activeSegIndex}">
       <span class="num">${i + 1}</span>
       <span class="jamo">${s.jamo}</span>
       <span class="sub">${s.id}</span>
