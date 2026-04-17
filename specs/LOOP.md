@@ -120,7 +120,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 ## Backlog
 
 ### Viral (공유·기록·전파)
-- [ ] **Session recording**: 오디오(WebAudio → MediaRecorder) + 캔버스를 묶어 WebM/MP4로 녹화·다운로드.
+- [ ] **Video session recording**: 캔버스 + 오디오를 묶어 WebM로 (현재는 오디오만).
 - [ ] **URL-encoded presets**: 세그먼트·DJ 매핑을 URL에 인코딩 → "이 세팅 그대로 열기" 링크.
 - [ ] **Replay mode**: 마지막 N초 키 입력 기록 → 재생 버튼으로 다시 트리거.
 - [ ] **"Auto-beat" 버튼**: 랜덤 DJ 한방 + 자동 시퀀스로 15초짜리 히트 생성 (공유용 데모).
@@ -161,6 +161,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 4 — `?` 단축키 오버레이**: 모달 카드 UI로 11개 단축키 표시, `?`/`Shift+/`로 토글, `Esc`/클릭으로 닫기.
 - [x] **[2026-04-17] Loop 5 — 세그먼트 재생 fade envelope**: 6ms linear ramp in/out GainNode로 click/pop 제거.
 - [x] **[2026-04-17] Loop 6 — Haptic vibrate**: `navigator.vibrate` 래퍼로 키프레스(강도 비례) + DJ 슬롯(3-pulse 패턴).
+- [x] **[2026-04-17] Loop 7 — 오디오 세션 녹음**: `MediaStreamDestination` + `MediaRecorder` opus, 빨간 blink 버튼 + mm:ss 타이머, 중지 시 WebM 자동 다운로드.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

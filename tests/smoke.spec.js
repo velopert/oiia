@@ -94,6 +94,21 @@ test('haptic vibrate fires on key press (when API present)', async ({ page }) =>
   expect(errors).toEqual([]);
 });
 
+test('record button toggles state', async ({ page }) => {
+  const errors = attachConsoleGuard(page);
+  await page.goto('/');
+  const btn = page.locator('#rec');
+  await expect(btn).toBeVisible();
+  await expect(btn).toHaveText(/녹음/);
+  await btn.click();
+  await expect(btn).toHaveClass(/recording/);
+  await page.keyboard.press('n');
+  await page.waitForTimeout(200);
+  await btn.click();
+  await expect(btn).not.toHaveClass(/recording/);
+  expect(errors).toEqual([]);
+});
+
 test('A key spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');

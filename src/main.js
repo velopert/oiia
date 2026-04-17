@@ -76,6 +76,7 @@ app.innerHTML = `
   <div class="controls">
     <button id="play-all">▶ 전체 재생 (Space)</button>
     <button id="play-oiia" class="secondary">▶ ㅜㅣㅣㅏ 순서로</button>
+    <button id="rec" class="rec-btn">⏺ 녹음</button>
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
   </div>
@@ -886,6 +887,70 @@ function playOiiaSequence() {
   });
 }
 
+let recorder = null;
+let recChunks = [];
+let recStart = 0;
+
+function setupRecorder() {
+  if (recorder || !audioCtx || !masterOut) return;
+  const streamDest = audioCtx.createMediaStreamDestination();
+  masterOut.connect(streamDest);
+  const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ? 'audio/webm;codecs=opus' : 'audio/webm';
+  recorder = new MediaRecorder(streamDest.stream, { mimeType: mime });
+  recorder.ondataavailable = (e) => { if (e.data && e.data.size) recChunks.push(e.data); };
+}
+
+function toggleRec() {
+  const btn = document.getElementById('rec');
+  if (!btn) return;
+  if (!recorder || recorder.state !== 'recording') {
+    if (audioCtx?.state === 'suspended') audioCtx.resume();
+    setupRecorder();
+    if (!recorder) return;
+    recChunks = [];
+    recStart = performance.now();
+    recorder.start();
+    btn.textContent = '⏹ 녹음 중…';
+    btn.classList.add('recording');
+    startRecTimer();
+  } else {
+    recorder.onstop = () => {
+      const blob = new Blob(recChunks, { type: recorder.mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      a.download = `oiiai-${ts}.webm`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      btn.textContent = '⏺ 녹음';
+      btn.classList.remove('recording');
+      stopRecTimer();
+    };
+    recorder.stop();
+  }
+}
+
+let recTimerId = null;
+function startRecTimer() {
+  stopRecTimer();
+  const btn = document.getElementById('rec');
+  recTimerId = setInterval(() => {
+    if (!recorder || recorder.state !== 'recording') return stopRecTimer();
+    const s = Math.floor((performance.now() - recStart) / 1000);
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    btn.textContent = `⏹ ${mm}:${ss}`;
+  }, 250);
+}
+function stopRecTimer() {
+  if (recTimerId) { clearInterval(recTimerId); recTimerId = null; }
+}
+
+document.getElementById('rec').onclick = toggleRec;
 document.getElementById('play-all').onclick = playAll;
 document.getElementById('play-oiia').onclick = playOiiaSequence;
 document.getElementById('reset').onclick = () => {

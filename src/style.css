@@ -249,6 +249,18 @@ canvas#waveform {
   background: #2a2a2a;
   color: #eee;
 }
+.controls button.rec-btn {
+  background: #e33;
+  color: #fff;
+}
+.controls button.rec-btn.recording {
+  background: #ff1744;
+  animation: rec-blink 1s ease-in-out infinite;
+}
+@keyframes rec-blink {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,23,68,0.7); }
+  50%      { box-shadow: 0 0 0 8px rgba(255,23,68,0); }
+}
 .controls button:hover { opacity: 0.9; }
 
 .error {
