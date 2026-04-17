@@ -63,6 +63,7 @@ function setupStartHint() {
   }
   const btn = document.getElementById('start-hint-btn');
   if (btn) {
+    requestAnimationFrame(() => { try { btn.focus({ preventScroll: true }); } catch {} });
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       try { if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume(); } catch {}
