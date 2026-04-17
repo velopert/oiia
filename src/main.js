@@ -295,7 +295,6 @@ function applyAllI18n() {
   if (tourNext) tourNext.textContent = t('tour.next');
   const ctrlMap = {
     'play-all': 'ctrl.playAll',
-    'play-oiia': 'ctrl.playOiia',
     'metro': 'ctrl.metro',
     'make-clip': 'ctrl.makeClip',
     'replay-btn': 'ctrl.replay',
@@ -438,9 +437,8 @@ function bumpStat(group, id) {
 
 function celebrate(n) {
   const palette = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff', '#c86bff'];
-  palette.forEach((c, i) => {
-    setTimeout(() => fx.drop(c, `${n}!`), i * 90);
-  });
+  const color = palette[((n / 100) | 0) % palette.length];
+  fx.drop(color, `${n}!`);
   toast(t('toast.celebrate', { n }));
   haptic([40, 30, 80]);
 }
@@ -489,9 +487,10 @@ const DEFAULT_SEGMENTS = [
   { id: 'o', jamo: 'ㅜ', latin: 'O', code: 'KeyN', key: 'ㅜ', start: 0.430, end: 0.622, color: '#ff6b6b' },
   { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },
   { id: 'a', jamo: 'ㅏ', latin: 'A', code: 'KeyK', key: 'ㅏ', start: 0.831, end: 1.017, color: '#6bcf7f' },
-  { id: 'ka', jamo: 'Q', latin: 'Q', code: 'KeyQ', key: 'q', start: 0.440, end: 2.041, color: '#4d96ff' },
-  { id: 'kb', jamo: 'W', latin: 'W', code: 'KeyW', key: 'w', start: 3.272, end: 5.304, color: '#c86bff' },
-  { id: 'kc', jamo: 'E', latin: 'E', code: 'KeyE', key: 'e', start: 0.852, end: 1.257, color: '#4dd0e1' },
+  { id: 'ka', jamo: 'q', latin: 'q', code: 'KeyQ', key: 'q', start: 0.440, end: 2.041, color: '#4d96ff' },
+  { id: 'kb', jamo: 'w', latin: 'w', code: 'KeyW', key: 'w', start: 3.272, end: 5.304, color: '#c86bff' },
+  { id: 'kc', jamo: 'e', latin: 'e', code: 'KeyE', key: 'e', start: 0.852, end: 1.257, color: '#4dd0e1' },
+  { id: 'kd', jamo: 'r', latin: 'r', code: 'KeyR', key: 'r', start: 2.050, end: 3.250, color: '#ff6ab8' },
 ];
 
 const KEY_LAYOUT = {
@@ -499,20 +498,26 @@ const KEY_LAYOUT = {
     { segId: 'o',  jamo: 'ㅜ', latin: 'O', code: 'KeyN' },
     { segId: 'i',  jamo: 'ㅣ', latin: 'I', code: 'KeyL' },
     { segId: 'a',  jamo: 'ㅏ', latin: 'A', code: 'KeyK' },
-    { segId: 'ka', jamo: 'Q',  latin: 'Q', code: 'KeyQ' },
-    { segId: 'kb', jamo: 'W',  latin: 'W', code: 'KeyW' },
-    { segId: 'kc', jamo: 'E',  latin: 'E', code: 'KeyE' },
+    { segId: 'ka', jamo: 'q',  latin: 'q', code: 'KeyQ' },
+    { segId: 'kb', jamo: 'w',  latin: 'w', code: 'KeyW' },
+    { segId: 'kc', jamo: 'e',  latin: 'e', code: 'KeyE' },
+    { segId: 'kd', jamo: 'r',  latin: 'r', code: 'KeyR' },
   ],
   en: [
-    { segId: 'o',  jamo: 'o', latin: 'O', code: 'KeyO' },
-    { segId: 'i',  jamo: 'i', latin: 'I', code: 'KeyI' },
-    { segId: 'a',  jamo: 'a', latin: 'A', code: 'KeyA' },
-    { segId: 'ka', jamo: 'Q', latin: 'Q', code: 'KeyQ' },
-    { segId: 'kb', jamo: 'W', latin: 'W', code: 'KeyW' },
-    { segId: 'kc', jamo: 'E', latin: 'E', code: 'KeyE' },
+    { segId: 'o',  jamo: 'o', latin: 'o', code: 'KeyO' },
+    { segId: 'i',  jamo: 'i', latin: 'i', code: 'KeyI' },
+    { segId: 'a',  jamo: 'a', latin: 'a', code: 'KeyA' },
+    { segId: 'ka', jamo: 'q', latin: 'q', code: 'KeyQ' },
+    { segId: 'kb', jamo: 'w', latin: 'w', code: 'KeyW' },
+    { segId: 'kc', jamo: 'e', latin: 'e', code: 'KeyE' },
+    { segId: 'kd', jamo: 'r', latin: 'r', code: 'KeyR' },
   ],
 };
 let KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
+function segLabel(s) {
+  const k = KEY_ORDER.find((x) => x.segId === s.id);
+  return k?.jamo ?? s.jamo;
+}
 renderKeyhelp();
 renderHint();
 
@@ -540,7 +545,6 @@ app.innerHTML = `
   <div class="dj-slots-bar" id="dj-slots-bar"><button id="dj-shuffle-inline" type="button" title="9개 슬롯을 랜덤 이펙트로">🎲 이펙트 셔플</button></div>
   <div class="controls">
     <button id="play-all">▶ 전체 재생 (Space)</button>
-    <button id="play-oiia" class="secondary">▶ ㅜㅣㅣㅏ 순서로</button>
     <button id="rec" class="rec-btn">⏺ 녹음</button>
     <button id="tap" class="tap-btn" title="t 키로도 탭">
       <span class="tap-label">TAP</span>
@@ -581,7 +585,13 @@ const segsEl = document.getElementById('segments');
 function loadSegments() {
   try {
     const saved = localStorage.getItem('oiia-segments-v12');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const arr = JSON.parse(saved);
+      for (const def of DEFAULT_SEGMENTS) {
+        if (!arr.find((s) => s.id === def.id)) arr.push(structuredClone(def));
+      }
+      return arr;
+    }
   } catch {}
   return structuredClone(DEFAULT_SEGMENTS);
 }
@@ -712,7 +722,7 @@ function drawWaveform() {
     ctx.fillRect(x2 - (isActive ? 3 : 2), 0, isActive ? 3 : 2, h);
     ctx.fillStyle = isLight ? '#111' : '#fff';
     ctx.font = (isActive ? 'bold 14px' : 'bold 13px') + ' sans-serif';
-    ctx.fillText(s.jamo + (isActive ? ' ●' : ''), x1 + 4, 16);
+    ctx.fillText(segLabel(s) + (isActive ? ' ●' : ''), x1 + 4, 16);
   });
 
   ctx.fillStyle = isLight ? '#888' : '#555';
@@ -743,10 +753,11 @@ function renderKeys() {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); endHold(k.code); }
     });
     el.style.setProperty('--c', color);
+    const showSubs = getLocale() !== 'en';
     el.innerHTML = `
       <div class="jamo">${k.jamo}</div>
-      <div class="latin">${k.latin}</div>
-      <div class="bind">${k.code.replace('Key', '')} · ${k.jamo}</div>
+      ${showSubs ? `<div class="latin">${k.latin}</div>` : ''}
+      ${showSubs ? `<div class="bind">${k.code.replace('Key', '')} · ${k.jamo}</div>` : ''}
     `;
     el.addEventListener('pointerdown', (e) => {
       e.preventDefault();
@@ -775,7 +786,7 @@ function renderSegments() {
     });
     el.innerHTML = `
       <div class="seg-head">
-        <span class="seg-label">${s.jamo} <span style="color:#888;font-weight:400">(${s.id})</span></span>
+        <span class="seg-label">${segLabel(s)}${segLabel(s) !== s.id ? ` <span style="color:#888;font-weight:400">(${s.id})</span>` : ''}</span>
         <input type="color" data-color="${i}" value="${s.color}" title="${t('seg.colorTitle')}" class="seg-color">
         <span class="seg-meta">${(s.end - s.start).toFixed(3)}s</span>
       </div>
@@ -783,7 +794,7 @@ function renderSegments() {
       <input type="range" min="0" max="${buffer.duration.toFixed(3)}" step="0.005" value="${s.start}" data-i="${i}" data-k="start">
       <div class="row"><span>end</span><span id="v-${i}-end">${s.end.toFixed(3)}s</span></div>
       <input type="range" min="0" max="${buffer.duration.toFixed(3)}" step="0.005" value="${s.end}" data-i="${i}" data-k="end">
-      <button data-play="${i}">${t('seg.play', { jamo: s.jamo })}</button>
+      <button data-play="${i}">${t('seg.play', { jamo: segLabel(s) })}</button>
     `;
     segsEl.appendChild(el);
   });
@@ -813,7 +824,7 @@ function renderSegments() {
   });
 }
 
-const activeSoloNodes = { ka: null, kb: null, kc: null };
+const activeSoloNodes = { ka: null, kb: null, kc: null, kd: null };
 
 function playSegmentByIndex(i) {
   const s = segments[i];
@@ -827,7 +838,7 @@ function playSegmentByIndex(i) {
   src.connect(g);
   const now = audioCtx.currentTime;
   const t = nextGrid16(now);
-  const isSolo = s.id === 'ka' || s.id === 'kb' || s.id === 'kc';
+  const isSolo = s.id === 'ka' || s.id === 'kb' || s.id === 'kc' || s.id === 'kd';
   if (isSolo) {
     stopAllDj();
     for (const key of Object.keys(activeSoloNodes)) {
@@ -874,12 +885,19 @@ function pressKey(code, intensity = 1) {
   playSegmentById(k.segId);
   flashKey(code);
   const seg = segments.find((s) => s.id === k.segId);
-  if (seg) fx.burst(seg.color, seg.jamo, intensity);
+  if (seg) fx.burst(seg.color, k.jamo, intensity);
   if (code === 'KeyQ') catFx.spawn();
   if (code === 'KeyW') catFx.spawnBig();
   if (code === 'KeyE') catFx.spawnRotate();
+  if (code === 'KeyR') catFx.spawnBurst();
+  if (k.segId === 'o' || k.segId === 'i' || k.segId === 'a') {
+    oiaPressCount++;
+    if (oiaPressCount % 10 === 0) catFx.spawnDjFx(Math.floor(Math.random() * 9));
+  }
   haptic(Math.min(30, 12 + intensity * 6));
 }
+
+let oiaPressCount = 0;
 
 const activeDjNodes = new Set();
 
@@ -1580,6 +1598,7 @@ function playDjSlot(idx) {
   }
   try { eff.play(); } catch (err) { console.error(err); }
   fx.drop(eff.color, eff.name);
+  catFx.spawnDjFx(idx);
   haptic([30, 20, 40]);
   const wrap = document.querySelector(`.dj-slot-wrap:nth-child(${idx + 1})`);
   if (wrap) {
@@ -1723,7 +1742,7 @@ function endHold(code) {
     const seg = segments.find((s) => s.id === k.segId);
     if (seg) {
       playSegmentById(k.segId);
-      fx.drop(seg.color, seg.jamo);
+      fx.drop(seg.color, k.jamo);
     }
   }
 }
@@ -1844,18 +1863,6 @@ function tickPlayhead() {
   ctx.stroke();
   ctx.restore();
   playheadAnim = requestAnimationFrame(tickPlayhead);
-}
-
-function playOiiaSequence() {
-  const order = ['o', 'i', 'i', 'a'];
-  let t = 0;
-  order.forEach((id) => {
-    const s = segments.find((x) => x.id === id);
-    if (!s) return;
-    const dur = s.end - s.start;
-    setTimeout(() => playSegmentById(id), t);
-    t += dur * 1000 + 30;
-  });
 }
 
 let recorder = null;
@@ -2395,7 +2402,6 @@ document.getElementById('share-x').onclick = () => {
   window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
 };
 document.getElementById('play-all').onclick = playAll;
-document.getElementById('play-oiia').onclick = playOiiaSequence;
 document.getElementById('reset').onclick = () => {
   segments = structuredClone(DEFAULT_SEGMENTS);
   clampSegments();
@@ -2467,8 +2473,8 @@ function renderActiveBar() {
   bar.innerHTML = segments.map((s, i) => `
     <button class="active-chip${i === activeSegIndex ? ' on' : ''}" data-sel="${i}" style="--c:${s.color}" role="tab" aria-selected="${i === activeSegIndex}">
       <span class="num">${i + 1}</span>
-      <span class="jamo">${s.jamo}</span>
-      <span class="sub">${s.id}</span>
+      <span class="jamo">${segLabel(s)}</span>
+      ${segLabel(s) !== s.id ? `<span class="sub">${s.id}</span>` : ''}
     </button>
   `).join('');
   bar.querySelectorAll('button[data-sel]').forEach((b) => {

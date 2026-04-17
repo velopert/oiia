@@ -293,8 +293,24 @@ export function createCatSpawner(url) {
   layer.className = 'cat-layer';
   document.body.appendChild(layer);
 
-  const MAX_CATS = 6;
+  const MAX_CATS = 14;
   const pool = [];
+
+  function purge() {
+    while (layer.childElementCount >= MAX_CATS && layer.firstElementChild) {
+      layer.firstElementChild.remove();
+    }
+  }
+  function makeCat(cls, styleStr, lifeMs) {
+    purge();
+    const img = new Image();
+    img.src = url;
+    img.className = 'cat-pop ' + cls;
+    img.style.cssText = styleStr;
+    layer.appendChild(img);
+    setTimeout(() => { if (img.parentNode) img.remove(); }, lifeMs);
+    return img;
+  }
 
   function spawn() {
     while (layer.childElementCount >= MAX_CATS && layer.firstElementChild) {
@@ -376,6 +392,186 @@ export function createCatSpawner(url) {
     setTimeout(() => { if (img.parentNode) img.remove(); }, 2800);
   }
 
-  return { spawn, spawnBig, spawnRotate };
+  function spawnBurst() {
+    while (layer.childElementCount >= MAX_CATS && layer.firstElementChild) {
+      layer.firstElementChild.remove();
+    }
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const cx = w / 2 + (Math.random() - 0.5) * w * 0.12;
+    const cy = h / 2 + (Math.random() - 0.5) * h * 0.12;
+    const count = 8;
+    const size = Math.max(70, Math.min(w, h) * 0.11);
+    const radius = Math.min(w, h) * 0.42;
+    const baseAngle = Math.random() * Math.PI * 2;
+    const dur = 1400;
+    for (let i = 0; i < count; i++) {
+      const img = new Image();
+      img.src = url;
+      img.className = 'cat-pop cat-pop-burst';
+      const a = baseAngle + (i / count) * Math.PI * 2;
+      const jitter = (Math.random() - 0.5) * 0.25;
+      const dx = Math.cos(a + jitter) * radius * (0.85 + Math.random() * 0.3);
+      const dy = Math.sin(a + jitter) * radius * (0.85 + Math.random() * 0.3);
+      const spin = (Math.random() < 0.5 ? -1 : 1) * (360 + Math.random() * 540);
+      img.style.cssText = `
+        position:absolute;
+        left:${cx - size / 2}px;top:${cy - size / 2}px;
+        width:${size}px;height:auto;
+        --dx:${dx.toFixed(1)}px;
+        --dy:${dy.toFixed(1)}px;
+        --spin:${spin.toFixed(0)}deg;
+        --delay:${(i * 18).toFixed(0)}ms;
+        animation-delay: ${(i * 18).toFixed(0)}ms;
+      `;
+      layer.appendChild(img);
+      const el = img;
+      setTimeout(() => { if (el.parentNode) el.remove(); }, dur + i * 18 + 80);
+    }
+  }
+
+  function setVars(el, vars) {
+    for (const k in vars) el.style.setProperty(k, vars[k]);
+  }
+
+  function spawnRain() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const n = 5;
+    const size = Math.max(110, Math.min(w, h) * 0.16);
+    for (let i = 0; i < n; i++) {
+      const x = (w / (n + 1)) * (i + 1) + (Math.random() - 0.5) * 40;
+      const delay = i * 60 + Math.random() * 80;
+      const dur = 1100 + Math.random() * 300;
+      const el = makeCat('cat-pop-rain', `position:absolute;left:${x - size / 2}px;top:${-size - 20}px;width:${size}px;height:auto;animation-delay:${delay}ms;animation-duration:${dur}ms;`, dur + delay + 80);
+      setVars(el, { '--fall': (h + size + 40) + 'px', '--rot': ((Math.random() - 0.5) * 80).toFixed(1) + 'deg' });
+    }
+  }
+
+  function spawnRise() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const n = 3;
+    const size = Math.max(150, Math.min(w, h) * 0.22);
+    for (let i = 0; i < n; i++) {
+      const x = w * (0.2 + i * 0.3) + (Math.random() - 0.5) * 60;
+      const dur = 1500 + i * 120;
+      const delay = i * 80;
+      const liftNeg = -(h + size + 80);
+      const sway = (Math.random() - 0.5) * 120;
+      const el = makeCat('cat-pop-rise', `position:absolute;left:${x - size / 2}px;top:${h + 20}px;width:${size}px;height:auto;animation-delay:${delay}ms;animation-duration:${dur}ms;`, dur + delay + 80);
+      setVars(el, { '--ly': liftNeg.toFixed(0) + 'px', '--sx': sway.toFixed(0) + 'px' });
+    }
+  }
+
+  function spawnStreak() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const size = Math.max(200, Math.min(w, h) * 0.34);
+    const y = h * (0.3 + Math.random() * 0.4);
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const dur = 900;
+    const dist = (w + size * 2 + 40) * dir;
+    const el = makeCat('cat-pop-streak', `position:absolute;left:${dir > 0 ? -size - 20 : w + 20}px;top:${y - size / 2}px;width:${size}px;height:auto;animation-duration:${dur}ms;`, dur + 60);
+    setVars(el, { '--dist': dist.toFixed(0) + 'px' });
+  }
+
+  function spawnCorners() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const size = Math.max(140, Math.min(w, h) * 0.18);
+    const cx = w / 2, cy = h / 2;
+    const corners = [[-size - 20, -size - 20], [w + 20, -size - 20], [-size - 20, h + 20], [w + 20, h + 20]];
+    const dur = 1100;
+    corners.forEach(([sx, sy], i) => {
+      const tx = cx - sx - size / 2;
+      const ty = cy - sy - size / 2;
+      const spin = (Math.random() < 0.5 ? -1 : 1) * (360 + Math.random() * 360);
+      const spinMid = spin * 0.55;
+      const el = makeCat('cat-pop-corners', `position:absolute;left:${sx}px;top:${sy}px;width:${size}px;height:auto;animation-delay:${i * 40}ms;animation-duration:${dur}ms;`, dur + 120);
+      setVars(el, {
+        '--tx': tx.toFixed(0) + 'px',
+        '--ty': ty.toFixed(0) + 'px',
+        '--spin': spin.toFixed(0) + 'deg',
+        '--spin-mid': spinMid.toFixed(0) + 'deg',
+      });
+    });
+  }
+
+  function spawnOrbit() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const size = Math.max(130, Math.min(w, h) * 0.16);
+    const r = Math.min(w, h) * 0.32;
+    const cx = w / 2 - size / 2, cy = h / 2 - size / 2;
+    const n = 4;
+    const dur = 1400;
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    for (let i = 0; i < n; i++) {
+      const a0 = (i / n) * Math.PI * 2;
+      const a1 = a0 + dir * Math.PI * 2;
+      const midA = a0 + dir * Math.PI;
+      const el = makeCat('cat-pop-orbit', `position:absolute;left:${cx}px;top:${cy}px;width:${size}px;height:auto;animation-delay:${i * 30}ms;animation-duration:${dur}ms;`, dur + 120);
+      setVars(el, {
+        '--x0': (Math.cos(a0) * r).toFixed(0) + 'px',
+        '--y0': (Math.sin(a0) * r).toFixed(0) + 'px',
+        '--xm': (Math.cos(midA) * r).toFixed(0) + 'px',
+        '--ym': (Math.sin(midA) * r).toFixed(0) + 'px',
+        '--x1': (Math.cos(a1) * r).toFixed(0) + 'px',
+        '--y1': (Math.sin(a1) * r).toFixed(0) + 'px',
+      });
+    }
+  }
+
+  function spawnPulse() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const size = Math.max(280, Math.min(w, h) * 0.5);
+    const cx = w / 2 - size / 2, cy = h / 2 - size / 2;
+    const dur = 1300;
+    makeCat('cat-pop-pulse', `position:absolute;left:${cx}px;top:${cy}px;width:${size}px;height:auto;animation-duration:${dur}ms;`, dur + 60);
+  }
+
+  function spawnShake() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const size = Math.max(230, Math.min(w, h) * 0.38);
+    const cx = w / 2 - size / 2, cy = h / 2 - size / 2;
+    const dur = 900;
+    makeCat('cat-pop-shake', `position:absolute;left:${cx}px;top:${cy}px;width:${size}px;height:auto;animation-duration:${dur}ms;`, dur + 60);
+  }
+
+  function spawnZigzag() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const size = Math.max(150, Math.min(w, h) * 0.2);
+    const startX = Math.random() * (w - size);
+    const startY = h + 20;
+    const dur = 1500;
+    const up = h + size + 80;
+    const zig = 60 + Math.random() * 60;
+    const el = makeCat('cat-pop-zigzag', `position:absolute;left:${startX}px;top:${startY}px;width:${size}px;height:auto;animation-duration:${dur}ms;`, dur + 60);
+    setVars(el, {
+      '--u1': (-up * 0.2).toFixed(0) + 'px',
+      '--u2': (-up * 0.45).toFixed(0) + 'px',
+      '--u3': (-up * 0.72).toFixed(0) + 'px',
+      '--u4': (-up).toFixed(0) + 'px',
+      '--zig': zig.toFixed(0) + 'px',
+      '--zigN': (-zig).toFixed(0) + 'px',
+    });
+  }
+
+  function spawnMirror() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const size = Math.max(180, Math.min(w, h) * 0.26);
+    const cy = h / 2 - size / 2;
+    const cx = w / 2 - size / 2;
+    const dist = w * 0.35;
+    const dur = 1200;
+    const elL = makeCat('cat-pop-mirror-l', `position:absolute;left:${cx}px;top:${cy}px;width:${size}px;height:auto;animation-duration:${dur}ms;`, dur + 60);
+    setVars(elL, { '--dN': (-dist).toFixed(0) + 'px', '--dMid': (-dist * 0.5).toFixed(0) + 'px' });
+    const elR = makeCat('cat-pop-mirror-r', `position:absolute;left:${cx}px;top:${cy}px;width:${size}px;height:auto;animation-duration:${dur}ms;`, dur + 60);
+    setVars(elR, { '--d': dist.toFixed(0) + 'px', '--dMid': (dist * 0.5).toFixed(0) + 'px' });
+  }
+
+  const DJ_SPAWNERS = [spawnRain, spawnRise, spawnStreak, spawnCorners, spawnOrbit, spawnPulse, spawnShake, spawnZigzag, spawnMirror];
+  function spawnDjFx(idx) {
+    const fn = DJ_SPAWNERS[idx % DJ_SPAWNERS.length];
+    if (fn) fn();
+  }
+
+  return { spawn, spawnBig, spawnRotate, spawnBurst, spawnDjFx };
 }
 
