@@ -95,6 +95,27 @@ canvas#waveform {
 .active-chip .jamo { font-size: 16px; font-weight: 700; }
 .active-chip .sub { font-size: 11px; opacity: 0.7; font-family: ui-monospace, monospace; }
 
+.presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.preset-btn {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #ddd;
+  padding: 5px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.12s;
+}
+.preset-btn:hover { background: #242424; border-color: #5af; }
+html[data-theme="light"] .preset-btn { background: #fff; color: #222; border-color: #d0d0d0; }
+html[data-theme="light"] .preset-btn:hover { background: #eaf2ff; }
+
 .keys {
   margin-top: 20px;
   display: grid;

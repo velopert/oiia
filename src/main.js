@@ -198,6 +198,7 @@ app.innerHTML = `
     <br/>단축키: Space=전체재생 · <code>Tab</code>=구간 순환 · 파형 드래그로 구간 튜닝
   </div>
   <div class="active-bar" id="active-bar"></div>
+  <div class="presets" id="presets"></div>
   <canvas id="waveform"></canvas>
   <div class="keys" id="keys"></div>
   <div class="segments" id="segments"></div>
@@ -317,6 +318,7 @@ async function init() {
     renderActiveBar();
     renderSegments();
     renderDjSlots();
+    renderPresets();
     drawWaveform();
     loadFromHash();
   } catch (err) {
@@ -1819,6 +1821,38 @@ document.getElementById('export').onclick = () => {
   console.log(text);
   toast('타임스탬프 JSON이 클립보드 · 콘솔에 복사됨');
 };
+
+const PRESETS = [
+  { name: '🚀 Basics',  dj: ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'], bpm: null },
+  { name: '🎧 Club',    dj: ['wubwub', 'deep', 'stutter', 'distort', 'drive', 'pingpong', 'echo', 'sweep', 'crush'],  bpm: 128 },
+  { name: '✨ Ether',   dj: ['hall', 'phaser', 'swell', 'chord', 'revecho', 'flanger', 'echo', 'siren', 'vinyl'],       bpm: 96 },
+  { name: '🔥 Chaos',   dj: ['glitch', 'tapestop', 'robot', 'drumroll', 'laser', 'scratch', 'backspin', 'chip', 'lofi'], bpm: 145 },
+];
+
+function applyNamedPreset(p) {
+  djMapping = p.dj.map((id) => DJ_EFFECTS.find((e) => e.id === id) ? id : DEFAULT_DJ_MAPPING[0]);
+  saveDjMapping();
+  renderDjSlots();
+  if (p.bpm) {
+    currentBpm = p.bpm;
+    tapTimes = [];
+    const bv = document.getElementById('bpm-value');
+    if (bv) bv.textContent = p.bpm + ' BPM';
+    schedulePulse();
+  }
+  toast('프리셋: ' + p.name);
+}
+
+function renderPresets() {
+  const el = document.getElementById('presets');
+  if (!el) return;
+  el.innerHTML = PRESETS.map((p, i) =>
+    `<button class="preset-btn" data-preset="${i}">${p.name}${p.bpm ? ` · ${p.bpm}` : ''}</button>`
+  ).join('');
+  el.querySelectorAll('[data-preset]').forEach((b) => {
+    b.addEventListener('click', () => applyNamedPreset(PRESETS[+b.dataset.preset]));
+  });
+}
 
 function setActiveSegment(i) {
   activeSegIndex = i;
