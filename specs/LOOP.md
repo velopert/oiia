@@ -184,6 +184,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 37 — Export alert→toast**: 타임스탬프 복사 피드백을 native alert에서 in-app toast로 통일.
 - [x] **[2026-04-17] Loop 38 — DRUMROLL 이펙트**: 32분음 28회 반복 + 볼륨 크레셴도 (빌드업용). 총 32개.
 - [x] **[2026-04-17] Loop 39 — 루프 녹음 라이브 카운트**: 녹음 중 버튼 텍스트에 이벤트 개수 실시간 표시.
+- [x] **[2026-04-17] Loop 40 — Esc = 패닉 정지**: Escape가 루프 재생/녹음 + 모든 DJ 노드 stopAllDj. 도움말 업데이트.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

@@ -1124,6 +1124,21 @@ document.addEventListener('keydown', (e) => {
     tapBeat();
     return;
   }
+  if (e.code === 'Escape') {
+    if (loopPlaying || loopRecording) {
+      loopPlaying = false;
+      loopRecording = false;
+      loopTimeouts.forEach((id) => clearTimeout(id));
+      loopTimeouts = [];
+      if (loopIterTimer) clearTimeout(loopIterTimer);
+      const btn = document.getElementById('loop-btn');
+      btn.textContent = '🔁 루프';
+      btn.classList.remove('on', 'rec');
+    }
+    stopAllDj();
+    toast('정지');
+    return;
+  }
   let code = e.code;
   if (!KEY_ORDER.find((k) => k.code === code) && JAMO_TO_CODE[e.key]) {
     code = JAMO_TO_CODE[e.key];
