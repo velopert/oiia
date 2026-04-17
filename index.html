@@ -47,7 +47,7 @@
         <div class="keyhelp-close">클릭/Esc/? 로 닫기</div>
       </div>
     </div>
-    <div id="tour" class="tour" hidden>
+    <div id="tour" class="tour" role="dialog" aria-modal="false" aria-labelledby="tour-title" aria-describedby="tour-body" hidden>
       <div class="tour-bubble">
         <div class="tour-step"><span id="tour-n">1</span>/<span id="tour-total">3</span></div>
         <div class="tour-title" id="tour-title"></div>
@@ -57,7 +57,7 @@
           <button id="tour-next" class="tour-next">다음 →</button>
         </div>
       </div>
-      <div id="tour-arrow" class="tour-arrow"></div>
+      <div id="tour-arrow" class="tour-arrow" aria-hidden="true"></div>
     </div>
     <div id="start-hint" class="start-hint">
       <div class="start-hint-inner">
