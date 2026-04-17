@@ -293,3 +293,40 @@ body.fx-shake { animation: fx-shake 0.5s cubic-bezier(.36,.07,.19,.97); }
 .cat-pop-v1 { animation: cat-pop-1 1.8s cubic-bezier(.175,.885,.32,1.275) forwards; }
 .cat-pop-v2 { animation: cat-pop-2 2.0s cubic-bezier(.175,.885,.32,1.275) forwards; }
 .cat-pop-v3 { animation: cat-pop-3 1.9s cubic-bezier(.175,.885,.32,1.4)   forwards; }
+
+.start-hint {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.45), rgba(0,0,0,0.85));
+  z-index: 10001;
+  pointer-events: none;
+  animation: sh-fadein 0.5s ease forwards;
+}
+.start-hint.hiding { animation: sh-fadeout 0.45s ease forwards; }
+.start-hint-inner { text-align: center; animation: sh-pulse 1.5s ease-in-out infinite; }
+.start-jamo {
+  font-size: clamp(72px, 14vw, 180px);
+  font-weight: 900;
+  background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff, #c86bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.08em;
+  filter: drop-shadow(0 0 36px rgba(255,255,255,0.18));
+}
+.start-text {
+  font-size: 18px;
+  color: #eee;
+  margin-top: 24px;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+@keyframes sh-fadein { from { opacity: 0 } to { opacity: 1 } }
+@keyframes sh-fadeout { to { opacity: 0 } }
+@keyframes sh-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}

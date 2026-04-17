@@ -20,11 +20,12 @@
    - (c) 한 루프 안에 깔끔히 끝낼 수 있는가
 3. 구현.
 4. **Playwright 검수** (아래 섹션 참조). smoke + 관련 spec 통과해야 Done 자격.
-5. Backlog → Done 으로 이동, 한 줄 요약 + 날짜 + 저장된 스크린샷 경로.
-6. 만들면서 발견한 아이디어 1~3개 Backlog에 추가.
+5. Backlog 체크리스트에서 해당 항목을 `- [x]`로 체크하고, 그대로 Done 섹션으로 이동 (한 줄 요약 + 날짜 + 스크린샷 경로).
+6. 만들면서 발견한 아이디어 1~3개 Backlog에 `- [ ]` 로 추가.
 7. `blocked` / `deferred` 표시된 항목은 이유 없이 건드리지 않기.
 8. 다음 루프에서 자연스럽게 이어지도록 코드/스펙 정리.
-9. **이 루프로 Done 카운트가 10의 배수에 도달했다면** `devlogs/` 작성 (아래 Devlog 섹션 참조).
+9. **커밋**: `git add -A && git commit -m "loop N: <한 줄 요약>"` 루프 단위로 원자적으로.
+10. **이 루프로 Done 카운트가 10의 배수에 도달했다면** `devlogs/` 작성 (아래 Devlog 섹션 참조).
 
 ## Verification (Playwright)
 AppleScript 대신 Playwright 사용 — 크로스 플랫폼, 콘솔 에러 캡처, 스크린샷, DOM 평가 가능.
@@ -143,7 +144,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 
 ### Onboarding / polish
 - [ ] **First-run tour**: 1회 한정 툴팁 3스텝 (키 눌러보기 → 홀드해보기 → 1키 DJ).
-- [ ] **"눌러서 시작하기" 초기 배너** — 첫 입력 전까지만 표시.
 - [ ] **DJ 효과 툴팁**: 각 옵션에 한 줄 설명 (DISTORT = 찌그러진 하드클립, WUBWUB = 덥스텝 LFO …).
 - [ ] **`?` 키 → 전체 단축키 오버레이**.
 - [ ] **다크/라이트 테마 토글** (기본 다크 유지).
@@ -160,7 +160,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **DJ 효과 search/filter** select 위에 검색창.
 
 ## Done
-(loop가 돌면서 채움. 포맷: `- [YYYY-MM-DD] 항목명 — 한 줄 결과`)
+- [x] **[2026-04-17] Loop 1 — "눌러서 시작" 초기 배너**: 자모 그라디언트 텍스트 + 펄스, 첫 키다운/클릭에 자동 dismiss. `specs/screenshots/smoke-desktop.png`
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

@@ -6,6 +6,23 @@ import { createFX, createCatSpawner } from './effects.js';
 const fx = createFX();
 const catFx = createCatSpawner(catGifUrl);
 
+function setupStartHint() {
+  const hint = document.getElementById('start-hint');
+  if (!hint) return;
+  let dismissed = false;
+  function dismiss() {
+    if (dismissed) return;
+    dismissed = true;
+    hint.classList.add('hiding');
+    setTimeout(() => hint.remove(), 500);
+    document.removeEventListener('keydown', dismiss, true);
+    document.removeEventListener('pointerdown', dismiss, true);
+  }
+  document.addEventListener('keydown', dismiss, true);
+  document.addEventListener('pointerdown', dismiss, true);
+}
+setupStartHint();
+
 const DEFAULT_SEGMENTS = [
   { id: 'o', jamo: 'ㅜ', latin: 'O', code: 'KeyN', key: 'ㅜ', start: 0.430, end: 0.622, color: '#ff6b6b' },
   { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },

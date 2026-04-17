@@ -14,10 +14,22 @@ function attachConsoleGuard(page) {
   return errors;
 }
 
+test('start hint shows and dismisses on first interaction', async ({ page }) => {
+  const errors = attachConsoleGuard(page);
+  await page.goto('/');
+  await expect(page.locator('#start-hint')).toBeVisible();
+  await page.keyboard.press('n');
+  await page.waitForTimeout(600);
+  await expect(page.locator('#start-hint')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
 test('app loads, core UI renders, no console errors', async ({ page }, testInfo) => {
   const errors = attachConsoleGuard(page);
 
   await page.goto('/');
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.locator('#start-hint').evaluate((el) => el && el.remove()).catch(() => {});
 
   await expect(page.locator('#waveform')).toBeVisible();
   await expect(page.locator('#active-bar')).toBeVisible();
