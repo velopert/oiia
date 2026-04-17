@@ -630,6 +630,14 @@ html[data-theme="light"] .theme-toggle {
   font-family: ui-monospace, monospace !important;
   letter-spacing: 0.08em;
 }
+@media (max-width: 380px) {
+  .top-tools { gap: 4px; right: 44px; }
+  .top-tools button { padding: 0 7px; font-size: 11px; gap: 4px; }
+  .dj-tap-float .tap-label { font-size: 9px; }
+  .dj-tap-float #dj-tap-bpm { font-size: 10px; }
+  .lang-toggle { min-width: 28px; }
+  .theme-toggle { right: 6px; width: 28px; }
+}
 .dj-mode-toggle.on {
   background: #ff5577 !important;
   color: #fff !important;
