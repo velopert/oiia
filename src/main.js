@@ -100,6 +100,33 @@ function setupTour() {
 }
 setupTour();
 
+function setupTheme() {
+  const saved = localStorage.getItem('oiia-theme-v1');
+  if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  const btn = document.createElement('button');
+  btn.className = 'theme-toggle';
+  btn.setAttribute('aria-label', '테마 전환');
+  btn.title = '다크 ↔ 라이트';
+  function refresh() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    btn.textContent = isLight ? '🌙' : '☀️';
+  }
+  refresh();
+  btn.onclick = () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('oiia-theme-v1', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('oiia-theme-v1', 'light');
+    }
+    refresh();
+  };
+  document.body.appendChild(btn);
+}
+setupTheme();
+
 const sessionStats = { key: {}, dj: {}, total: 0, start: Date.now() };
 
 function bumpStat(group, id) {
