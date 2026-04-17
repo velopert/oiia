@@ -272,6 +272,27 @@ function applyAllI18n() {
   if (tourSkip) tourSkip.textContent = t('tour.skip');
   const tourNext = document.getElementById('tour-next');
   if (tourNext) tourNext.textContent = t('tour.next');
+  const ctrlMap = {
+    'play-all': 'ctrl.playAll',
+    'play-oiia': 'ctrl.playOiia',
+    'metro': 'ctrl.metro',
+    'make-clip': 'ctrl.makeClip',
+    'replay-btn': 'ctrl.replay',
+    'share': 'ctrl.share',
+    'share-x': 'ctrl.shareX',
+    'reset': 'ctrl.reset',
+    'export': 'ctrl.export',
+  };
+  for (const [id, key] of Object.entries(ctrlMap)) {
+    const el = document.getElementById(id);
+    if (el && !el.classList.contains('on') && !el.classList.contains('recording')) {
+      el.textContent = t(key);
+    }
+  }
+  const recBtn = document.getElementById('rec');
+  if (recBtn && !recBtn.classList.contains('recording')) recBtn.textContent = t('ctrl.rec');
+  const loopBtn = document.getElementById('loop-btn');
+  if (loopBtn && !loopBtn.classList.contains('on') && !loopBtn.classList.contains('rec')) loopBtn.textContent = t('ctrl.loop');
   renderKeyhelp();
   renderHint();
 }

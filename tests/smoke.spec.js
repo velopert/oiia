@@ -18,6 +18,7 @@ async function suppressTour(page) {
   await page.addInitScript(() => {
     try { localStorage.setItem('oiia-tour-done-v1', '1'); } catch {}
     try { localStorage.setItem('oiia-dj-mode-v1', '0'); } catch {}
+    try { localStorage.setItem('oiia-locale-v1', 'ko'); } catch {}
   });
 }
 
