@@ -1569,7 +1569,7 @@ document.getElementById('export').onclick = () => {
   const text = JSON.stringify(data, null, 2);
   navigator.clipboard.writeText(text).catch(() => {});
   console.log(text);
-  alert('타임스탬프가 클립보드에 복사됨 (콘솔에도 출력)');
+  toast('타임스탬프 JSON이 클립보드 · 콘솔에 복사됨');
 };
 
 function setActiveSegment(i) {

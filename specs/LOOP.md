@@ -181,6 +181,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 34 — Make Clip 카운트다운**: 3-2-1-REC 풀스크린 오버레이로 사용자가 키 시작 타이밍 잡을 수 있게.
 - [x] **[2026-04-17] Loop 35 — Video 녹음**: FX canvas `captureStream(30fps)` + audio 스트림을 `MediaStream`으로 합성, vp9/vp8 자동 선택, 결과물 WebM 비디오(파티클·텍스트·플래시 시각 포함).
 - [x] **[2026-04-17] Loop 36 — CHORD DJ 이펙트**: 옥타브 다운 + 기본 + 5도 위 동시 믹스. 총 31개.
+- [x] **[2026-04-17] Loop 37 — Export alert→toast**: 타임스탬프 복사 피드백을 native alert에서 in-app toast로 통일.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
