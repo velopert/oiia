@@ -312,6 +312,8 @@ function applyAllI18n() {
     el.title = t(titleKey);
     if (labelKey && !el.classList.contains('on')) el.textContent = t(labelKey);
   }
+  const quant = document.getElementById('quantize');
+  if (quant && !quant.classList.contains('on')) quant.textContent = t('quantize.label');
   const mv = document.querySelector('.master-vol-wrap');
   if (mv) mv.title = t('title.masterVol');
   const djHeader = document.querySelector('.dj-header h3');
