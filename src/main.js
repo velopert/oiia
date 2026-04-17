@@ -127,6 +127,23 @@ function setupTheme() {
 }
 setupTheme();
 
+(function setupFxIntensity() {
+  const slider = document.getElementById('fx-intensity');
+  const val = document.getElementById('fx-intensity-val');
+  if (!slider) return;
+  const saved = +(localStorage.getItem('oiia-fx-intensity-v1') || 1);
+  slider.value = saved;
+  val.textContent = saved.toFixed(2).replace(/0+$/, '').replace(/\.$/, '') + '×';
+  fx.setIntensity(saved);
+  slider.addEventListener('input', () => {
+    const v = +slider.value;
+    fx.setIntensity(v);
+    val.textContent = v.toFixed(2).replace(/0+$/, '').replace(/\.$/, '') + '×';
+    localStorage.setItem('oiia-fx-intensity-v1', v);
+  });
+  slider.addEventListener('click', (e) => e.stopPropagation());
+})();
+
 document.getElementById('replay-tour')?.addEventListener('click', (e) => {
   e.stopPropagation();
   localStorage.removeItem('oiia-tour-done-v1');

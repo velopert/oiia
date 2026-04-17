@@ -195,6 +195,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 51 — 세그먼트 컬러 피커**: `input[type=color]`로 각 세그먼트 컬러 편집. URL preset encode/decode에 컬러 포함. 키 카드 + 파형 + active chip 자동 리렌더.
 - [x] **[2026-04-17] Loop 52 — Help 오버레이 액션**: "🎯 튜토리얼 다시 보기" + "🗑 전체 초기화" (confirm 후 localStorage 싹 비우고 리로드).
 - [x] **[2026-04-17] Loop 53 — 0 = 랜덤 DJ**: 0 키로 9개 슬롯 중 랜덤 발사. 도움말 업데이트.
+- [x] **[2026-04-17] Loop 54 — FX 강도 슬라이더**: help 오버레이 하단 range (0.2–1.8x), `fx.setIntensity` 곱셈. `oiia-fx-intensity-v1` persist.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

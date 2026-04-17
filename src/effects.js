@@ -262,11 +262,13 @@ export function createFX() {
   requestAnimationFrame(loop);
 
   let qualityMul = 1;
+  let userIntensity = 1;
   function setQuality(m) { qualityMul = Math.max(0.3, Math.min(1, m)); }
+  function setIntensity(i) { userIntensity = Math.max(0.2, Math.min(1.8, i)); }
 
   const origBurst = burst;
   function burstWithQ(color, label, intensity = 1) {
-    origBurst(color, label, intensity * qualityMul);
+    origBurst(color, label, intensity * qualityMul * userIntensity);
   }
 
   function beatRing(color = '#5af') {
@@ -277,7 +279,7 @@ export function createFX() {
 
   const origDraw = draw;
 
-  return { burst: burstWithQ, drop, setQuality, beatRing, canvas };
+  return { burst: burstWithQ, drop, setQuality, setIntensity, beatRing, canvas };
 }
 
 export function createCatSpawner(url) {

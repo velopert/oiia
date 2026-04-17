@@ -791,6 +791,23 @@ html[data-theme="light"] .stats-row b { color: #000; }
 html[data-theme="light"] .keyhelp-action { background: #f4f4f4; color: #222; border-color: #ccc; }
 html[data-theme="light"] .keyhelp-action.danger { color: #c62828; border-color: #e8b0b0; }
 
+.keyhelp-intensity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #aaa;
+}
+.keyhelp-intensity input[type="range"] { flex: 1; accent-color: #5af; }
+.keyhelp-intensity span {
+  min-width: 48px;
+  text-align: right;
+  font-family: ui-monospace, monospace;
+  color: #fff;
+}
+html[data-theme="light"] .keyhelp-intensity span { color: #222; }
+
 .keyhelp-close {
   margin-top: 16px;
   color: #666;
