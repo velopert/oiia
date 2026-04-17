@@ -144,6 +144,7 @@ app.innerHTML = `
     <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
     <button id="make-clip" class="make-clip-btn">🎬 Make Clip</button>
     <button id="share" class="secondary">🔗 링크 공유</button>
+    <button id="share-x" class="secondary">𝕏 트윗</button>
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
   </div>
@@ -1285,6 +1286,12 @@ document.getElementById('shuffle-dj').onclick = shuffleDj;
 document.getElementById('make-clip').onclick = makeClip;
 document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
+document.getElementById('share-x').onclick = () => {
+  const b64 = encodePreset();
+  const url = location.origin + location.pathname + '#p=' + b64;
+  const text = encodeURIComponent('oiiai keyboard 내 세팅 🎧🐱');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
+};
 document.getElementById('play-all').onclick = playAll;
 document.getElementById('play-oiia').onclick = playOiiaSequence;
 document.getElementById('reset').onclick = () => {
