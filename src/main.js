@@ -296,6 +296,24 @@ function applyAllI18n() {
   if (loopBtn && !loopBtn.classList.contains('on') && !loopBtn.classList.contains('rec')) loopBtn.textContent = t('ctrl.loop');
   const djFilter = document.getElementById('dj-filter');
   if (djFilter) djFilter.placeholder = t('filter.dj.placeholder');
+  const titleMap = {
+    'shuffle-dj':       ['title.shuffle',    'label.shuffleMini'],
+    'reset-dj':         ['title.resetDj',    'label.resetDj'],
+    'tap':              ['title.tap',         null],
+    'metro':            ['title.metro',       null],
+    'quantize':         ['title.quantize',    null],
+    'replay-btn':       ['title.replay',      null],
+    'loop-speed':       ['title.loopSpeed',   null],
+    'dj-shuffle-inline':['title.djInline',    'dj.shuffle'],
+  };
+  for (const [id, [titleKey, labelKey]] of Object.entries(titleMap)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.title = t(titleKey);
+    if (labelKey && !el.classList.contains('on')) el.textContent = t(labelKey);
+  }
+  const mv = document.querySelector('.master-vol-wrap');
+  if (mv) mv.title = t('title.masterVol');
   const theme = document.querySelector('.theme-toggle');
   if (theme) theme.setAttribute('aria-label', t('aria.theme'));
   const djModeBtn = document.getElementById('dj-mode-toggle');
