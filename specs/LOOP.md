@@ -165,6 +165,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 13 — Auto-beat 버튼**: 16-step 8분박 랜덤 패턴 4종 중 하나 + 중간중간 DJ 트리거 자동 발사. BPM 설정되어 있으면 거기에 맞춤.
 - [x] **[2026-04-17] Loop 14 — PWA 매니페스트**: `manifest.webmanifest` + apple-touch-icon + theme-color meta. 홈 추가 가능 (iOS/Android).
 - [x] **[2026-04-17] Loop 15 — 세션 통계 in 도움말**: 프레스 카운트 · 경과 시간 · 메인 키/DJ를 `?` 오버레이 하단에 라이브 표시.
+- [x] **[2026-04-17] Loop 16 — DJ 슬롯 firing 피드백**: 트리거 시 슬롯에 컬러 링 + glow + 스케일 800ms CSS 애니메이션.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

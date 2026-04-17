@@ -799,6 +799,13 @@ function playDjSlot(idx) {
   try { eff.play(); } catch (err) { console.error(err); }
   fx.drop(eff.color, eff.name);
   haptic([30, 20, 40]);
+  const wrap = document.querySelector(`.dj-slot-wrap:nth-child(${idx + 1})`);
+  if (wrap) {
+    wrap.classList.remove('firing');
+    void wrap.offsetWidth;
+    wrap.classList.add('firing');
+    setTimeout(() => wrap.classList.remove('firing'), 800);
+  }
 }
 
 function renderDjSlots() {
