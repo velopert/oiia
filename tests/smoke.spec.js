@@ -80,6 +80,20 @@ test('? key opens help overlay, Esc closes', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('haptic vibrate fires on key press (when API present)', async ({ page }) => {
+  const errors = attachConsoleGuard(page);
+  await page.addInitScript(() => {
+    window.__vibrateCalls = [];
+    navigator.vibrate = (p) => { window.__vibrateCalls.push(p); return true; };
+  });
+  await page.goto('/');
+  await page.keyboard.press('n');
+  await page.waitForTimeout(100);
+  const calls = await page.evaluate(() => window.__vibrateCalls);
+  expect(calls.length).toBeGreaterThan(0);
+  expect(errors).toEqual([]);
+});
+
 test('A key spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');

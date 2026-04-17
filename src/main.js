@@ -269,6 +269,10 @@ function playSegmentById(id) {
   if (i >= 0) playSegmentByIndex(i);
 }
 
+function haptic(ms) {
+  try { navigator.vibrate && navigator.vibrate(ms); } catch {}
+}
+
 function pressKey(code, intensity = 1) {
   if (audioCtx?.state === 'suspended') audioCtx.resume();
   const k = KEY_ORDER.find((x) => x.code === code);
@@ -278,6 +282,7 @@ function pressKey(code, intensity = 1) {
   const seg = segments.find((s) => s.id === k.segId);
   if (seg) fx.burst(seg.color, seg.jamo, intensity);
   if (code === 'KeyA') catFx.spawn();
+  haptic(Math.min(30, 12 + intensity * 6));
 }
 
 const activeDjNodes = new Set();
@@ -736,6 +741,7 @@ function playDjSlot(idx) {
   if (!eff) return;
   try { eff.play(); } catch (err) { console.error(err); }
   fx.drop(eff.color, eff.name);
+  haptic([30, 20, 40]);
 }
 
 function renderDjSlots() {

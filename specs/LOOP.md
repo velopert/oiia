@@ -137,7 +137,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 ### Mobile & cross-device
 - [ ] **터치 패드 레이아웃**: 하단에 큰 컬러 패드, multi-touch (`Touch.identifier` 추적).
 - [ ] **Orientation-aware**: portrait = 하단 패드, landscape = 좌우 분리.
-- [ ] **Haptic**: 터치 시 `navigator.vibrate(15)` 짧은 버즈.
 - [ ] **PWA**: manifest + service worker, 홈 추가 가능.
 - [ ] **iOS audio unlock**: 최초 터치에 `audioCtx.resume()` + 무음 버퍼로 wake (이미 부분 구현, 모바일 검증).
 - [ ] **Wake lock**: 재생 중 화면 꺼짐 방지 (Screen Wake Lock API).
@@ -161,6 +160,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 3 — DJ 효과 툴팁 + 설명 라인**: 24개 이펙트 각각에 한 줄 설명 추가. 슬롯 하단에 현재 선택의 설명 표시 + option/select/button title로 네이티브 hover 툴팁.
 - [x] **[2026-04-17] Loop 4 — `?` 단축키 오버레이**: 모달 카드 UI로 11개 단축키 표시, `?`/`Shift+/`로 토글, `Esc`/클릭으로 닫기.
 - [x] **[2026-04-17] Loop 5 — 세그먼트 재생 fade envelope**: 6ms linear ramp in/out GainNode로 click/pop 제거.
+- [x] **[2026-04-17] Loop 6 — Haptic vibrate**: `navigator.vibrate` 래퍼로 키프레스(강도 비례) + DJ 슬롯(3-pulse 패턴).
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
