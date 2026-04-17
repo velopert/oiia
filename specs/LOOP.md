@@ -183,6 +183,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 36 — CHORD DJ 이펙트**: 옥타브 다운 + 기본 + 5도 위 동시 믹스. 총 31개.
 - [x] **[2026-04-17] Loop 37 — Export alert→toast**: 타임스탬프 복사 피드백을 native alert에서 in-app toast로 통일.
 - [x] **[2026-04-17] Loop 38 — DRUMROLL 이펙트**: 32분음 28회 반복 + 볼륨 크레셴도 (빌드업용). 총 32개.
+- [x] **[2026-04-17] Loop 39 — 루프 녹음 라이브 카운트**: 녹음 중 버튼 텍스트에 이벤트 개수 실시간 표시.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

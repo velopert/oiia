@@ -1420,6 +1420,10 @@ let loopIterTimer = null;
 function loopRec(type, arg) {
   if (!loopRecording) return;
   loopEvents.push({ t: performance.now() - loopStartT, type, arg });
+  const btn = document.getElementById('loop-btn');
+  if (btn && btn.classList.contains('rec')) {
+    btn.textContent = `⏺ 녹음 ${loopEvents.length}개`;
+  }
 }
 
 function loopRunIteration() {
