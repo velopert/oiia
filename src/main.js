@@ -131,6 +131,7 @@ app.innerHTML = `
   <div class="dj-header">
     <h3 style="margin:0;font-size:14px;color:#888;">🎧 DJ 슬롯 (1–9 키)</h3>
     <button id="shuffle-dj" class="dj-shuffle" title="9개 슬롯을 전부 랜덤 이펙트로">🎲 셔플</button>
+    <button id="reset-dj" class="dj-shuffle" title="DJ 슬롯을 기본값으로">↺ 기본</button>
   </div>
   <div class="dj-slots" id="dj-slots"></div>
   <div class="controls">
@@ -1427,6 +1428,12 @@ function shuffleDj() {
   toast('DJ 슬롯 랜덤 셔플됨');
 }
 document.getElementById('shuffle-dj').onclick = shuffleDj;
+document.getElementById('reset-dj').onclick = () => {
+  djMapping = [...DEFAULT_DJ_MAPPING];
+  saveDjMapping();
+  renderDjSlots();
+  toast('DJ 슬롯 기본값 복원');
+};
 document.getElementById('make-clip').onclick = makeClip;
 document.getElementById('loop-btn').addEventListener('click', (e) => {
   if (e.shiftKey) {

@@ -176,6 +176,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 28 — 루프 레이어**: 🔁 버튼 3-state (녹음 / 재생 / 정지). 키프레스·DJ 이벤트 시간축 캡처 → 자동 반복. 연주 위에 즉흥 가능.
 - [x] **[2026-04-17] Loop 29 — 루프 클리어**: Shift-click on 🔁로 녹음/재생 전부 정리.
 - [x] **[2026-04-17] Loop 30 — 안티앨리어싱**: `antiAliasFilter(maxRate)` 헬퍼, CHIP/SCRATCH/POWERUP/LASER에 pre-lowpass(Nyquist/maxRate*0.88) 체인 삽입.
+- [x] **[2026-04-17] Loop 31 — DJ 기본값 복원**: 셔플 옆에 ↺ 버튼, DEFAULT_DJ_MAPPING으로 즉시 복원.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
