@@ -778,6 +778,27 @@ function dj_pingpong() {
   s.start();
 }
 
+function dj_glitch() {
+  const base = audioCtx.currentTime;
+  const totalDur = 1.6;
+  const buf = getDjBuffer();
+  const maxOffset = Math.max(0.1, buf.duration - 0.15);
+  let t = 0;
+  while (t < totalDur) {
+    const segLen = 0.05 + Math.random() * 0.13;
+    const offset = Math.random() * maxOffset;
+    const s = djBufferSource();
+    s.playbackRate.value = 0.4 + Math.random() * 2.2;
+    if (Math.random() > 0.5) {
+      const rev = reverseBuffer(buf);
+      s.buffer = rev;
+    }
+    s.connect(masterOut);
+    try { s.start(base + t, offset, segLen); } catch {}
+    t += segLen + Math.random() * 0.04;
+  }
+}
+
 function dj_robot() {
   const s = djBufferSource();
   const modGain = audioCtx.createGain();
@@ -842,6 +863,7 @@ const DJ_EFFECTS = [
   { id: 'revecho',  name: 'REV-ECHO', color: '#9966ff', play: dj_reverse_echo,  desc: '역재생 + 피드백 딜레이' },
   { id: 'robot',    name: 'ROBOT',    color: '#11dd99', play: dj_robot,         desc: '80Hz 링 모듈레이션, 로봇 음성' },
   { id: 'tapestop', name: 'TAPESTOP', color: '#ee4422', play: dj_tapestop,      desc: '1.2초에 걸쳐 서서히 정지' },
+  { id: 'glitch',   name: 'GLITCH',   color: '#ff0066', play: dj_glitch,        desc: '랜덤 오프셋·길이·피치·방향 스터터' },
 ];
 
 const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
