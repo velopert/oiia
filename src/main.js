@@ -143,6 +143,7 @@ app.innerHTML = `
     </button>
     <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
     <button id="make-clip" class="make-clip-btn">🎬 Make Clip</button>
+    <button id="loop-btn" class="loop-btn">🔁 루프</button>
     <button id="share" class="secondary">🔗 링크 공유</button>
     <button id="share-x" class="secondary">𝕏 트윗</button>
     <button id="reset" class="secondary">↺ 기본값</button>
@@ -379,6 +380,7 @@ function pressKey(code, intensity = 1) {
   requestWakeLock();
   const k = KEY_ORDER.find((x) => x.code === code);
   if (!k) return;
+  loopRec('key', code);
   bumpStat('key', k.jamo);
   playSegmentById(k.segId);
   flashKey(code);
@@ -921,6 +923,7 @@ function playDjSlot(idx) {
   const id = djMapping[idx];
   const eff = DJ_EFFECTS.find((e) => e.id === id);
   if (!eff) return;
+  loopRec('dj', idx);
   bumpStat('dj', id);
   try { eff.play(); } catch (err) { console.error(err); }
   fx.drop(eff.color, eff.name);
@@ -1303,6 +1306,72 @@ function autoBeat() {
     setTimeout(() => playDjSlot(idx % 9), i * step + 40);
   });
 }
+let loopEvents = [];
+let loopRecording = false;
+let loopStartT = 0;
+let loopPlaying = false;
+let loopTimeouts = [];
+let loopIterTimer = null;
+
+function loopRec(type, arg) {
+  if (!loopRecording) return;
+  loopEvents.push({ t: performance.now() - loopStartT, type, arg });
+}
+
+function loopRunIteration() {
+  if (!loopPlaying) return;
+  const last = loopEvents[loopEvents.length - 1];
+  if (!last) return;
+  const total = last.t + 150;
+  loopTimeouts.forEach((id) => clearTimeout(id));
+  loopTimeouts = [];
+  loopEvents.forEach((e) => {
+    const id = setTimeout(() => {
+      if (!loopPlaying) return;
+      if (e.type === 'key') pressKey(e.arg, 1);
+      else if (e.type === 'dj') playDjSlot(e.arg);
+    }, e.t);
+    loopTimeouts.push(id);
+  });
+  loopIterTimer = setTimeout(loopRunIteration, total);
+}
+
+function loopToggle() {
+  const btn = document.getElementById('loop-btn');
+  if (loopPlaying) {
+    loopPlaying = false;
+    loopTimeouts.forEach((id) => clearTimeout(id));
+    loopTimeouts = [];
+    if (loopIterTimer) clearTimeout(loopIterTimer);
+    btn.textContent = '🔁 루프';
+    btn.classList.remove('on', 'rec');
+    toast('루프 정지');
+    return;
+  }
+  if (loopRecording) {
+    loopRecording = false;
+    btn.classList.remove('rec');
+    if (loopEvents.length === 0) {
+      btn.textContent = '🔁 루프';
+      toast('녹음된 이벤트 없음');
+      return;
+    }
+    loopPlaying = true;
+    btn.textContent = `🔁 × ${loopEvents.length}`;
+    btn.classList.add('on');
+    toast(`${loopEvents.length}개 이벤트 루프 재생`);
+    loopRunIteration();
+    return;
+  }
+  // start recording
+  loopEvents = [];
+  loopStartT = performance.now();
+  loopRecording = true;
+  btn.textContent = '⏺ 녹음 중 (다시 눌러 종료)';
+  btn.classList.add('rec');
+  toast('루프 녹음 중…');
+}
+
 async function makeClip() {
   const mk = document.getElementById('make-clip');
   if (mk.disabled) return;
@@ -1347,6 +1416,7 @@ function shuffleDj() {
 }
 document.getElementById('shuffle-dj').onclick = shuffleDj;
 document.getElementById('make-clip').onclick = makeClip;
+document.getElementById('loop-btn').onclick = loopToggle;
 document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
 document.getElementById('share-x').onclick = () => {

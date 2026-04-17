@@ -307,6 +307,26 @@ canvas#waveform {
   font-weight: 800;
 }
 .controls button.make-clip-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.controls button.loop-btn {
+  background: #2a2a2a;
+  color: #eee;
+  border: 1px solid #3a3a3a;
+}
+.controls button.loop-btn.rec {
+  background: #e33;
+  color: #fff;
+  animation: rec-blink 1s ease-in-out infinite;
+}
+.controls button.loop-btn.on {
+  background: #4d96ff;
+  color: #000;
+  font-weight: 700;
+  animation: loop-spin 2s linear infinite;
+}
+@keyframes loop-spin {
+  0%, 100% { box-shadow: inset 0 0 0 2px rgba(255,255,255,0); }
+  50%      { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); }
+}
 .controls button.rec-btn.recording {
   background: #ff1744;
   animation: rec-blink 1s ease-in-out infinite;
