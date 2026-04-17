@@ -23,6 +23,26 @@ function setupStartHint() {
 }
 setupStartHint();
 
+function setupKeyhelp() {
+  const el = document.getElementById('keyhelp');
+  if (!el) return;
+  function toggle(show) {
+    if (show === undefined) show = el.hidden;
+    el.hidden = !show;
+  }
+  el.addEventListener('click', () => toggle(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+      e.preventDefault();
+      toggle();
+    } else if (e.key === 'Escape' && !el.hidden) {
+      e.preventDefault();
+      toggle(false);
+    }
+  });
+}
+setupKeyhelp();
+
 const DEFAULT_SEGMENTS = [
   { id: 'o', jamo: 'ㅜ', latin: 'O', code: 'KeyN', key: 'ㅜ', start: 0.430, end: 0.622, color: '#ff6b6b' },
   { id: 'i', jamo: 'ㅣ', latin: 'I', code: 'KeyL', key: 'ㅣ', start: 1.345, end: 1.465, color: '#ffd93d' },

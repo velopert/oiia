@@ -144,7 +144,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 
 ### Onboarding / polish
 - [ ] **First-run tour**: 1회 한정 툴팁 3스텝 (키 눌러보기 → 홀드해보기 → 1키 DJ).
-- [ ] **`?` 키 → 전체 단축키 오버레이**.
 - [ ] **다크/라이트 테마 토글** (기본 다크 유지).
 
 ### Audio quality
@@ -161,6 +160,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 1 — "눌러서 시작" 초기 배너**: 자모 그라디언트 텍스트 + 펄스, 첫 키다운/클릭에 자동 dismiss. `specs/screenshots/smoke-desktop.png`
 - [x] **[2026-04-17] Loop 2 — Master limiter**: `DynamicsCompressorNode`(threshold -8dB, ratio 6, knee 18) 마스터 체인. 모든 노드 라우팅을 `masterOut` 경유로 전환.
 - [x] **[2026-04-17] Loop 3 — DJ 효과 툴팁 + 설명 라인**: 24개 이펙트 각각에 한 줄 설명 추가. 슬롯 하단에 현재 선택의 설명 표시 + option/select/button title로 네이티브 hover 툴팁.
+- [x] **[2026-04-17] Loop 4 — `?` 단축키 오버레이**: 모달 카드 UI로 11개 단축키 표시, `?`/`Shift+/`로 토글, `Esc`/클릭으로 닫기.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

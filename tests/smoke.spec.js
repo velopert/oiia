@@ -68,6 +68,18 @@ test('DJ slot 1 triggers drop', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('? key opens help overlay, Esc closes', async ({ page }) => {
+  const errors = attachConsoleGuard(page);
+  await page.goto('/');
+  await page.locator('#start-hint').evaluate((el) => el && el.remove()).catch(() => {});
+  await expect(page.locator('#keyhelp')).toBeHidden();
+  await page.keyboard.press('Shift+/');
+  await expect(page.locator('#keyhelp')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#keyhelp')).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
 test('A key spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');
