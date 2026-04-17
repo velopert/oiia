@@ -293,6 +293,18 @@ function applyAllI18n() {
   if (recBtn && !recBtn.classList.contains('recording')) recBtn.textContent = t('ctrl.rec');
   const loopBtn = document.getElementById('loop-btn');
   if (loopBtn && !loopBtn.classList.contains('on') && !loopBtn.classList.contains('rec')) loopBtn.textContent = t('ctrl.loop');
+  const djFilter = document.getElementById('dj-filter');
+  if (djFilter) djFilter.placeholder = t('filter.dj.placeholder');
+  const theme = document.querySelector('.theme-toggle');
+  if (theme) theme.setAttribute('aria-label', t('aria.theme'));
+  const djModeBtn = document.getElementById('dj-mode-toggle');
+  if (djModeBtn) djModeBtn.setAttribute('aria-label', t('aria.dj'));
+  const langBtn = document.getElementById('lang-toggle');
+  if (langBtn) langBtn.setAttribute('aria-label', t('aria.lang'));
+  const tapFl = document.getElementById('dj-tap-float');
+  if (tapFl) tapFl.setAttribute('aria-label', t('aria.tap'));
+  const quantFl = document.getElementById('dj-quant-float');
+  if (quantFl) quantFl.setAttribute('aria-label', t('aria.quantize'));
   renderKeyhelp();
   renderHint();
 }
@@ -361,7 +373,7 @@ document.getElementById('replay-tour')?.addEventListener('click', (e) => {
 });
 document.getElementById('reset-storage')?.addEventListener('click', (e) => {
   e.stopPropagation();
-  if (!confirm('세그먼트·DJ 매핑·볼륨·테마·튜토리얼 기록을 모두 지우고 새로고침합니다. 진행?')) return;
+  if (!confirm(t('confirm.resetAll'))) return;
   ['oiia-segments-v11', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
   location.href = location.origin + location.pathname;
 });
@@ -1980,7 +1992,7 @@ function toggleMetro() {
 document.getElementById('bpm-value').addEventListener('dblclick', (e) => {
   e.stopPropagation();
   e.preventDefault();
-  const input = prompt('BPM 입력 (40–240)', currentBpm || '');
+  const input = prompt(t('prompt.bpm'), currentBpm || '');
   if (input === null) return;
   const n = parseInt(input);
   if (!isNaN(n) && n >= 40 && n <= 240) {
@@ -2077,7 +2089,7 @@ function shareLink() {
     navigator.clipboard.writeText(url);
     toast(t('toast.share.copied'));
   } catch {
-    prompt('링크를 복사하세요', url);
+    prompt(t('prompt.shareLink'), url);
   }
   history.replaceState(null, '', '#p=' + b64);
 }
