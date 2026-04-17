@@ -484,6 +484,9 @@ app.innerHTML = `
   <div id="toast" class="toast" hidden></div>
 `;
 
+applyAllI18n();
+renderHint();
+
 let audioCtx;
 let buffer;
 let segments = loadSegments();
