@@ -197,6 +197,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 54 — FX 강도 슬라이더**: help 오버레이 하단 range (0.2–1.8x), `fx.setIntensity` 곱셈. `oiia-fx-intensity-v1` persist.
 - [x] **[2026-04-17] Loop 55 — 세션 stats v2**: 상위 3개 키/DJ 칩, 분당 프레스 카운트. help 오버레이의 한 눈에 보는 세션 요약.
 - [x] **[2026-04-17] Loop 56 — Replay 버튼**: 마지막 10초 링 버퍼 (키+DJ 이벤트), 🎞 버튼으로 원래 타이밍 그대로 다시 발사.
+- [x] **[2026-04-17] Loop 57 — 파형 플레이헤드**: 전체 재생(Space) 시 파형 위에 흰 세로 라인이 시간에 따라 스윕.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

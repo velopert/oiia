@@ -1422,12 +1422,41 @@ window.addEventListener('blur', () => {
   for (const code of Array.from(heldKeys.keys())) endHold(code);
 });
 
+let playheadStartT = 0;
+let playheadDur = 0;
+let playheadAnim = 0;
 function playAll() {
   if (audioCtx?.state === 'suspended') audioCtx.resume();
   const src = audioCtx.createBufferSource();
   src.buffer = buffer;
   src.connect(masterOut);
   src.start();
+  playheadStartT = performance.now();
+  playheadDur = buffer.duration * 1000;
+  if (!playheadAnim) tickPlayhead();
+}
+function tickPlayhead() {
+  const elapsed = performance.now() - playheadStartT;
+  if (elapsed > playheadDur + 100) {
+    playheadAnim = 0;
+    drawWaveform();
+    return;
+  }
+  drawWaveform();
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  ctx.save();
+  ctx.scale(dpr, dpr);
+  const x = (elapsed / playheadDur) * canvas.clientWidth;
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.globalAlpha = 0.85;
+  ctx.beginPath();
+  ctx.moveTo(x, 0);
+  ctx.lineTo(x, canvas.clientHeight);
+  ctx.stroke();
+  ctx.restore();
+  playheadAnim = requestAnimationFrame(tickPlayhead);
 }
 
 function playOiiaSequence() {
