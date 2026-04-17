@@ -662,6 +662,29 @@ html[data-theme="light"] .theme-toggle {
   line-height: 1;
 }
 .top-tools button:hover { filter: brightness(1.2); }
+.devlog-link {
+  height: 26px;
+  width: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #eee;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.15s, filter 0.15s;
+}
+.devlog-link:hover { opacity: 1; filter: brightness(1.2); text-decoration: none; }
+html[data-theme="light"] .devlog-link {
+  background: rgba(255,255,255,0.85);
+  color: #222;
+  border-color: rgba(0,0,0,0.12);
+}
 .lang-toggle {
   min-width: 42px;
   font-family: ui-monospace, monospace !important;

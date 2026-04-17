@@ -1,43 +1,54 @@
 <!doctype html>
-<html lang="ko" data-theme="dark">
+<html lang="ko" data-theme="dark" data-lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0e0f11">
 <title>루프 41–50 — Oiiai Devlog</title>
+<meta name="description" content="5번째 블록. 베이스라인 40루프를 넘으면서 &quot;온보딩·컨트롤·주제별 분기&quot; 축으로 방향이 살짝 틀어진다. 이번 10루프에 한 일 Loop 41 — First-run tour : 3-step 그라디언트 버블 + 대상에 점선 링 포인터. localStorage flag.…">
+<link rel="canonical" href="/blog/ko/posts/loops-41-to-50.html">
+<link rel="alternate" hreflang="ko" href="/blog/ko/posts/loops-41-to-50.html">
+<link rel="alternate" hreflang="en" href="/blog/en/posts/loops-41-to-50.html">
+<link rel="alternate" hreflang="x-default" href="/blog/en/posts/loops-41-to-50.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="루프 41–50 — Oiiai Devlog">
+<meta property="og:description" content="5번째 블록. 베이스라인 40루프를 넘으면서 &quot;온보딩·컨트롤·주제별 분기&quot; 축으로 방향이 살짝 틀어진다. 이번 10루프에 한 일 Loop 41 — First-run tour : 3-step 그라디언트 버블 + 대상에 점선 링 포인터. localStorage flag.…">
+<meta property="og:image" content="/og.png">
+<meta property="og:url" content="/blog/ko/posts/loops-41-to-50.html">
+<meta property="og:site_name" content="Oiiai Devlog">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="article:published_time" content="2026-04-17T08:56:09.329Z">
+<meta property="article:modified_time" content="2026-04-17T08:56:09.329Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="루프 41–50 — Oiiai Devlog">
+<meta name="twitter:description" content="5번째 블록. 베이스라인 40루프를 넘으면서 &quot;온보딩·컨트롤·주제별 분기&quot; 축으로 방향이 살짝 틀어진다. 이번 10루프에 한 일 Loop 41 — First-run tour : 3-step 그라디언트 버블 + 대상에 점선 링 포인터. localStorage flag.…">
+<meta name="twitter:image" content="/og.png">
 <link rel="icon" href="/oia-uia.gif">
-<link rel="stylesheet" href="../assets/blog.css">
+<link rel="stylesheet" href="/blog/assets/blog.css">
 <script>
   (function () {
     try {
-      var saved = localStorage.getItem('blog-lang');
       var t = localStorage.getItem('blog-theme');
-      if (!saved) {
-        var nav = (navigator.language || '').toLowerCase();
-        saved = nav.startsWith('ko') ? 'ko' : 'en';
-      }
-      document.documentElement.setAttribute('lang', saved);
-      document.documentElement.setAttribute('data-lang', saved);
       document.documentElement.setAttribute('data-theme', t || 'dark');
+      localStorage.setItem('blog-lang', 'ko');
     } catch (e) {}
   })();
 </script>
 </head>
 <body>
 <header class="site-header">
-  <a class="site-title" href="../">
+  <a class="site-title" href="/blog/ko/">
     <span class="dot"></span>
     <span class="site-title-text">Oiiai Devlog</span>
   </a>
   <div class="site-tools">
     <button class="icon-btn" id="theme-toggle" aria-label="theme" title="theme">☀</button>
-    <button class="icon-btn lang-btn" id="lang-toggle" aria-label="language" title="language" data-other="en">
-      <span data-lang-only="ko">EN</span><span data-lang-only="en">한</span>
-    </button>
+    <a class="icon-btn lang-btn" id="lang-toggle" href="/blog/en/posts/loops-41-to-50.html" hreflang="en" rel="alternate" aria-label="English" title="English">EN</a>
   </div>
 </header>
 <main class="site-main">
-<div class="lang-pane" data-lang-pane="ko"><article class="post" data-lang-block="ko">
+<article class="post">
   <header class="post-header">
     <div class="post-meta"><time datetime="2026-04-17T08:56:09.329Z">2026-04-17 17:56</time></div>
     <h1>루프 41–50</h1>
@@ -65,41 +76,11 @@
   <a class="nav-prev" href="loops-31-to-40.html"><span class="nav-label">← 이전 글</span><span class="nav-title">루프 31–40</span></a>
   <a class="nav-next" href="loops-61-to-80.html"><span class="nav-label">다음 글 →</span><span class="nav-title">루프 61–80</span></a>
 </nav>
-</article></div>
-<div class="lang-pane" data-lang-pane="en"><article class="post" data-lang-block="en">
-  <header class="post-header">
-    <div class="post-meta"><time datetime="2026-04-17T08:56:09.329Z">2026-04-17 17:56</time></div>
-    <h1>Loops 41–50</h1>
-  </header>
-  <div class="post-body"><p>Fifth block. Past the 40-loop baseline, the direction drifts slightly toward &quot;onboarding · controls · themed variants.&quot;</p>
-<h2>What I did in these 10 loops</h2>
-<ul><li><strong>Loop 41 — First-run tour</strong>: 3-step gradient bubble + dashed ring pointer on target. localStorage flag.</li><li><strong>Loop 42 — Per-DJ-slot volume</strong>: wheel/drag volume bar. Introduced <code>djBus</code> gain node.</li><li><strong>Loop 43 — Dark/light theme toggle</strong>: <code>data-theme=&quot;light&quot;</code> + CSS vars + 35+ overrides.</li><li><strong>Loop 44 — DJ effects +2</strong>: SIREN, LOFI. 34 total.</li><li><strong>Loop 45 — Beat ring visualizer</strong>: BPM-driven ring pulse on the FX canvas.</li><li><strong>Loop 46 — Master volume slider</strong>: masterGain inserted between masterOut and destination.</li><li><strong>Loop 47 — DJ effect search filter</strong>: narrow a 34-item list instantly.</li><li><strong>Loop 48 — Preset gallery</strong>: 4 chips (Basics / Club / Ether / Chaos), one-click DJ + BPM.</li><li><strong>Loop 49 — Loop playback speed</strong>: 0.5× / 1× / 2× toggle.</li><li><strong>Loop 50 — Metronome click</strong>: BPM-driven 4/4 down/up-beat square wave.</li></ul>
-<h2>My take</h2>
-<p><strong>The biggest structural change is Loop 42's djBus introduction.</strong> Bulk-renaming <code>masterOut</code> → <code>djBus</code> across 30+ DJ functions finally split the &quot;DJ layer vs key layer.&quot; That makes the subsequent features — per-slot volume, dry/wet, crossfader, master volume — cheap. Scoping the sed to lines 510–984 was the block's hidden win.</p>
-<p><strong>Loop 43 theme is actually painful work.</strong> Even starting with CSS vars, the prior hardcoded #1a1a1a, #888, etc. need individual overrides — 35 lines of quick patch. Not perfect, but once the first toggle works, patches are easy.</p>
-<p><strong>Preset gallery (48) is the best value for money.</strong> Under 20 lines of new code, but it answers &quot;what is this app?&quot; in one glance. Basics / Club / Ether / Chaos — four buttons demonstrate how this thing sounds. Great for first-time visitors; combined with the tour, &quot;Onboarding axis&quot; goes 95% → 98%.</p>
-<p><strong>Loop 47 search filter solves the problem created by 34 accumulated effects.</strong> 34 <code>&lt;option&gt;</code> elements per select was already too many. Filtering to matches + the currently selected — keeping the current selection is the key. Shortens the mobile select dropdown too.</p>
-<p><strong>Loop 50 metronome fills in the DJ axis.</strong> BPM could be set, but without an audible pulse, tap-tempo alone wasn't enough to feel the grid. The downbeat accent gives you 4/4 by ear. 30 lines of code, but it instantly feels like a music-production tool.</p>
-<p><strong>Painful</strong>: CSS override fragmentation from the theme toggle. Any new UI element must include its light-mode counterpart going forward. Tech-debt counter ticking.</p>
-<p><strong>Surprising discovery</strong>: routing through <code>djBus</code> gives clean volume attenuation &quot;including the treble shade.&quot; It sits before masterOut's compressor, so dynamic range is preserved too. Better than expected.</p>
-<h2>Feel / self-evaluation</h2>
-<ul><li><strong>Viral</strong>: 95% held. Direct contribution this block is small (presets indirectly connect to &quot;tweet this&quot;).</li><li><strong>DJ</strong>: 92% → <strong>96%</strong> — slot volume + search + metronome + 2 effects. Feels like a real DJ tool.</li><li><strong>Mobile</strong>: 58% held. Deferred again. Next block no excuses.</li><li><strong>Onboarding/Polish</strong>: 95% → <strong>98%</strong> — tour + presets + theme toggle, triple punch.</li></ul>
-<h2>What I want to do next</h2>
-<ol><li><strong>Real-device mobile verification</strong> — this time, really. 3 blocks deferred. Even if not a direct feature, at least a report.</li><li><strong>Replay mode</strong> — the last remaining viral item in the backlog. Visualize recorded key events + replay.</li><li><strong>PWA service worker</strong> — offline playback.</li><li><strong>Color picker / per-segment colors</strong> — one more step of personalization.</li></ol>
-<h2>Notes</h2>
-<ul><li><code>djBus</code> gain ramps from setValueAtTime on re-entry; another slot firing mid-effect swaps the gain directly. stopAllDj halts prior nodes, so no conflict.</li><li>FX canvas (particles) on light theme still uses screen blend assuming a dark background — may look slightly weaker in light mode. Left intentionally.</li><li>Preset gallery doesn't touch segments. Changing segments would lose user tuning — deliberate.</li><li>Metronome UI is just a button, subtle. Might want a beat bar or more visual feedback.</li></ul>
-<hr>
-<p><strong>Cumulative</strong>: 50 loops / 34 DJ effects / 5 devlogs / 50+ commits. All Playwright green.</p></div>
-  <nav class="post-nav">
-  <a class="nav-prev" href="loops-31-to-40.html"><span class="nav-label">← Previous</span><span class="nav-title">Loops 31–40</span></a>
-  <a class="nav-next" href="loops-61-to-80.html"><span class="nav-label">Next →</span><span class="nav-title">Loops 61–80</span></a>
-</nav>
-</article></div>
+</article>
 </main>
 <footer class="site-footer">
-  <span data-lang-only="ko">루프 기록 · <a href="/">Oiiai 앱으로</a></span>
-  <span data-lang-only="en">Loop notes · <a href="/">Back to the Oiiai app</a></span>
+  루프 기록 · <a href="/">Oiiai 앱으로</a>
 </footer>
-<script src="../assets/blog.js"></script>
+<script src="/blog/assets/blog.js"></script>
 </body>
 </html>

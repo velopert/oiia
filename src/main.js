@@ -263,9 +263,18 @@ function setupDjMode() {
     langBtn.classList.add('flash');
   };
 
+  const devlogLink = document.createElement('a');
+  devlogLink.className = 'devlog-link';
+  devlogLink.id = 'devlog-link';
+  devlogLink.href = '/blog/';
+  devlogLink.setAttribute('aria-label', 'Devlog');
+  devlogLink.title = 'Devlog';
+  devlogLink.textContent = '📓';
+
   bar.appendChild(tapFloat);
   bar.appendChild(quantFloat);
   bar.appendChild(langBtn);
+  bar.appendChild(devlogLink);
   bar.appendChild(btn);
   document.body.appendChild(bar);
 
@@ -1328,19 +1337,6 @@ function dj_chord() {
   });
 }
 
-function dj_swell() {
-  const s = djBufferSource();
-  const g = audioCtx.createGain();
-  g.gain.value = 0;
-  s.connect(g).connect(djBus);
-  const t = audioCtx.currentTime;
-  g.gain.setValueAtTime(0, t);
-  g.gain.exponentialRampToValueAtTime(1, t + 1.4);
-  g.gain.setValueAtTime(1, t + 2.6);
-  g.gain.exponentialRampToValueAtTime(0.01, t + 3.0);
-  s.start();
-}
-
 function dj_chop() {
   const s = djBufferSource();
   const g = audioCtx.createGain();
@@ -1383,27 +1379,6 @@ function dj_phaser() {
   s.connect(djBus);
   lfo.start();
   s.start();
-}
-
-function dj_glitch() {
-  const base = audioCtx.currentTime;
-  const totalDur = 1.6;
-  const buf = getDjBuffer();
-  const maxOffset = Math.max(0.1, buf.duration - 0.15);
-  let t = 0;
-  while (t < totalDur) {
-    const segLen = 0.05 + Math.random() * 0.13;
-    const offset = Math.random() * maxOffset;
-    const s = djBufferSource();
-    s.playbackRate.value = 0.4 + Math.random() * 2.2;
-    if (Math.random() > 0.5) {
-      const rev = reverseBuffer(buf);
-      s.buffer = rev;
-    }
-    s.connect(djBus);
-    try { s.start(base + t, offset, segLen); } catch {}
-    t += segLen + Math.random() * 0.04;
-  }
 }
 
 function dj_robot() {
@@ -1493,6 +1468,651 @@ function dj_reverse_echo() {
   s.start();
 }
 
+function makeNoiseBuffer(durSec, kind) {
+  const len = Math.floor(audioCtx.sampleRate * durSec);
+  const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+  const d = buf.getChannelData(0);
+  if (kind === 'pink') {
+    let b0 = 0, b1 = 0, b2 = 0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99765 * b0 + w * 0.0990460;
+      b1 = 0.96300 * b1 + w * 0.2965164;
+      b2 = 0.57000 * b2 + w * 1.0526913;
+      d[i] = (b0 + b1 + b2 + w * 0.1848) * 0.18;
+    }
+  } else {
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  }
+  return buf;
+}
+
+function dj_reverb() {
+  const taps = [0.019, 0.037, 0.061, 0.089, 0.113, 0.149, 0.197, 0.257, 0.331];
+  const out = audioCtx.createGain();
+  out.gain.value = 0.6;
+  const hp = audioCtx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 180;
+  out.connect(hp).connect(djBus);
+  const s = djBufferSource();
+  s.connect(out);
+  taps.forEach((d, i) => {
+    const dl = audioCtx.createDelay(1.2);
+    dl.delayTime.value = d;
+    const g = audioCtx.createGain();
+    g.gain.value = 0.52 / Math.sqrt(i + 1);
+    const fb = audioCtx.createGain();
+    fb.gain.value = 0.28;
+    s.connect(dl);
+    dl.connect(g).connect(out);
+    dl.connect(fb).connect(dl);
+  });
+  s.start();
+}
+
+function dj_shimmer() {
+  const shift = djBufferSource();
+  shift.playbackRate.value = 2.0;
+  const aa = antiAliasFilter(2.0);
+  const delay = audioCtx.createDelay(1.2);
+  delay.delayTime.value = 0.14;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.62;
+  const wet = audioCtx.createGain();
+  wet.gain.value = 0.5;
+  delay.connect(fb).connect(delay);
+  delay.connect(wet).connect(djBus);
+  shift.connect(aa).connect(delay);
+  const dry = djBufferSource();
+  dry.connect(djBus);
+  dry.start();
+  shift.start();
+}
+
+function dj_ice() {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'highpass';
+  f.frequency.value = 1800;
+  const delay = audioCtx.createDelay(1);
+  delay.delayTime.value = 0.08;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.72;
+  const res = audioCtx.createBiquadFilter();
+  res.type = 'bandpass';
+  res.Q.value = 10;
+  res.frequency.value = 5200;
+  delay.connect(fb).connect(delay);
+  delay.connect(res).connect(djBus);
+  f.connect(delay);
+  const s = djBufferSource();
+  s.playbackRate.value = 1.5;
+  const aa = antiAliasFilter(1.5);
+  s.connect(aa).connect(f);
+  s.start();
+}
+
+function dj_tunnel() {
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 1200;
+  lp.Q.value = 2;
+  const delay = audioCtx.createDelay(1);
+  delay.delayTime.value = currentBpm ? beatSec(8) : 0.2;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.7;
+  delay.connect(lp).connect(fb).connect(delay);
+  delay.connect(djBus);
+  const s = djBufferSource();
+  s.connect(djBus);
+  s.connect(delay);
+  s.start();
+}
+
+function dj_spiral() {
+  const out = audioCtx.createGain();
+  out.gain.value = 1;
+  out.connect(djBus);
+  const s = djBufferSource();
+  s.connect(out);
+  s.start();
+  const base = audioCtx.currentTime;
+  for (let i = 1; i <= 5; i++) {
+    const e = djBufferSource();
+    e.playbackRate.value = Math.pow(0.84, i);
+    const aa = antiAliasFilter(1);
+    const g = audioCtx.createGain();
+    g.gain.value = 0.55 * Math.pow(0.7, i);
+    e.connect(aa).connect(g).connect(out);
+    try { e.start(base + i * (currentBpm ? beatSec(8) : 0.18)); } catch {}
+  }
+}
+
+function dj_roll() {
+  const buf = getDjBuffer();
+  const unit = currentBpm ? beatSec(8) : 0.18;
+  const base = audioCtx.currentTime;
+  const slice = Math.min(unit, 0.22);
+  const offset = Math.random() * Math.max(0.01, buf.duration - slice);
+  for (let i = 0; i < 10; i++) {
+    const s = djBufferSource();
+    const g = audioCtx.createGain();
+    g.gain.value = 0.8;
+    s.connect(g).connect(djBus);
+    try { s.start(base + i * unit, offset, slice * 0.96); } catch {}
+  }
+}
+
+function dj_helix() {
+  const buf = getDjBuffer();
+  const base = audioCtx.currentTime;
+  const offset = Math.random() * Math.max(0.01, buf.duration - 0.4);
+  const units = [1 / 4, 1 / 8, 1 / 16, 1 / 32];
+  let t = 0;
+  for (let k = 0; k < units.length; k++) {
+    const u = (currentBpm ? beatSec(1) : 0.5) * units[k];
+    const reps = Math.max(2, Math.round(1 / units[k]) / 2);
+    for (let i = 0; i < reps && t < 2.2; i++) {
+      const s = djBufferSource();
+      const g = audioCtx.createGain();
+      g.gain.value = 0.72;
+      s.connect(g).connect(djBus);
+      try { s.start(base + t, offset, u * 0.95); } catch {}
+      t += u;
+    }
+  }
+}
+
+function dj_mobius() {
+  const s = djBufferSource();
+  const g = audioCtx.createGain();
+  g.gain.value = 0.85;
+  s.connect(g).connect(djBus);
+  const o1 = djOsc('sawtooth', 160);
+  const o2 = djOsc('sawtooth', 320);
+  const og = audioCtx.createGain();
+  og.gain.value = 0.0;
+  o1.connect(og);
+  o2.connect(og);
+  og.connect(djBus);
+  const t = audioCtx.currentTime;
+  og.gain.setValueAtTime(0.0, t);
+  og.gain.linearRampToValueAtTime(0.18, t + 0.3);
+  og.gain.linearRampToValueAtTime(0.0, t + 2.4);
+  o1.frequency.setValueAtTime(120, t);
+  o1.frequency.exponentialRampToValueAtTime(1200, t + 2.2);
+  o2.frequency.setValueAtTime(900, t);
+  o2.frequency.exponentialRampToValueAtTime(90, t + 2.2);
+  o1.start();
+  o2.start();
+  o1.stop(t + 2.5);
+  o2.stop(t + 2.5);
+  s.start();
+}
+
+function dj_dubecho() {
+  const delay = audioCtx.createDelay(2);
+  delay.delayTime.value = currentBpm ? beatSec(4) : 0.4;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.7;
+  const lp = audioCtx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 4000;
+  delay.connect(lp).connect(fb).connect(delay);
+  delay.connect(djBus);
+  const t = audioCtx.currentTime;
+  lp.frequency.setValueAtTime(4500, t);
+  lp.frequency.exponentialRampToValueAtTime(500, t + 2.8);
+  const s = djBufferSource();
+  s.connect(djBus);
+  s.connect(delay);
+  s.start();
+}
+
+function dj_triplet() {
+  const unit = currentBpm ? beatSec(4) / 3 : 0.14;
+  const base = audioCtx.currentTime;
+  const count = 12;
+  const buf = getDjBuffer();
+  const offset = Math.random() * Math.max(0.05, buf.duration - 0.2);
+  for (let i = 0; i < count; i++) {
+    const s = djBufferSource();
+    const g = audioCtx.createGain();
+    g.gain.value = 0.4 + (i / count) * 0.5;
+    s.playbackRate.value = 1 + (i % 3 === 0 ? 0.0 : i % 3 === 1 ? 0.04 : -0.04);
+    s.connect(g).connect(djBus);
+    try { s.start(base + i * unit, offset, unit * 0.85); } catch {}
+  }
+}
+
+function dj_kick() {
+  const o = djOsc('sine', 90);
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  const sat = audioCtx.createWaveShaper();
+  sat.curve = makeDistortionCurve(30);
+  o.connect(g).connect(sat).connect(djBus);
+  const t = audioCtx.currentTime;
+  o.frequency.setValueAtTime(160, t);
+  o.frequency.exponentialRampToValueAtTime(42, t + 0.09);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(1.1, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+  o.start(t);
+  o.stop(t + 0.5);
+  const click = audioCtx.createBufferSource();
+  click.buffer = makeNoiseBuffer(0.02, 'white');
+  const cg = audioCtx.createGain();
+  cg.gain.value = 0.4;
+  const cf = audioCtx.createBiquadFilter();
+  cf.type = 'highpass';
+  cf.frequency.value = 1200;
+  click.connect(cf).connect(cg).connect(djBus);
+  click.start(t);
+  const s = djBufferSource();
+  const sg = audioCtx.createGain();
+  sg.gain.value = 0.5;
+  s.connect(sg).connect(djBus);
+  s.start(t + 0.08);
+}
+
+function dj_sub() {
+  const o = djOsc('sine', 200);
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  o.connect(g).connect(djBus);
+  const t = audioCtx.currentTime;
+  o.frequency.setValueAtTime(320, t);
+  o.frequency.exponentialRampToValueAtTime(28, t + 1.4);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(1.1, t + 0.05);
+  g.gain.setValueAtTime(1.1, t + 1.2);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 1.6);
+  o.start(t);
+  o.stop(t + 1.7);
+  const s = djBufferSource();
+  s.playbackRate.value = 0.7;
+  const sg = audioCtx.createGain();
+  sg.gain.value = 0.4;
+  s.connect(sg).connect(djBus);
+  s.start(t + 1.0);
+}
+
+function dj_impact() {
+  const t = audioCtx.currentTime;
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = makeNoiseBuffer(0.6, 'white');
+  const nf = audioCtx.createBiquadFilter();
+  nf.type = 'lowpass';
+  nf.frequency.value = 400;
+  const ng = audioCtx.createGain();
+  ng.gain.value = 0;
+  noise.connect(nf).connect(ng).connect(djBus);
+  ng.gain.setValueAtTime(0, t);
+  ng.gain.linearRampToValueAtTime(1.0, t + 0.01);
+  ng.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+  const o = djOsc('sine', 55);
+  const og = audioCtx.createGain();
+  og.gain.value = 0;
+  o.connect(og).connect(djBus);
+  og.gain.setValueAtTime(0, t);
+  og.gain.linearRampToValueAtTime(1.3, t + 0.005);
+  og.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+  o.frequency.setValueAtTime(120, t);
+  o.frequency.exponentialRampToValueAtTime(32, t + 0.5);
+  noise.start(t);
+  o.start(t);
+  o.stop(t + 1.3);
+  const s = djBufferSource();
+  const sg = audioCtx.createGain();
+  sg.gain.value = 0.35;
+  s.connect(sg).connect(djBus);
+  s.start(t + 0.1);
+}
+
+function dj_stab() {
+  const t = audioCtx.currentTime;
+  const count = 5;
+  const unit = currentBpm ? beatSec(16) : 0.08;
+  const buf = getDjBuffer();
+  const offset = Math.random() * Math.max(0.01, buf.duration - 0.12);
+  for (let i = 0; i < count; i++) {
+    const s = djBufferSource();
+    const g = audioCtx.createGain();
+    g.gain.value = 0;
+    const aa = audioCtx.createBiquadFilter();
+    aa.type = 'lowpass';
+    aa.frequency.value = 5000;
+    s.connect(aa).connect(g).connect(djBus);
+    const tt = t + i * unit * (i === 0 ? 1 : 1.6);
+    g.gain.setValueAtTime(0, tt);
+    g.gain.linearRampToValueAtTime(1.1, tt + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.001, tt + 0.09);
+    try { s.start(tt, offset, 0.12); } catch {}
+  }
+}
+
+function dj_cymbal() {
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = makeNoiseBuffer(2, 'white');
+  const hp = audioCtx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 4000;
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.Q.value = 1.2;
+  bp.frequency.value = 7000;
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  noise.connect(hp).connect(bp).connect(g).connect(djBus);
+  const t = audioCtx.currentTime;
+  const dur = 1.6;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.9, t + dur);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.15);
+  bp.frequency.setValueAtTime(3500, t);
+  bp.frequency.exponentialRampToValueAtTime(9000, t + dur);
+  noise.start(t);
+  noise.stop(t + dur + 0.3);
+  const s = djBufferSource();
+  s.connect(djBus);
+  s.start(t + dur - 0.05);
+}
+
+function dj_uplifter() {
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = makeNoiseBuffer(2.2, 'pink');
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.Q.value = 4;
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  noise.connect(bp).connect(g).connect(djBus);
+  const t = audioCtx.currentTime;
+  const dur = 2.0;
+  bp.frequency.setValueAtTime(200, t);
+  bp.frequency.exponentialRampToValueAtTime(10000, t + dur);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(1.2, t + dur * 0.9);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.1);
+  noise.start(t);
+  noise.stop(t + dur + 0.2);
+}
+
+function dj_downlift() {
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = makeNoiseBuffer(1.8, 'pink');
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.Q.value = 5;
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  noise.connect(bp).connect(g).connect(djBus);
+  const t = audioCtx.currentTime;
+  const dur = 1.6;
+  bp.frequency.setValueAtTime(10000, t);
+  bp.frequency.exponentialRampToValueAtTime(150, t + dur);
+  g.gain.setValueAtTime(0.9, t);
+  g.gain.linearRampToValueAtTime(0.3, t + dur);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.1);
+  noise.start(t);
+  noise.stop(t + dur + 0.2);
+}
+
+function dj_whoosh() {
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = makeNoiseBuffer(0.8, 'white');
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.Q.value = 2;
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  const panner = audioCtx.createStereoPanner();
+  noise.connect(bp).connect(g).connect(panner).connect(djBus);
+  const t = audioCtx.currentTime;
+  const dur = 0.7;
+  bp.frequency.setValueAtTime(500, t);
+  bp.frequency.exponentialRampToValueAtTime(8000, t + dur);
+  panner.pan.setValueAtTime(-1, t);
+  panner.pan.linearRampToValueAtTime(1, t + dur);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.9, t + dur * 0.5);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  noise.start(t);
+  noise.stop(t + dur + 0.1);
+}
+
+function dj_noise() {
+  const s = djBufferSource();
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = makeNoiseBuffer(2, 'white');
+  const nf = audioCtx.createBiquadFilter();
+  nf.type = 'bandpass';
+  nf.Q.value = 2;
+  nf.frequency.value = 3000;
+  const ng = audioCtx.createGain();
+  ng.gain.value = 0.22;
+  noise.connect(nf).connect(ng).connect(djBus);
+  const t = audioCtx.currentTime;
+  nf.frequency.setValueAtTime(800, t);
+  nf.frequency.exponentialRampToValueAtTime(8000, t + 1.8);
+  s.connect(djBus);
+  s.start();
+  noise.start();
+  noise.stop(t + 2.2);
+}
+
+function dj_pitchup() {
+  const s = djBufferSource();
+  s.playbackRate.value = 1.26;
+  const aa = antiAliasFilter(1.26);
+  s.connect(aa).connect(djBus);
+  s.start();
+}
+
+function dj_pitchdn() {
+  const s = djBufferSource();
+  s.playbackRate.value = 0.794;
+  const aa = antiAliasFilter(1);
+  s.connect(aa).connect(djBus);
+  s.start();
+}
+
+function dj_octup() {
+  const buf = getDjBuffer();
+  const base = audioCtx.currentTime;
+  const unit = currentBpm ? beatSec(16) : 0.095;
+  for (let i = 0; i < 14; i++) {
+    const s = djBufferSource();
+    s.playbackRate.value = 2.0;
+    const aa = antiAliasFilter(2.0);
+    const g = audioCtx.createGain();
+    g.gain.value = 0.55 + (i / 14) * 0.35;
+    s.connect(aa).connect(g).connect(djBus);
+    try { s.start(base + i * unit, 0, unit * 0.92); } catch {}
+  }
+  void buf;
+}
+
+function dj_formant() {
+  const s = djBufferSource();
+  s.playbackRate.value = 1.0;
+  const f1 = audioCtx.createBiquadFilter();
+  f1.type = 'peaking';
+  f1.frequency.value = 900;
+  f1.Q.value = 6;
+  f1.gain.value = 18;
+  const f2 = audioCtx.createBiquadFilter();
+  f2.type = 'peaking';
+  f2.frequency.value = 2200;
+  f2.Q.value = 5;
+  f2.gain.value = 14;
+  const f3 = audioCtx.createBiquadFilter();
+  f3.type = 'peaking';
+  f3.frequency.value = 3400;
+  f3.Q.value = 4;
+  f3.gain.value = 10;
+  s.connect(f1).connect(f2).connect(f3).connect(djBus);
+  s.start();
+}
+
+function dj_chirp() {
+  const t = audioCtx.currentTime;
+  const o = djOsc('sine', 600);
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  o.connect(g).connect(djBus);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(0.7, t + 0.03);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+  o.frequency.setValueAtTime(400, t);
+  o.frequency.exponentialRampToValueAtTime(5200, t + 0.42);
+  o.start(t);
+  o.stop(t + 0.5);
+  const s = djBufferSource();
+  const sg = audioCtx.createGain();
+  sg.gain.value = 0.5;
+  s.connect(sg).connect(djBus);
+  s.start(t + 0.1);
+}
+
+function dj_acid() {
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'lowpass';
+  f.Q.value = 18;
+  f.frequency.value = 400;
+  f.connect(djBus);
+  const lfo = djOsc('sine', currentBpm ? currentBpm / 60 * 2 : 3.8);
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 1400;
+  lfo.connect(lfoGain).connect(f.frequency);
+  lfo.start();
+  const drive = audioCtx.createWaveShaper();
+  drive.curve = makeDistortionCurve(40);
+  const s = djBufferSource();
+  s.connect(drive).connect(f);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_freeze() {
+  const buf = getDjBuffer();
+  const grainDur = 0.06;
+  const offset = 0.2 + Math.random() * Math.max(0.01, buf.duration - 0.4);
+  const sampleStart = Math.floor(offset * buf.sampleRate);
+  const sampleLen = Math.floor(grainDur * buf.sampleRate);
+  const grain = audioCtx.createBuffer(buf.numberOfChannels, sampleLen, buf.sampleRate);
+  for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+    const src = buf.getChannelData(ch);
+    const dst = grain.getChannelData(ch);
+    for (let i = 0; i < sampleLen; i++) dst[i] = src[sampleStart + i] || 0;
+  }
+  const src = audioCtx.createBufferSource();
+  src.buffer = grain;
+  src.loop = true;
+  activeDjNodes.add(src);
+  const g = audioCtx.createGain();
+  g.gain.value = 0;
+  const res = audioCtx.createBiquadFilter();
+  res.type = 'bandpass';
+  res.Q.value = 4;
+  res.frequency.value = 1600;
+  src.connect(res).connect(g).connect(djBus);
+  const t = audioCtx.currentTime;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(0.85, t + 0.05);
+  g.gain.setValueAtTime(0.85, t + 1.8);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 2.2);
+  src.start();
+  src.stop(t + 2.3);
+}
+
+function dj_granular() {
+  const buf = getDjBuffer();
+  const base = audioCtx.currentTime;
+  const total = 1.8;
+  let t = 0;
+  while (t < total) {
+    const grainDur = 0.04 + Math.random() * 0.08;
+    const off = Math.random() * Math.max(0.01, buf.duration - grainDur);
+    const s = djBufferSource();
+    s.playbackRate.value = 0.7 + Math.random() * 0.8;
+    const g = audioCtx.createGain();
+    g.gain.value = 0;
+    const pan = audioCtx.createStereoPanner();
+    pan.pan.value = (Math.random() - 0.5) * 1.6;
+    s.connect(g).connect(pan).connect(djBus);
+    const tt = base + t;
+    g.gain.setValueAtTime(0, tt);
+    g.gain.linearRampToValueAtTime(0.6, tt + grainDur * 0.3);
+    g.gain.exponentialRampToValueAtTime(0.001, tt + grainDur);
+    try { s.start(tt, off, grainDur); } catch {}
+    t += 0.02 + Math.random() * 0.03;
+  }
+}
+
+function dj_ufo() {
+  const s = djBufferSource();
+  const g = audioCtx.createGain();
+  g.gain.value = 0.8;
+  s.connect(g).connect(djBus);
+  const lfo = djOsc('sine', currentBpm ? currentBpm / 60 * 0.5 : 1.6);
+  const lfoG = audioCtx.createGain();
+  lfoG.gain.value = 0.5;
+  lfo.connect(lfoG).connect(g.gain);
+  lfo.start();
+  const t = audioCtx.currentTime;
+  s.playbackRate.setValueAtTime(0.6, t);
+  for (let i = 0; i <= 10; i++) {
+    s.playbackRate.linearRampToValueAtTime(0.6 + (i % 2 ? 1.2 : 0), t + i * 0.18);
+  }
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
+function dj_orbit() {
+  const s = djBufferSource();
+  const pan = audioCtx.createStereoPanner();
+  const f = audioCtx.createBiquadFilter();
+  f.type = 'bandpass';
+  f.Q.value = 2;
+  f.frequency.value = 1200;
+  s.connect(f).connect(pan).connect(djBus);
+  const lfo = djOsc('sine', currentBpm ? currentBpm / 60 : 2.2);
+  const lfoP = audioCtx.createGain();
+  lfoP.gain.value = 0.95;
+  lfo.connect(lfoP).connect(pan.pan);
+  const lfoF = djOsc('sine', currentBpm ? currentBpm / 60 * 0.5 : 1.1);
+  const lfoFG = audioCtx.createGain();
+  lfoFG.gain.value = 1000;
+  lfoF.connect(lfoFG).connect(f.frequency);
+  lfo.start();
+  lfoF.start();
+  s.start();
+  s.onended = () => { try { lfo.stop(); } catch {} try { lfoF.stop(); } catch {} };
+}
+
+function dj_comb() {
+  const delay = audioCtx.createDelay(0.05);
+  delay.delayTime.value = 0.003;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.85;
+  delay.connect(fb).connect(delay);
+  const lfo = djOsc('sine', 0.25);
+  const lfoG = audioCtx.createGain();
+  lfoG.gain.value = 0.0015;
+  lfo.connect(lfoG).connect(delay.delayTime);
+  lfo.start();
+  const wet = audioCtx.createGain();
+  wet.gain.value = 0.8;
+  delay.connect(wet).connect(djBus);
+  const s = djBufferSource();
+  s.connect(djBus);
+  s.connect(delay);
+  s.start();
+  s.onended = () => lfo.stop();
+}
+
 const DJ_EFFECTS = [
   { id: 'distort',  name: 'DISTORT',  color: '#ff3355', play: dj_distort,       desc: '하드클립 왜곡, 찌그러지고 공격적' },
   { id: 'reverse',  name: 'REVERSE',  color: '#55ffaa', play: dj_reverse,       desc: '거꾸로 재생' },
@@ -1520,17 +2140,45 @@ const DJ_EFFECTS = [
   { id: 'revecho',  name: 'REV-ECHO', color: '#9966ff', play: dj_reverse_echo,  desc: '역재생 + 피드백 딜레이' },
   { id: 'robot',    name: 'ROBOT',    color: '#11dd99', play: dj_robot,         desc: '80Hz 링 모듈레이션, 로봇 음성' },
   { id: 'tapestop', name: 'TAPESTOP', color: '#ee4422', play: dj_tapestop,      desc: '1.2초에 걸쳐 서서히 정지' },
-  { id: 'glitch',   name: 'GLITCH',   color: '#ff0066', play: dj_glitch,        desc: '랜덤 오프셋·길이·피치·방향 스터터' },
   { id: 'phaser',   name: 'PHASER',   color: '#66aaff', play: dj_phaser,        desc: '4단 allpass 위상 시프트 + 0.5Hz LFO' },
-  { id: 'swell',    name: 'SWELL',    color: '#88ffaa', play: dj_swell,         desc: '1.4초 볼륨 스웰 인 → 급격 페이드' },
   { id: 'chop',     name: 'CHOP',     color: '#ff55bb', play: dj_chop,          desc: 'BPM 기반 랜덤 게이트 (trance gate)' },
   { id: 'chord',    name: 'CHORD',    color: '#aaff44', play: dj_chord,         desc: '옥타브 다운 + 기본 + 5도 위 동시 재생' },
   { id: 'drumroll', name: 'DRUMROLL', color: '#ffcc66', play: dj_drumroll,      desc: '32분음 고속 반복 + 크레셴도' },
   { id: 'siren',    name: 'SIREN',    color: '#ff3333', play: dj_siren,         desc: '사이렌 (피치 0.6↔1.8 반복 스윕)' },
   { id: 'lofi',     name: 'LOFI',     color: '#b79066', play: dj_lofi,          desc: '저샘플 + 비닐 노이즈 (로파이)' },
+  { id: 'reverb',   name: 'REVERB',   color: '#c0e0ff', play: dj_reverb,        desc: '다중 탭 FDN 잔향 (홀보다 조밀)' },
+  { id: 'shimmer',  name: 'SHIMMER',  color: '#e0ccff', play: dj_shimmer,       desc: '옥타브 업 + 긴 딜레이 (천상 느낌)' },
+  { id: 'ice',      name: 'ICE',      color: '#bff0ff', play: dj_ice,           desc: '하이패스 + 금속 밴드패스 피드백' },
+  { id: 'tunnel',   name: 'TUNNEL',   color: '#66bbaa', play: dj_tunnel,        desc: '저역 강조 피드백 (지하 터널)' },
+  { id: 'spiral',   name: 'SPIRAL',   color: '#ffaa88', play: dj_spiral,        desc: '에코마다 피치 하강 (DJM 스파이럴)' },
+  { id: 'roll',     name: 'ROLL',     color: '#ff8800', play: dj_roll,          desc: '조각 캡처 → 8분음 반복' },
+  { id: 'helix',    name: 'HELIX',    color: '#ee44ff', play: dj_helix,         desc: '루프 길이 1/4→1/32로 가속' },
+  { id: 'mobius',   name: 'MOBIUS',   color: '#88aaff', play: dj_mobius,        desc: '오실레이터 상승·하강 교차 (DJM 뫼비우스)' },
+  { id: 'dubecho',  name: 'DUB ECHO', color: '#99ccbb', play: dj_dubecho,       desc: '에코 + 로우패스 스윕 (더빙)' },
+  { id: 'triplet',  name: 'TRIPLET',  color: '#ffcc99', play: dj_triplet,       desc: '3연음 게이트 롤' },
+  { id: 'kick',     name: 'KICK',     color: '#ffffff', play: dj_kick,          desc: '서브 킥 + 클릭 어택' },
+  { id: 'sub',      name: 'SUB DROP', color: '#6655ff', play: dj_sub,           desc: '서브 사인파 하강 (320→28Hz)' },
+  { id: 'impact',   name: 'IMPACT',   color: '#ff3322', play: dj_impact,        desc: '노이즈 + 서브 = 대형 임팩트' },
+  { id: 'stab',     name: 'STAB',     color: '#ff88bb', play: dj_stab,          desc: '짧은 슬라이스 5연속 스타카토' },
+  { id: 'cymbal',   name: 'REV CYMB', color: '#eecc66', play: dj_cymbal,        desc: '노이즈 역재생 스웰 (역 심벌)' },
+  { id: 'uplifter', name: 'UPLIFTER', color: '#ffee00', play: dj_uplifter,      desc: '화이트 노이즈 상승 (빌드업)' },
+  { id: 'downlift', name: 'DOWNLIFT', color: '#4466ff', play: dj_downlift,      desc: '화이트 노이즈 하강 (드롭 후)' },
+  { id: 'whoosh',   name: 'WHOOSH',   color: '#00ddbb', play: dj_whoosh,        desc: '밴드패스 노이즈 좌→우 스윕' },
+  { id: 'noise',    name: 'NOISE',    color: '#bbbbbb', play: dj_noise,         desc: '노이즈 레이어 + 밴드패스 스윕' },
+  { id: 'pitchup',  name: 'PITCH+',   color: '#eeff77', play: dj_pitchup,       desc: '+4 반음 피치 업' },
+  { id: 'pitchdn',  name: 'PITCH-',   color: '#77ddff', play: dj_pitchdn,       desc: '-4 반음 피치 다운' },
+  { id: 'octup',    name: 'OCT UP',   color: '#ffeeaa', play: dj_octup,         desc: '옥타브 업 스터터 14회' },
+  { id: 'formant',  name: 'HELIUM',   color: '#ffbbee', play: dj_formant,       desc: '공명 피크 3단 (헬륨 보이스)' },
+  { id: 'chirp',    name: 'CHIRP',    color: '#66ff66', play: dj_chirp,         desc: '사인파 400→5.2kHz 급상승' },
+  { id: 'acid',     name: 'ACID',     color: '#aaff00', play: dj_acid,          desc: '레조넌트 LPF 워블 (TB-303)' },
+  { id: 'freeze',   name: 'FREEZE',   color: '#aaeeee', play: dj_freeze,        desc: '한 조각 루프 홀드 + 밴드패스' },
+  { id: 'granular', name: 'GRANULE',  color: '#cc99ff', play: dj_granular,      desc: '미세 그레인 클라우드 (스테레오 분산)' },
+  { id: 'ufo',      name: 'UFO',      color: '#99ff77', play: dj_ufo,           desc: '피치 왕복 + 볼륨 LFO (UFO)' },
+  { id: 'orbit',    name: 'ORBIT',    color: '#66cc99', play: dj_orbit,         desc: '스테레오 팬 + 밴드패스 LFO' },
+  { id: 'comb',     name: 'COMB',     color: '#ffaaaa', play: dj_comb,          desc: '짧은 피드백 딜레이 = 콤 필터' },
 ];
 
-const DEFAULT_DJ_MAPPING = ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'];
+const DEFAULT_DJ_MAPPING = ['distort', 'vinyl', 'drumroll', 'pitchup', 'siren', 'kick', 'noise', 'chirp', 'sub'];
 
 function loadDjMapping() {
   try {
@@ -2423,8 +3071,8 @@ document.getElementById('export').onclick = () => {
 const PRESETS = [
   { name: '🚀 Basics',  dj: ['distort', 'reverse', 'deep', 'chip', 'sweep', 'stutter', 'wubwub', 'scratch', 'riser'], bpm: null },
   { name: '🎧 Club',    dj: ['wubwub', 'deep', 'stutter', 'distort', 'drive', 'pingpong', 'echo', 'sweep', 'crush'],  bpm: 128 },
-  { name: '✨ Ether',   dj: ['hall', 'phaser', 'swell', 'chord', 'revecho', 'flanger', 'echo', 'siren', 'vinyl'],       bpm: 96 },
-  { name: '🔥 Chaos',   dj: ['glitch', 'tapestop', 'robot', 'drumroll', 'laser', 'scratch', 'backspin', 'chip', 'lofi'], bpm: 145 },
+  { name: '✨ Ether',   dj: ['hall', 'phaser', 'shimmer', 'chord', 'revecho', 'flanger', 'echo', 'siren', 'vinyl'],       bpm: 96 },
+  { name: '🔥 Chaos',   dj: ['granular', 'tapestop', 'robot', 'drumroll', 'laser', 'scratch', 'backspin', 'chip', 'lofi'], bpm: 145 },
 ];
 
 function applyNamedPreset(p) {

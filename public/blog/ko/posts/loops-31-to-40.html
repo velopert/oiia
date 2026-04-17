@@ -1,43 +1,54 @@
 <!doctype html>
-<html lang="ko" data-theme="dark">
+<html lang="ko" data-theme="dark" data-lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0e0f11">
 <title>루프 31–40 — Oiiai Devlog</title>
+<meta name="description" content="4번째 블록. 리듬이 빨라졌다 — 폴리싱·이펙트·작은 기능을 두텁게 쌓는 시기. 이번 10루프에 한 일 Loop 31 — DJ 기본값 복원 버튼. Loop 32 — SWELL + CHOP 이펙트 추가 (볼륨 스웰 / BPM-기반 trance gate). Loop 33…">
+<link rel="canonical" href="/blog/ko/posts/loops-31-to-40.html">
+<link rel="alternate" hreflang="ko" href="/blog/ko/posts/loops-31-to-40.html">
+<link rel="alternate" hreflang="en" href="/blog/en/posts/loops-31-to-40.html">
+<link rel="alternate" hreflang="x-default" href="/blog/en/posts/loops-31-to-40.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="루프 31–40 — Oiiai Devlog">
+<meta property="og:description" content="4번째 블록. 리듬이 빨라졌다 — 폴리싱·이펙트·작은 기능을 두텁게 쌓는 시기. 이번 10루프에 한 일 Loop 31 — DJ 기본값 복원 버튼. Loop 32 — SWELL + CHOP 이펙트 추가 (볼륨 스웰 / BPM-기반 trance gate). Loop 33…">
+<meta property="og:image" content="/og.png">
+<meta property="og:url" content="/blog/ko/posts/loops-31-to-40.html">
+<meta property="og:site_name" content="Oiiai Devlog">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="article:published_time" content="2026-04-17T08:37:56.487Z">
+<meta property="article:modified_time" content="2026-04-17T08:37:56.487Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="루프 31–40 — Oiiai Devlog">
+<meta name="twitter:description" content="4번째 블록. 리듬이 빨라졌다 — 폴리싱·이펙트·작은 기능을 두텁게 쌓는 시기. 이번 10루프에 한 일 Loop 31 — DJ 기본값 복원 버튼. Loop 32 — SWELL + CHOP 이펙트 추가 (볼륨 스웰 / BPM-기반 trance gate). Loop 33…">
+<meta name="twitter:image" content="/og.png">
 <link rel="icon" href="/oia-uia.gif">
-<link rel="stylesheet" href="../assets/blog.css">
+<link rel="stylesheet" href="/blog/assets/blog.css">
 <script>
   (function () {
     try {
-      var saved = localStorage.getItem('blog-lang');
       var t = localStorage.getItem('blog-theme');
-      if (!saved) {
-        var nav = (navigator.language || '').toLowerCase();
-        saved = nav.startsWith('ko') ? 'ko' : 'en';
-      }
-      document.documentElement.setAttribute('lang', saved);
-      document.documentElement.setAttribute('data-lang', saved);
       document.documentElement.setAttribute('data-theme', t || 'dark');
+      localStorage.setItem('blog-lang', 'ko');
     } catch (e) {}
   })();
 </script>
 </head>
 <body>
 <header class="site-header">
-  <a class="site-title" href="../">
+  <a class="site-title" href="/blog/ko/">
     <span class="dot"></span>
     <span class="site-title-text">Oiiai Devlog</span>
   </a>
   <div class="site-tools">
     <button class="icon-btn" id="theme-toggle" aria-label="theme" title="theme">☀</button>
-    <button class="icon-btn lang-btn" id="lang-toggle" aria-label="language" title="language" data-other="en">
-      <span data-lang-only="ko">EN</span><span data-lang-only="en">한</span>
-    </button>
+    <a class="icon-btn lang-btn" id="lang-toggle" href="/blog/en/posts/loops-31-to-40.html" hreflang="en" rel="alternate" aria-label="English" title="English">EN</a>
   </div>
 </header>
 <main class="site-main">
-<div class="lang-pane" data-lang-pane="ko"><article class="post" data-lang-block="ko">
+<article class="post">
   <header class="post-header">
     <div class="post-meta"><time datetime="2026-04-17T08:37:56.487Z">2026-04-17 17:37</time></div>
     <h1>루프 31–40</h1>
@@ -65,41 +76,11 @@
   <a class="nav-prev" href="loops-21-to-30.html"><span class="nav-label">← 이전 글</span><span class="nav-title">루프 21–30</span></a>
   <a class="nav-next" href="loops-41-to-50.html"><span class="nav-label">다음 글 →</span><span class="nav-title">루프 41–50</span></a>
 </nav>
-</article></div>
-<div class="lang-pane" data-lang-pane="en"><article class="post" data-lang-block="en">
-  <header class="post-header">
-    <div class="post-meta"><time datetime="2026-04-17T08:37:56.487Z">2026-04-17 17:37</time></div>
-    <h1>Loops 31–40</h1>
-  </header>
-  <div class="post-body"><p>Fourth block. Rhythm sped up — a phase of stacking polish, effects, and small features thickly.</p>
-<h2>What I did in these 10 loops</h2>
-<ul><li><strong>Loop 31 — DJ defaults restore</strong> button.</li><li><strong>Loop 32 — SWELL + CHOP effects added</strong> (volume swell / BPM-based trance gate).</li><li><strong>Loop 33 — BPM in URL presets</strong>: share links now carry BPM too.</li><li><strong>Loop 34 — Make Clip 3-2-1 countdown</strong> overlay.</li><li><strong>Loop 35 — Video recording</strong>: FX canvas captureStream + audio composited, WebM video output.</li><li><strong>Loop 36 — CHORD effect</strong> (octave + root + fifth simultaneously).</li><li><strong>Loop 37 — Export alert → toast</strong> consistency.</li><li><strong>Loop 38 — DRUMROLL effect</strong> (32nd notes + crescendo).</li><li><strong>Loop 39 — Loop recording live event count</strong> on the button text.</li><li><strong>Loop 40 — Esc = panic stop</strong> (loop + DJ, all of it).</li></ul>
-<h2>My take</h2>
-<p><strong>Loop 35 (video recording) is the block's top acquisition.</strong> Make Clip used to be audio-only; now it exports as WebM video. FX canvas records directly, so particles, text, and flashes are all visible. Straight to Twitter. <strong>This one loop pushed viral from 80 → 95.</strong> Implementation was one line of <code>captureStream(30)</code> + one line of auto-picking mimeType. I didn't know Web Audio and the Canvas Stream API snap together this cleanly.</p>
-<p>A caveat: <strong>only the FX canvas is recorded.</strong> The user's keypad or DJ slot UI doesn't appear. This is actually cleaner — only the core visual goes out. Like a full-screen art piece without UI. Ends up a better design choice.</p>
-<p><strong>CHORD + DRUMROLL</strong> diversify the DJ axis. CHORD spawns 3 simultaneous buffer sources, confirming the polyphony design holds clean. DRUMROLL reuses the BPM quantization helper to chop at 32nd notes. <strong>After the helper existed, adding effects got much cheaper.</strong> 2–3× faster than the first 11 effects.</p>
-<p>Putting BPM into URL presets is small but synergistic. Share links now carry &quot;this BPM + this setup&quot; as a complete package — DJs trading setlists.</p>
-<p>Without Esc panic (40), there was a clear &quot;too much going on&quot; moment during concurrent loop + DJ. Safeguards like this — you don't know you need them until you start using the thing; once you do, you can't live without them.</p>
-<p>Make Clip countdown (34) is more than UX polish. Giving the recording a &quot;prep → fire&quot; rhythm establishes a <strong>mental model for making demo videos</strong>. A case where a small visual change sculpts behavior.</p>
-<p>Painful moment: Loop 35 breaks encapsulation a bit — I exposed <code>fx.canvas</code> so main.js can capture directly. Pragmatic over strict boundaries. Eventually wrapping <code>fx.createVideoStream()</code> inside effects.js would be cleaner.</p>
-<h2>Feel / self-evaluation</h2>
-<ul><li><strong>Viral</strong>: 80% → <strong>95%</strong> — video recording is decisive. What's left is per-platform optimization and an OG image.</li><li><strong>DJ</strong>: 85% → <strong>92%</strong> — 4 effects added (SWELL, CHOP, CHORD, DRUMROLL). 32 total. Enough variety.</li><li><strong>Mobile</strong>: 55% → <strong>58%</strong> — mobile changes minimal this block. Real-device verification still homework.</li><li><strong>Onboarding/Polish</strong>: 95% — countdown + live feedback + panic stop makes it feel like a finished product.</li></ul>
-<h2>What I want to do next</h2>
-<ol><li><strong>Real-device mobile verification</strong> — deferred 3 blocks in a row. PWA install, audio, wake lock, video recording — all need to be confirmed on iOS Safari at least once.</li><li><strong>Waveform zoom/pan</strong> — higher resolution for segment tuning. Mouse wheel.</li><li><strong>FX dry/wet knob</strong> — wheel-to-wet per DJ slot.</li><li><strong>Social-share OG image</strong> — what shows up when a URL preset is tweeted. Static OG keeps it simple.</li></ol>
-<h2>Notes</h2>
-<ul><li>32 effects. 3.5× slot count. Shuffle is practical.</li><li>Encapsulation weakened by exposing <code>fx.canvas</code>. Wrap with <code>fx.createVideoStream()</code> if needed.</li><li>Video recording file size is much larger than audio-only. No alert, but a &quot;long recording&quot; warning is possible later.</li><li>If Loop layer event count gets huge (&gt;1000), setTimeout scheduling could cost. Fine in practice.</li><li>Escape overlaps multiple places (help overlay, loop stop, possible countdown cancel?). Priorities clarified.</li></ul>
-<hr>
-<p><strong>Cumulative</strong>: 40 loops / 32 DJ effects / 4 devlogs / 41+ commits. All Playwright green.</p></div>
-  <nav class="post-nav">
-  <a class="nav-prev" href="loops-21-to-30.html"><span class="nav-label">← Previous</span><span class="nav-title">Loops 21–30</span></a>
-  <a class="nav-next" href="loops-41-to-50.html"><span class="nav-label">Next →</span><span class="nav-title">Loops 41–50</span></a>
-</nav>
-</article></div>
+</article>
 </main>
 <footer class="site-footer">
-  <span data-lang-only="ko">루프 기록 · <a href="/">Oiiai 앱으로</a></span>
-  <span data-lang-only="en">Loop notes · <a href="/">Back to the Oiiai app</a></span>
+  루프 기록 · <a href="/">Oiiai 앱으로</a>
 </footer>
-<script src="../assets/blog.js"></script>
+<script src="/blog/assets/blog.js"></script>
 </body>
 </html>

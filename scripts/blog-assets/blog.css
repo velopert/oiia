@@ -130,16 +130,9 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
 }
 .site-footer a { color: var(--fg-muted); }
 
-/* Language panes */
-.lang-pane { display: none; }
-html[data-lang="ko"] .lang-pane[data-lang-pane="ko"],
-html[data-lang="en"] .lang-pane[data-lang-pane="en"] {
-  display: block;
-}
-html[data-lang="ko"] [data-lang-only="en"],
-html[data-lang="en"] [data-lang-only="ko"] {
-  display: none;
-}
+/* Language toggle anchor shares the icon-btn look */
+a.icon-btn { text-decoration: none; }
+a.icon-btn:hover { text-decoration: none; }
 
 /* Index */
 .intro {
