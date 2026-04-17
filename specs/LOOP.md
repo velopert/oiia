@@ -144,7 +144,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **고배속 playback anti-alias**: CHIP/LASER에서 pre-lowpass 적용.
 
 ### 기존 기능 폴리싱
-- [ ] **FPS 모니터 + 자동 품질 저감**: 50fps 아래 떨어지면 파티클 수 절반.
 - [ ] **파형 줌 인/아웃** (휠 + 드래그 팬).
 - [ ] **DJ 효과 search/filter** select 위에 검색창.
 
@@ -171,6 +170,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 20 — 세그먼트 Undo**: Cmd/Ctrl+Z로 최근 10단계 편집 되돌리기, history는 `saveSegments` 시마다 스냅샷, help 오버레이에 단축키 추가.
 - [x] **[2026-04-17] Loop 21 — Make Clip 원클릭 바이럴**: Auto-beat + 자동 녹음 콤보 버튼. 한 번 누르면 ~11초짜리 WebM 자동 생성/다운로드.
 - [x] **[2026-04-17] Loop 22 — DJ 슬롯 셔플**: DJ 헤더에 🎲 버튼, 26개에서 랜덤으로 9슬롯 재매핑, 저장 + 토스트.
+- [x] **[2026-04-17] Loop 23 — FPS 모니터 + 자동 품질 저감**: 우상단 FPS 표시(45 이하 노랑), 50/40 이하 시 burst 강도 0.75x / 0.5x 자동 적용.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

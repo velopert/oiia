@@ -253,7 +253,15 @@ export function createFX() {
   }
   requestAnimationFrame(loop);
 
-  return { burst, drop };
+  let qualityMul = 1;
+  function setQuality(m) { qualityMul = Math.max(0.3, Math.min(1, m)); }
+
+  const origBurst = burst;
+  function burstWithQ(color, label, intensity = 1) {
+    origBurst(color, label, intensity * qualityMul);
+  }
+
+  return { burst: burstWithQ, drop, setQuality };
 }
 
 export function createCatSpawner(url) {

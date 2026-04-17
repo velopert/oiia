@@ -19,6 +19,24 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') requestWakeLock();
 });
 
+let fpsVal = 60, fpsFrames = 0, fpsLast = performance.now();
+const fpsEl = document.createElement('div');
+fpsEl.className = 'fps-meter';
+document.body.appendChild(fpsEl);
+(function fpsTick() {
+  fpsFrames++;
+  const now = performance.now();
+  if (now - fpsLast >= 1000) {
+    fpsVal = Math.round(fpsFrames * 1000 / (now - fpsLast));
+    fpsFrames = 0;
+    fpsLast = now;
+    fpsEl.textContent = fpsVal + ' fps';
+    fpsEl.classList.toggle('low', fpsVal < 45);
+    fx.setQuality(fpsVal < 40 ? 0.5 : fpsVal < 50 ? 0.75 : 1);
+  }
+  requestAnimationFrame(fpsTick);
+})();
+
 function setupStartHint() {
   const hint = document.getElementById('start-hint');
   if (!hint) return;
