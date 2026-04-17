@@ -81,9 +81,11 @@ app.innerHTML = `
       <span class="tap-label">TAP</span>
       <span id="bpm-value" class="bpm-value">— BPM</span>
     </button>
+    <button id="share" class="secondary">🔗 링크 공유</button>
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
   </div>
+  <div id="toast" class="toast" hidden></div>
 `;
 
 let audioCtx;
@@ -129,6 +131,7 @@ async function init() {
     renderSegments();
     renderDjSlots();
     drawWaveform();
+    loadFromHash();
   } catch (err) {
     app.innerHTML = `<div class="error">로드 실패: ${err.message}</div>`;
   }
@@ -1005,6 +1008,83 @@ window.__getBpm = () => currentBpm;
 
 document.getElementById('tap').onclick = tapBeat;
 document.getElementById('rec').onclick = toggleRec;
+
+function toast(msg, ms = 1800) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.hidden = false;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { el.classList.remove('show'); el.hidden = true; }, ms);
+}
+
+function encodePreset() {
+  const data = {
+    s: segments.map((x) => ({ id: x.id, s: +x.start.toFixed(4), e: +x.end.toFixed(4) })),
+    d: djMapping,
+  };
+  const json = JSON.stringify(data);
+  return btoa(unescape(encodeURIComponent(json)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function decodePreset(hash) {
+  try {
+    const b64 = hash.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+    const json = decodeURIComponent(escape(atob(b64 + pad)));
+    return JSON.parse(json);
+  } catch { return null; }
+}
+
+function applyPreset(p) {
+  if (!p) return false;
+  if (Array.isArray(p.s)) {
+    p.s.forEach((ps) => {
+      const seg = segments.find((x) => x.id === ps.id);
+      if (seg) {
+        if (typeof ps.s === 'number') seg.start = ps.s;
+        if (typeof ps.e === 'number') seg.end = ps.e;
+      }
+    });
+    clampSegments();
+    saveSegments();
+  }
+  if (Array.isArray(p.d) && p.d.length === 9) {
+    djMapping = p.d.map((id) => (DJ_EFFECTS.find((e) => e.id === id) ? id : DEFAULT_DJ_MAPPING[0]));
+    saveDjMapping();
+  }
+  return true;
+}
+
+function shareLink() {
+  const b64 = encodePreset();
+  const url = location.origin + location.pathname + '#p=' + b64;
+  try {
+    navigator.clipboard.writeText(url);
+    toast('링크가 클립보드에 복사됨');
+  } catch {
+    prompt('링크를 복사하세요', url);
+  }
+  history.replaceState(null, '', '#p=' + b64);
+}
+
+function loadFromHash() {
+  if (!location.hash.startsWith('#p=')) return;
+  const p = decodePreset(location.hash.slice(3));
+  if (applyPreset(p)) {
+    renderActiveBar();
+    renderSegments();
+    renderDjSlots();
+    drawWaveform();
+    toast('공유된 세팅 불러옴');
+  }
+}
+
+document.getElementById('share').onclick = shareLink;
 document.getElementById('play-all').onclick = playAll;
 document.getElementById('play-oiia').onclick = playOiiaSequence;
 document.getElementById('reset').onclick = () => {

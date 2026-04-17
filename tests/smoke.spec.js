@@ -134,6 +134,25 @@ test('tap tempo computes BPM after a few taps', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('share creates URL preset that reloads into app', async ({ page, context }) => {
+  const errors = attachConsoleGuard(page);
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/');
+  await page.waitForSelector('select[data-slot="0"]');
+
+  await page.selectOption('select[data-slot="0"]', 'reverse');
+  await page.locator('#share').click();
+  await expect(page.locator('#toast')).toBeVisible();
+  const url = page.url();
+  expect(url).toMatch(/#p=/);
+
+  await page.goto(url);
+  await page.waitForSelector('select[data-slot="0"]');
+  const val = await page.locator('select[data-slot="0"]').inputValue();
+  expect(val).toBe('reverse');
+  expect(errors).toEqual([]);
+});
+
 test('A key spawns a cat', async ({ page }) => {
   const errors = attachConsoleGuard(page);
   await page.goto('/');

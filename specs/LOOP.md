@@ -121,7 +121,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 
 ### Viral (공유·기록·전파)
 - [ ] **Video session recording**: 캔버스 + 오디오를 묶어 WebM로 (현재는 오디오만).
-- [ ] **URL-encoded presets**: 세그먼트·DJ 매핑을 URL에 인코딩 → "이 세팅 그대로 열기" 링크.
 - [ ] **Replay mode**: 마지막 N초 키 입력 기록 → 재생 버튼으로 다시 트리거.
 - [ ] **"Auto-beat" 버튼**: 랜덤 DJ 한방 + 자동 시퀀스로 15초짜리 히트 생성 (공유용 데모).
 - [ ] **Session stats** 화면 끝에: 가장 많이 쓴 키, 총 drop 횟수 ("당신의 메인은 ㅣ입니다").
@@ -164,6 +163,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 8 — 모바일 터치 패드 & 반응형**: `.keys` 5-col auto-fit, 최소 92px(데스크탑)/78px(모바일), `touch-action: manipulation`, `-webkit-tap-highlight-color: transparent`. Playwright mobile 프로젝트는 chromium + iPhone 14 viewport 에뮬레이트로 전환 — 18/18 통과.
 - [x] **[2026-04-17] Loop 9 — Tap-tempo BPM**: `t` 키/버튼 탭 → 최근 8탭 평균 → BPM, 2.5s idle 시 리셋, BPM에 맞춰 버튼 tick 펄스. 전역 `window.__getBpm()` 노출 (다음 퀀타이즈 루프용).
 - [x] **[2026-04-17] Loop 10 — BPM 퀀타이즈**: `beatSec(div)` 헬퍼로 STUTTER(16분) / ECHO(8분) / GATE(8분) / WUBWUB(4분) / TREMOLO(8분) / PINGPONG(L=8분 R=4분)이 현재 BPM에 스냅. BPM 미설정이면 기본값 유지.
+- [x] **[2026-04-17] Loop 11 — URL preset 공유**: base64url 해시로 세그먼트+DJ 매핑 인코딩, `🔗 링크 공유` 버튼이 clipboard 복사 + history replace. 페이지 로드 시 `#p=` 감지 → 자동 적용 + 토스트.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
