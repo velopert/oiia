@@ -326,9 +326,7 @@ function renderPostCard(p, lang) {
 
 function buildIndex(posts, lang) {
   const t = I18N[lang];
-  const sortedAsc = posts.slice().sort((a, b) => a.order - b.order);
-  const sortedDesc = posts.slice().sort((a, b) => b.order - a.order);
-  const orderedForDisplay = posts.length < 10 ? sortedAsc : sortedDesc;
+  const orderedForDisplay = posts.slice().sort((a, b) => a.order - b.order);
 
   const list = orderedForDisplay.map(p => renderPostCard(p, lang)).join('\n');
   const body = `<section class="intro">
