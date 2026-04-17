@@ -120,7 +120,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 ## Backlog
 
 ### Viral (공유·기록·전파)
-- [ ] **Video session recording**: 캔버스 + 오디오를 묶어 WebM로 (현재는 오디오만).
 - [ ] **Replay mode**: 마지막 N초 키 입력 기록 → 재생 버튼으로 다시 트리거.
 
 ### DJ (프로가 쓸 만한 컨트롤)
@@ -180,6 +179,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 32 — DJ 이펙트 +2종**: SWELL(1.4s 볼륨 스웰), CHOP(BPM 기반 랜덤 trance gate). 총 30개.
 - [x] **[2026-04-17] Loop 33 — URL preset에 BPM 포함**: 공유 링크가 BPM까지 직렬화, 로드 시 자동 복원 + 펄스 재개.
 - [x] **[2026-04-17] Loop 34 — Make Clip 카운트다운**: 3-2-1-REC 풀스크린 오버레이로 사용자가 키 시작 타이밍 잡을 수 있게.
+- [x] **[2026-04-17] Loop 35 — Video 녹음**: FX canvas `captureStream(30fps)` + audio 스트림을 `MediaStream`으로 합성, vp9/vp8 자동 선택, 결과물 WebM 비디오(파티클·텍스트·플래시 시각 포함).
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

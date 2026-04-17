@@ -1144,10 +1144,31 @@ function setupRecorder() {
   if (recorder || !audioCtx || !masterOut) return;
   const streamDest = audioCtx.createMediaStreamDestination();
   masterOut.connect(streamDest);
-  const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+  const audioStream = streamDest.stream;
+
+  let mixed = audioStream;
+  let mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
     ? 'audio/webm;codecs=opus' : 'audio/webm';
-  recorder = new MediaRecorder(streamDest.stream, { mimeType: mime });
+
+  try {
+    if (fx.canvas && fx.canvas.captureStream) {
+      const canvasStream = fx.canvas.captureStream(30);
+      mixed = new MediaStream();
+      canvasStream.getVideoTracks().forEach((t) => mixed.addTrack(t));
+      audioStream.getAudioTracks().forEach((t) => mixed.addTrack(t));
+      const videoMimes = [
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
+        'video/webm',
+      ];
+      const picked = videoMimes.find((m) => MediaRecorder.isTypeSupported(m));
+      if (picked) mime = picked;
+    }
+  } catch {}
+
+  recorder = new MediaRecorder(mixed, { mimeType: mime });
   recorder.ondataavailable = (e) => { if (e.data && e.data.size) recChunks.push(e.data); };
+  recorder.__isVideo = mime.startsWith('video');
 }
 
 function toggleRec() {

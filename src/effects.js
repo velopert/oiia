@@ -261,7 +261,7 @@ export function createFX() {
     origBurst(color, label, intensity * qualityMul);
   }
 
-  return { burst: burstWithQ, drop, setQuality };
+  return { burst: burstWithQ, drop, setQuality, canvas };
 }
 
 export function createCatSpawner(url) {
