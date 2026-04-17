@@ -626,7 +626,7 @@ html[data-theme="light"] .theme-toggle {
 }
 .top-tools button:hover { filter: brightness(1.2); }
 .lang-toggle {
-  min-width: 36px;
+  min-width: 42px;
   font-family: ui-monospace, monospace !important;
   letter-spacing: 0.08em;
   transition: background 0.2s, color 0.2s, transform 0.1s;
