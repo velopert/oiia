@@ -770,6 +770,19 @@ html[data-theme="light"] .stats-row b { color: #000; }
   padding: 4px 0;
 }
 .stats-row b { color: #fff; font-weight: 700; }
+.stats-chips { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.stats-chip {
+  background: #2a2a2a;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-family: ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.stats-chip.dj { background: #3a1f5a; color: #ffccff; }
+html[data-theme="light"] .stats-chip { background: #e4e4e4; color: #222; }
+html[data-theme="light"] .stats-chip.dj { background: #efdbff; color: #5a2a7f; }
 .keyhelp-actions {
   display: flex;
   gap: 8px;

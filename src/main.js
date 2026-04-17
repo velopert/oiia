@@ -169,15 +169,16 @@ function renderStats() {
   const el_total = sessionStats.total;
   const keyEntries = Object.entries(sessionStats.key).sort((a, b) => b[1] - a[1]);
   const djEntries = Object.entries(sessionStats.dj).sort((a, b) => b[1] - a[1]);
-  const mainKey = keyEntries[0];
-  const mainDj = djEntries[0];
   const minutes = Math.max(1, Math.round((Date.now() - sessionStats.start) / 60000));
+  const perMin = Math.round(el_total / minutes);
+  const keyTop = keyEntries.slice(0, 3).map(([k, v]) => `<span class="stats-chip">${k}·${v}</span>`).join('');
+  const djTop = djEntries.slice(0, 3).map(([k, v]) => `<span class="stats-chip dj">${k.toUpperCase()}·${v}</span>`).join('');
   el.innerHTML = `
     <div class="stats-title">세션 통계</div>
-    <div class="stats-row"><span>총 프레스</span><b>${el_total}</b></div>
+    <div class="stats-row"><span>총 프레스</span><b>${el_total} (${perMin}/분)</b></div>
     <div class="stats-row"><span>경과 시간</span><b>~${minutes}분</b></div>
-    ${mainKey ? `<div class="stats-row"><span>메인 키</span><b>${mainKey[0]} · ${mainKey[1]}회</b></div>` : ''}
-    ${mainDj ? `<div class="stats-row"><span>메인 DJ</span><b>${mainDj[0].toUpperCase()} · ${mainDj[1]}회</b></div>` : ''}
+    ${keyTop ? `<div class="stats-row"><span>상위 키</span><b class="stats-chips">${keyTop}</b></div>` : ''}
+    ${djTop ? `<div class="stats-row"><span>상위 DJ</span><b class="stats-chips">${djTop}</b></div>` : ''}
   `;
 }
 

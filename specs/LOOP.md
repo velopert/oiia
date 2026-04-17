@@ -196,6 +196,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 52 — Help 오버레이 액션**: "🎯 튜토리얼 다시 보기" + "🗑 전체 초기화" (confirm 후 localStorage 싹 비우고 리로드).
 - [x] **[2026-04-17] Loop 53 — 0 = 랜덤 DJ**: 0 키로 9개 슬롯 중 랜덤 발사. 도움말 업데이트.
 - [x] **[2026-04-17] Loop 54 — FX 강도 슬라이더**: help 오버레이 하단 range (0.2–1.8x), `fx.setIntensity` 곱셈. `oiia-fx-intensity-v1` persist.
+- [x] **[2026-04-17] Loop 55 — 세션 stats v2**: 상위 3개 키/DJ 칩, 분당 프레스 카운트. help 오버레이의 한 눈에 보는 세션 요약.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
