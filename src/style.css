@@ -416,6 +416,22 @@ canvas#waveform {
   100% { box-shadow: inset 0 0 0 2px rgba(90,170,255,0); }
 }
 .controls button:hover { opacity: 0.9; }
+.master-vol-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #ccc;
+}
+.master-vol-wrap input[type="range"] {
+  width: 110px;
+  accent-color: #5af;
+}
+html[data-theme="light"] .master-vol-wrap { background: #e4e4e4; color: #222; border-color: #ccc; }
 
 .error {
   color: #f66;

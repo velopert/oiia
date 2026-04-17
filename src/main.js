@@ -222,6 +222,10 @@ app.innerHTML = `
     <button id="share-x" class="secondary">𝕏 트윗</button>
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
+    <label class="master-vol-wrap" title="마스터 볼륨">
+      <span>🔊</span>
+      <input type="range" id="master-vol" min="0" max="1.3" step="0.01" value="0.9">
+    </label>
   </div>
   <div id="countdown" class="countdown" hidden></div>
   <div id="toast" class="toast" hidden></div>
@@ -276,6 +280,7 @@ function saveSegments() {
 }
 
 let masterOut;
+let masterGain;
 let djBus;
 
 async function init() {
@@ -287,10 +292,21 @@ async function init() {
     masterOut.ratio.value = 6;
     masterOut.attack.value = 0.003;
     masterOut.release.value = 0.18;
-    masterOut.connect(audioCtx.destination);
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = +(localStorage.getItem('oiia-master-vol-v1') ?? 0.9);
+    masterGain.connect(audioCtx.destination);
+    masterOut.connect(masterGain);
     djBus = audioCtx.createGain();
     djBus.gain.value = 1;
     djBus.connect(masterOut);
+    const mv = document.getElementById('master-vol');
+    if (mv) {
+      mv.value = masterGain.gain.value;
+      mv.addEventListener('input', () => {
+        masterGain.gain.value = +mv.value;
+        localStorage.setItem('oiia-master-vol-v1', mv.value);
+      });
+    }
     const res = await fetch(oiiaUrl);
     const arr = await res.arrayBuffer();
     buffer = await audioCtx.decodeAudioData(arr);

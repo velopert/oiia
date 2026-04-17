@@ -126,7 +126,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **MIDI input**: Web MIDI API로 물리 패드/키보드 바인딩.
 - [ ] **Velocity-like 강도**: 홀드 시간에 따라 drop뿐 아니라 일반 재생도 음색이 변하도록.
 - [ ] **Crossfader**: clean buffer ↔ A sub-buffer 를 실시간 블렌드.
-- [ ] **Master volume slider**: 전체 출력 레벨 컨트롤.
+- [ ] **Velocity → pitch**: 홀드 시간에 따라 살짝 피치업.
 
 ### Mobile & cross-device
 - [ ] **풀 모바일 패드 모드**: 작은 화면에서 전체 하단 터치 바에 고정 — 현재는 인라인 + 폰트/사이즈 튜닝 단계.
@@ -136,7 +136,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 
 ### Onboarding / polish
 - [ ] **Tour 재방문**: help overlay에 "튜토리얼 다시 보기" 버튼.
-- [ ] **Master volume slider**: FPS 옆 혹은 controls에 추가.
 
 ### Audio quality
 
@@ -190,6 +189,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 43 — 다크/라이트 테마 토글**: FPS 옆 `☀️/🌙` 버튼. `html[data-theme="light"]`로 CSS vars + 35+ 오버라이드 규칙. `oiia-theme-v1` localStorage 기본 다크.
 - [x] **[2026-04-17] Loop 44 — DJ 이펙트 +2**: SIREN(피치 0.6↔1.8 반복 스윕), LOFI(로우패스 3.2kHz + 24-step 양자화 + 비닐 크래클). 총 34개.
 - [x] **[2026-04-17] Loop 45 — Beat ring visualizer**: BPM 설정 시 매 박자마다 하단 중앙에 링 펄스. `fx.beatRing()` + effects.js 새 kind 'br'.
+- [x] **[2026-04-17] Loop 46 — Master 볼륨 슬라이더**: controls에 🔊 + range (0–1.3). `masterGain` 노드를 masterOut↔destination 사이 삽입. `oiia-master-vol-v1` persist.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
