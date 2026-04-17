@@ -218,6 +218,7 @@ app.innerHTML = `
       <span id="bpm-value" class="bpm-value">— BPM</span>
     </button>
     <button id="auto-beat" class="secondary">🎲 Auto-beat</button>
+    <button id="metro" class="secondary" title="BPM 클릭 트랙 (BPM 설정 필요)">🥁 Metro</button>
     <button id="make-clip" class="make-clip-btn">🎬 Make Clip</button>
     <button id="loop-btn" class="loop-btn">🔁 루프</button>
     <button id="loop-speed" class="secondary" title="루프 재생 속도">1×</button>
@@ -1515,6 +1516,42 @@ function schedulePulse() {
 
 window.__getBpm = () => currentBpm;
 
+let metroTimer = null;
+let metroCount = 0;
+function toggleMetro() {
+  const btn = document.getElementById('metro');
+  if (metroTimer) {
+    clearInterval(metroTimer);
+    metroTimer = null;
+    btn.classList.remove('on');
+    btn.textContent = '🥁 Metro';
+    return;
+  }
+  if (!currentBpm) { toast('먼저 BPM 설정'); return; }
+  if (audioCtx?.state === 'suspended') audioCtx.resume();
+  if (!masterOut) return;
+  metroCount = 0;
+  btn.classList.add('on');
+  btn.textContent = '🥁 …';
+  function click() {
+    const downbeat = metroCount % 4 === 0;
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    o.type = 'square';
+    o.frequency.value = downbeat ? 1600 : 1100;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(downbeat ? 0.4 : 0.22, t + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    o.connect(g).connect(masterOut);
+    o.start(t);
+    o.stop(t + 0.08);
+    metroCount++;
+  }
+  click();
+  metroTimer = setInterval(click, 60000 / currentBpm);
+}
+
 document.getElementById('bpm-value').addEventListener('dblclick', (e) => {
   e.stopPropagation();
   e.preventDefault();
@@ -1797,6 +1834,7 @@ document.getElementById('loop-btn').addEventListener('click', (e) => {
   }
   loopToggle();
 });
+document.getElementById('metro').onclick = toggleMetro;
 document.getElementById('loop-speed').onclick = () => {
   const i = LOOP_SPEEDS.indexOf(loopSpeed);
   loopSpeed = LOOP_SPEEDS[(i + 1) % LOOP_SPEEDS.length];

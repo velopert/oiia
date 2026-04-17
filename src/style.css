@@ -410,6 +410,11 @@ html[data-theme="light"] .dj-filter { background: #fff; color: #222; border-colo
   0%, 100% { box-shadow: inset 0 0 0 2px rgba(255,255,255,0); }
   50%      { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); }
 }
+.controls button.on {
+  background: #6bcf7f;
+  color: #000;
+  font-weight: 700;
+}
 .controls button.rec-btn.recording {
   background: #ff1744;
   animation: rec-blink 1s ease-in-out infinite;
