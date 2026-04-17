@@ -83,9 +83,18 @@ function saveSegments() {
   localStorage.setItem('oiia-segments-v7', JSON.stringify(segments));
 }
 
+let masterOut;
+
 async function init() {
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterOut = audioCtx.createDynamicsCompressor();
+    masterOut.threshold.value = -8;
+    masterOut.knee.value = 18;
+    masterOut.ratio.value = 6;
+    masterOut.attack.value = 0.003;
+    masterOut.release.value = 0.18;
+    masterOut.connect(audioCtx.destination);
     const res = await fetch(oiiaUrl);
     const arr = await res.arrayBuffer();
     buffer = await audioCtx.decodeAudioData(arr);
@@ -222,7 +231,7 @@ function playSegmentByIndex(i) {
   if (!s) return;
   const src = audioCtx.createBufferSource();
   src.buffer = buffer;
-  src.connect(audioCtx.destination);
+  src.connect(masterOut);
   const dur = Math.max(0.01, s.end - s.start);
   src.start(0, s.start, dur);
 }
@@ -318,7 +327,7 @@ function dj_distort() {
   ws.oversample = '4x';
   const g = audioCtx.createGain();
   g.gain.value = 0.35;
-  ws.connect(g).connect(audioCtx.destination);
+  ws.connect(g).connect(masterOut);
   const s = djBufferSource();
   s.connect(ws);
   s.start();
@@ -326,7 +335,7 @@ function dj_distort() {
 
 function dj_reverse() {
   const s = djBufferSource(reverseBuffer(getDjBuffer()));
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   s.start();
 }
 
@@ -335,14 +344,14 @@ function dj_deep() {
   s.playbackRate.value = 0.55;
   const g = audioCtx.createGain();
   g.gain.value = 1.2;
-  s.connect(g).connect(audioCtx.destination);
+  s.connect(g).connect(masterOut);
   s.start();
 }
 
 function dj_chipmunk() {
   const s = djBufferSource();
   s.playbackRate.value = 1.9;
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   s.start();
 }
 
@@ -350,7 +359,7 @@ function dj_sweep() {
   const f = audioCtx.createBiquadFilter();
   f.type = 'lowpass';
   f.Q.value = 10;
-  f.connect(audioCtx.destination);
+  f.connect(masterOut);
   const t = audioCtx.currentTime;
   f.frequency.setValueAtTime(150, t);
   f.frequency.exponentialRampToValueAtTime(14000, t + 2.5);
@@ -363,7 +372,7 @@ function dj_riser() {
   const f = audioCtx.createBiquadFilter();
   f.type = 'highpass';
   f.Q.value = 6;
-  f.connect(audioCtx.destination);
+  f.connect(masterOut);
   const t = audioCtx.currentTime;
   f.frequency.setValueAtTime(100, t);
   f.frequency.exponentialRampToValueAtTime(6000, t + 2.2);
@@ -380,14 +389,14 @@ function dj_stutter() {
   const base = audioCtx.currentTime;
   for (let i = 0; i < count; i++) {
     const s = djBufferSource();
-    s.connect(audioCtx.destination);
+    s.connect(masterOut);
     s.start(base + i * (segLen + gap), startT, segLen);
   }
 }
 
 function dj_scratch() {
   const s = djBufferSource();
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(0.2, t);
   s.playbackRate.linearRampToValueAtTime(2.5, t + 0.25);
@@ -403,7 +412,7 @@ function dj_wubwub() {
   f.type = 'lowpass';
   f.Q.value = 18;
   f.frequency.value = 1500;
-  f.connect(audioCtx.destination);
+  f.connect(masterOut);
   const lfo = djOsc('sine', 7);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 1400;
@@ -423,9 +432,9 @@ function dj_echo() {
   const wet = audioCtx.createGain();
   wet.gain.value = 0.7;
   delay.connect(fb).connect(delay);
-  delay.connect(wet).connect(audioCtx.destination);
+  delay.connect(wet).connect(masterOut);
   const s = djBufferSource();
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   s.connect(delay);
   s.start();
 }
@@ -443,7 +452,7 @@ function dj_crush() {
   const f = audioCtx.createBiquadFilter();
   f.type = 'lowpass';
   f.frequency.value = 3500;
-  ws.connect(f).connect(audioCtx.destination);
+  ws.connect(f).connect(masterOut);
   const s = djBufferSource();
   s.connect(ws);
   s.start();
@@ -451,7 +460,7 @@ function dj_crush() {
 
 function dj_tremolo() {
   const g = audioCtx.createGain();
-  g.connect(audioCtx.destination);
+  g.connect(masterOut);
   g.gain.value = 0.5;
   const lfo = djOsc('sine', 9);
   const lfoGain = audioCtx.createGain();
@@ -475,9 +484,9 @@ function dj_flanger() {
   lfo.connect(lfoGain).connect(delay.delayTime);
   lfo.start();
   delay.connect(fb).connect(delay);
-  delay.connect(audioCtx.destination);
+  delay.connect(masterOut);
   const s = djBufferSource();
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   s.connect(delay);
   s.start();
   s.onended = () => lfo.stop();
@@ -488,7 +497,7 @@ function dj_autowah() {
   f.type = 'bandpass';
   f.Q.value = 8;
   f.frequency.value = 1500;
-  f.connect(audioCtx.destination);
+  f.connect(masterOut);
   const lfo = djOsc('sine', 3);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 1200;
@@ -509,7 +518,7 @@ function dj_phone() {
   lp.frequency.value = 2800;
   const ws = audioCtx.createWaveShaper();
   ws.curve = makeDistortionCurve(40);
-  hp.connect(lp).connect(ws).connect(audioCtx.destination);
+  hp.connect(lp).connect(ws).connect(masterOut);
   const s = djBufferSource();
   s.connect(hp);
   s.start();
@@ -518,7 +527,7 @@ function dj_phone() {
 function dj_gate() {
   const g = audioCtx.createGain();
   g.gain.value = 0.5;
-  g.connect(audioCtx.destination);
+  g.connect(masterOut);
   const lfo = djOsc('square', 8);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 0.5;
@@ -532,7 +541,7 @@ function dj_gate() {
 
 function dj_backspin() {
   const s = djBufferSource();
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(1.0, t);
   s.playbackRate.exponentialRampToValueAtTime(0.08, t + 0.8);
@@ -542,7 +551,7 @@ function dj_backspin() {
 
 function dj_powerup() {
   const s = djBufferSource();
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(0.4, t);
   s.playbackRate.exponentialRampToValueAtTime(2.4, t + 1.6);
@@ -555,7 +564,7 @@ function dj_vinyl() {
   f.frequency.value = 3800;
   const g = audioCtx.createGain();
   g.gain.value = 0.85;
-  f.connect(g).connect(audioCtx.destination);
+  f.connect(g).connect(masterOut);
   const lfo = djOsc('sine', 0.7);
   const lfoGain = audioCtx.createGain();
   lfoGain.gain.value = 0.05;
@@ -572,7 +581,7 @@ function dj_hall() {
   const taps = [0.05, 0.11, 0.17, 0.23, 0.31, 0.43];
   const out = audioCtx.createGain();
   out.gain.value = 0.75;
-  out.connect(audioCtx.destination);
+  out.connect(masterOut);
   const s = djBufferSource();
   s.connect(out);
   taps.forEach((d, i) => {
@@ -591,7 +600,7 @@ function dj_overdrive() {
   ws.oversample = '2x';
   const g = audioCtx.createGain();
   g.gain.value = 0.55;
-  ws.connect(g).connect(audioCtx.destination);
+  ws.connect(g).connect(masterOut);
   const s = djBufferSource();
   s.connect(ws);
   s.start();
@@ -599,7 +608,7 @@ function dj_overdrive() {
 
 function dj_laser() {
   const s = djBufferSource();
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   const t = audioCtx.currentTime;
   s.playbackRate.setValueAtTime(2.6, t);
   s.playbackRate.exponentialRampToValueAtTime(0.35, t + 1.4);
@@ -620,9 +629,9 @@ function dj_pingpong() {
   const merger = audioCtx.createChannelMerger(2);
   splitL.connect(merger, 0, 0);
   splitR.connect(merger, 0, 1);
-  merger.connect(audioCtx.destination);
+  merger.connect(masterOut);
   const s = djBufferSource();
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   s.connect(splitL);
   s.start();
 }
@@ -634,10 +643,10 @@ function dj_reverse_echo() {
   const fb = audioCtx.createGain();
   fb.gain.value = 0.5;
   delay.connect(fb).connect(delay);
-  delay.connect(audioCtx.destination);
+  delay.connect(masterOut);
   const s = djBufferSource(rev);
   s.playbackRate.value = 0.9;
-  s.connect(audioCtx.destination);
+  s.connect(masterOut);
   s.connect(delay);
   s.start();
 }
@@ -824,7 +833,7 @@ function playAll() {
   if (audioCtx?.state === 'suspended') audioCtx.resume();
   const src = audioCtx.createBufferSource();
   src.buffer = buffer;
-  src.connect(audioCtx.destination);
+  src.connect(masterOut);
   src.start();
 }
 
@@ -989,7 +998,7 @@ canvas.addEventListener('pointerup', (e) => {
       const t = timeFromX(e.clientX);
       const src = audioCtx.createBufferSource();
       src.buffer = buffer;
-      src.connect(audioCtx.destination);
+      src.connect(masterOut);
       src.start(0, t, 0.3);
     }
     return;

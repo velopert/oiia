@@ -149,7 +149,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **다크/라이트 테마 토글** (기본 다크 유지).
 
 ### Audio quality
-- [ ] **Master limiter**: `DynamicsCompressorNode`를 master에 꽂아 clipping 방지.
 - [ ] **Segment click 제거**: start/end에 5~10ms 페이드 인/아웃 envelope.
 - [ ] **고배속 playback anti-alias**: CHIP/LASER에서 pre-lowpass 적용.
 
@@ -161,6 +160,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 
 ## Done
 - [x] **[2026-04-17] Loop 1 — "눌러서 시작" 초기 배너**: 자모 그라디언트 텍스트 + 펄스, 첫 키다운/클릭에 자동 dismiss. `specs/screenshots/smoke-desktop.png`
+- [x] **[2026-04-17] Loop 2 — Master limiter**: `DynamicsCompressorNode`(threshold -8dB, ratio 6, knee 18) 마스터 체인. 모든 노드 라우팅을 `masterOut` 경유로 전환.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
