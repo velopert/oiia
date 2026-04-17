@@ -203,6 +203,7 @@ app.innerHTML = `
   <div class="segments" id="segments"></div>
   <div class="dj-header">
     <h3 style="margin:0;font-size:14px;color:#888;">🎧 DJ 슬롯 (1–9 키)</h3>
+    <input id="dj-filter" class="dj-filter" type="search" placeholder="이펙트 검색…" />
     <button id="shuffle-dj" class="dj-shuffle" title="9개 슬롯을 전부 랜덤 이펙트로">🎲 셔플</button>
     <button id="reset-dj" class="dj-shuffle" title="DJ 슬롯을 기본값으로">↺ 기본</button>
   </div>
@@ -1176,11 +1177,15 @@ function playDjSlot(idx) {
   }
 }
 
+let djFilter = '';
 function renderDjSlots() {
   const el = document.getElementById('dj-slots');
   if (!el) return;
+  const q = djFilter.trim().toLowerCase();
   el.innerHTML = djMapping.map((id, i) => {
-    const opts = DJ_EFFECTS.map((e) =>
+    const opts = DJ_EFFECTS.filter((e) =>
+      !q || e.name.toLowerCase().includes(q) || (e.desc || '').toLowerCase().includes(q) || e.id === id
+    ).map((e) =>
       `<option value="${e.id}" title="${e.desc || ''}"${e.id === id ? ' selected' : ''}>${e.name}</option>`
     ).join('');
     const curr = DJ_EFFECTS.find((e) => e.id === id) || DJ_EFFECTS[0];
@@ -1758,6 +1763,11 @@ function shuffleDj() {
   renderDjSlots();
   toast('DJ 슬롯 랜덤 셔플됨');
 }
+document.getElementById('dj-filter').addEventListener('input', (e) => {
+  djFilter = e.target.value;
+  renderDjSlots();
+  document.getElementById('dj-filter').focus();
+});
 document.getElementById('shuffle-dj').onclick = shuffleDj;
 document.getElementById('reset-dj').onclick = () => {
   djMapping = [...DEFAULT_DJ_MAPPING];
