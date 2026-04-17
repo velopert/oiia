@@ -615,6 +615,11 @@ html[data-theme="light"] .theme-toggle {
   line-height: 1;
 }
 .top-tools button:hover { filter: brightness(1.2); }
+.lang-toggle {
+  min-width: 36px;
+  font-family: ui-monospace, monospace !important;
+  letter-spacing: 0.08em;
+}
 .dj-mode-toggle.on {
   background: #ff5577 !important;
   color: #fff !important;

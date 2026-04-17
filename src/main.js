@@ -2,6 +2,7 @@ import './style.css';
 import oiiaUrl from '/oiia.mp3?url';
 import catGifUrl from '/oia-uia.gif?url';
 import { createFX, createCatSpawner } from './effects.js';
+import { t, getLocale, setLocale, onLocaleChange } from './i18n.js';
 
 const fx = createFX();
 const catFx = createCatSpawner(catGifUrl);
@@ -40,6 +41,10 @@ document.body.appendChild(fpsEl);
 function setupStartHint() {
   const hint = document.getElementById('start-hint');
   if (!hint) return;
+  const btnText = hint.querySelector('#start-hint-btn');
+  if (btnText) btnText.textContent = t('start.button');
+  const hintText = hint.querySelector('.start-text');
+  if (hintText) hintText.textContent = t('start.hint');
   let dismissed = false;
   function dismiss() {
     if (dismissed) return;
@@ -50,7 +55,10 @@ function setupStartHint() {
     document.removeEventListener('pointerdown', onPointer, true);
   }
   function onPointer(e) {
-    if (e.target && e.target.closest && e.target.closest('#start-hint-btn')) return;
+    if (!e.target || !e.target.closest) { dismiss(); return; }
+    if (e.target.closest('#start-hint-btn')) return;
+    if (e.target.closest('#top-tools')) return;
+    if (e.target.closest('.theme-toggle')) return;
     dismiss();
   }
   const btn = document.getElementById('start-hint-btn');
@@ -89,10 +97,10 @@ function setupTour() {
   const nEl = document.getElementById('tour-n');
   const arrow = document.getElementById('tour-arrow');
   const steps = [
-    { title: '오이아이 키 6개', body: 'ㅜ ㅣ ㅏ A B C 자모 키를 탭(또는 N/L/K/Q/W/E). 꾹 누르면 EDM 빌드업 → 드롭 폭발!', target: '#keys .key' },
-    { title: '1–9 DJ 이펙트 패드', body: '숫자패드를 탭하거나 키보드 1–9로 9가지 DJ 이펙트를 발사하세요.', target: '#dj-slots .dj-slot-wrap' },
-    { title: '🎲 이펙트 셔플', body: '패드 아래 셔플 버튼 한 번으로 9개 슬롯을 전부 랜덤 이펙트로 교체.', target: '#dj-shuffle-inline' },
-    { title: '⚙ Advanced 모드', body: '우측 상단 버튼으로 파형·세그먼트 편집·녹음·루프 등 고급 기능 전환.', target: '#dj-mode-toggle' },
+    { key: 'tour.1', target: '#keys .key' },
+    { key: 'tour.2', target: '#dj-slots .dj-slot-wrap' },
+    { key: 'tour.3', target: '#dj-shuffle-inline' },
+    { key: 'tour.4', target: '#dj-mode-toggle' },
   ];
   const bubble = root.querySelector('.tour-bubble');
   const totalEl = document.getElementById('tour-total');
@@ -119,8 +127,8 @@ function setupTour() {
     }
   }
   function render() {
-    titleEl.textContent = steps[i].title;
-    bodyEl.textContent = steps[i].body;
+    titleEl.textContent = t(steps[i].key + '.title');
+    bodyEl.textContent = t(steps[i].key + '.body');
     nEl.textContent = (i + 1);
     position();
   }
@@ -192,41 +200,77 @@ function setupDjMode() {
   const tapFloat = document.createElement('button');
   tapFloat.className = 'dj-only-btn dj-tap-float';
   tapFloat.id = 'dj-tap-float';
-  tapFloat.title = 'TAP: BPM 탭 (T)';
-  tapFloat.innerHTML = `<span class="tap-label">TAP</span><span id="dj-tap-bpm">— BPM</span>`;
+  tapFloat.innerHTML = `<span class="tap-label"></span><span id="dj-tap-bpm"></span>`;
   tapFloat.onclick = () => { const b = document.getElementById('tap'); if (b) b.click(); };
 
   const quantFloat = document.createElement('button');
   quantFloat.className = 'dj-only-btn dj-quant-float';
   quantFloat.id = 'dj-quant-float';
-  quantFloat.title = '비트 보완 (1/16 스냅)';
-  quantFloat.textContent = '🧲 비트보완';
   quantFloat.onclick = () => { const b = document.getElementById('quantize'); if (b) b.click(); };
 
   const btn = document.createElement('button');
   btn.className = 'dj-mode-toggle';
   btn.id = 'dj-mode-toggle';
-  btn.setAttribute('aria-label', '모드 전환');
   function apply(on) {
     document.body.classList.toggle('dj-mode', on);
     btn.classList.toggle('on', on);
-    btn.textContent = on ? '⚙ Advanced' : '🎛 DJ';
-    btn.title = on ? '고급 모드로 (파형·세그먼트·녹음)' : 'DJ 모드로 (키 + 1–9 슬롯)';
+    btn.textContent = on ? t('dj.toggle.on') : t('dj.toggle.off');
+    btn.title = on ? t('dj.toggle.title.on') : t('dj.toggle.title.off');
   }
+  function refreshLabels() {
+    tapFloat.title = t('tap.title');
+    tapFloat.querySelector('.tap-label').textContent = t('tap.label');
+    const bpmEl = tapFloat.querySelector('#dj-tap-bpm');
+    if (bpmEl && !bpmEl.textContent.match(/\d/)) bpmEl.textContent = t('tap.bpm.empty');
+    quantFloat.title = t('quantize.title');
+    quantFloat.textContent = t('quantize.label');
+    apply(document.body.classList.contains('dj-mode'));
+  }
+  refreshLabels();
   apply(saved);
   btn.onclick = () => {
     const on = !document.body.classList.contains('dj-mode');
     apply(on);
     localStorage.setItem('oiia-dj-mode-v1', on ? '1' : '0');
-    if (typeof toast === 'function') toast(on ? 'DJ 모드' : 'Advanced 모드');
+    if (typeof toast === 'function') toast(on ? t('dj.mode.on.toast') : t('dj.mode.off.toast'));
+  };
+
+  const langBtn = document.createElement('button');
+  langBtn.className = 'lang-toggle';
+  langBtn.id = 'lang-toggle';
+  langBtn.title = t('lang.toggle.title');
+  function refreshLang() { langBtn.textContent = getLocale() === 'ko' ? 'KO' : 'EN'; }
+  refreshLang();
+  langBtn.onclick = () => {
+    setLocale(getLocale() === 'ko' ? 'en' : 'ko');
   };
 
   bar.appendChild(tapFloat);
   bar.appendChild(quantFloat);
+  bar.appendChild(langBtn);
   bar.appendChild(btn);
   document.body.appendChild(bar);
+
+  onLocaleChange(() => {
+    refreshLabels();
+    refreshLang();
+    applyAllI18n();
+  });
 }
 setupDjMode();
+
+function applyAllI18n() {
+  const sb = document.getElementById('start-hint-btn');
+  if (sb) sb.textContent = t('start.button');
+  const sh = document.querySelector('#start-hint .start-text');
+  if (sh) sh.textContent = t('start.hint');
+  const shuffle = document.getElementById('dj-shuffle-inline');
+  if (shuffle) { shuffle.textContent = t('dj.shuffle'); shuffle.title = t('dj.shuffle.title'); }
+  const tourSkip = document.getElementById('tour-skip');
+  if (tourSkip) tourSkip.textContent = t('tour.skip');
+  const tourNext = document.getElementById('tour-next');
+  if (tourNext) tourNext.textContent = t('tour.next');
+}
 
 (function setupFxIntensity() {
   const slider = document.getElementById('fx-intensity');
@@ -1581,7 +1625,7 @@ document.addEventListener('keydown', (e) => {
       btn.classList.remove('on', 'rec');
     }
     stopAllDj();
-    toast('정지');
+    toast(t('toast.stop'));
     return;
   }
   let code = e.code;
@@ -1813,7 +1857,7 @@ function toggleMetro() {
     btn.textContent = '🥁 Metro';
     return;
   }
-  if (!currentBpm) { toast('먼저 BPM 설정'); return; }
+  if (!currentBpm) { toast(t('toast.bpm.needFirst')); return; }
   if (audioCtx?.state === 'suspended') audioCtx.resume();
   if (!masterOut) return;
   metroCount = 0;
@@ -1866,7 +1910,7 @@ document.getElementById('bpm-value').addEventListener('dblclick', (e) => {
     const fl = document.getElementById('dj-tap-bpm'); if (fl) fl.textContent = n + ' BPM';
     localStorage.setItem('oiia-bpm-v1', String(n));
     schedulePulse();
-    toast('BPM ' + n + '으로 설정');
+    toast(t('toast.bpm.set', { n }));
   }
 });
 document.getElementById('tap').onclick = tapBeat;
@@ -1881,8 +1925,8 @@ document.getElementById('quantize').onclick = () => {
   quantizeEnabled = !quantizeEnabled;
   localStorage.setItem('oiia-quantize-v1', quantizeEnabled ? '1' : '0');
   refreshQuantizeBtn();
-  if (quantizeEnabled && !currentBpm) toast('먼저 BPM 설정 (T로 탭)');
-  else toast(quantizeEnabled ? '비트 보완 ON (1/16)' : '비트 보완 OFF');
+  if (quantizeEnabled && !currentBpm) toast(t('quantize.needsBpm'));
+  else toast(quantizeEnabled ? t('quantize.on') : t('quantize.off'));
 };
 document.getElementById('rec').onclick = toggleRec;
 
