@@ -249,10 +249,18 @@ function renderSegments() {
 function playSegmentByIndex(i) {
   const s = segments[i];
   if (!s) return;
+  const dur = Math.max(0.01, s.end - s.start);
+  const fadeDur = Math.min(0.006, dur / 4);
   const src = audioCtx.createBufferSource();
   src.buffer = buffer;
-  src.connect(masterOut);
-  const dur = Math.max(0.01, s.end - s.start);
+  const g = audioCtx.createGain();
+  g.connect(masterOut);
+  src.connect(g);
+  const t = audioCtx.currentTime;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(1, t + fadeDur);
+  g.gain.setValueAtTime(1, t + Math.max(fadeDur, dur - fadeDur));
+  g.gain.linearRampToValueAtTime(0, t + dur);
   src.start(0, s.start, dur);
 }
 

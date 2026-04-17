@@ -147,7 +147,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **다크/라이트 테마 토글** (기본 다크 유지).
 
 ### Audio quality
-- [ ] **Segment click 제거**: start/end에 5~10ms 페이드 인/아웃 envelope.
 - [ ] **고배속 playback anti-alias**: CHIP/LASER에서 pre-lowpass 적용.
 
 ### 기존 기능 폴리싱
@@ -161,6 +160,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 2 — Master limiter**: `DynamicsCompressorNode`(threshold -8dB, ratio 6, knee 18) 마스터 체인. 모든 노드 라우팅을 `masterOut` 경유로 전환.
 - [x] **[2026-04-17] Loop 3 — DJ 효과 툴팁 + 설명 라인**: 24개 이펙트 각각에 한 줄 설명 추가. 슬롯 하단에 현재 선택의 설명 표시 + option/select/button title로 네이티브 hover 툴팁.
 - [x] **[2026-04-17] Loop 4 — `?` 단축키 오버레이**: 모달 카드 UI로 11개 단축키 표시, `?`/`Shift+/`로 토글, `Esc`/클릭으로 닫기.
+- [x] **[2026-04-17] Loop 5 — 세그먼트 재생 fade envelope**: 6ms linear ramp in/out GainNode로 click/pop 제거.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/
