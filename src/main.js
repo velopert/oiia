@@ -409,11 +409,11 @@ function renderStats() {
   const keyTop = keyEntries.slice(0, 3).map(([k, v]) => `<span class="stats-chip">${k}·${v}</span>`).join('');
   const djTop = djEntries.slice(0, 3).map(([k, v]) => `<span class="stats-chip dj">${k.toUpperCase()}·${v}</span>`).join('');
   el.innerHTML = `
-    <div class="stats-title">세션 통계</div>
-    <div class="stats-row"><span>총 프레스</span><b>${el_total} (${perMin}/분)</b></div>
-    <div class="stats-row"><span>경과 시간</span><b>~${minutes}분</b></div>
-    ${keyTop ? `<div class="stats-row"><span>상위 키</span><b class="stats-chips">${keyTop}</b></div>` : ''}
-    ${djTop ? `<div class="stats-row"><span>상위 DJ</span><b class="stats-chips">${djTop}</b></div>` : ''}
+    <div class="stats-title">${t('stats.title')}</div>
+    <div class="stats-row"><span>${t('stats.total')}</span><b>${t('stats.totalValue', { n: el_total, perMin })}</b></div>
+    <div class="stats-row"><span>${t('stats.elapsed')}</span><b>${t('stats.elapsedValue', { min: minutes })}</b></div>
+    ${keyTop ? `<div class="stats-row"><span>${t('stats.topKey')}</span><b class="stats-chips">${keyTop}</b></div>` : ''}
+    ${djTop ? `<div class="stats-row"><span>${t('stats.topDj')}</span><b class="stats-chips">${djTop}</b></div>` : ''}
   `;
 }
 
@@ -719,14 +719,14 @@ function renderSegments() {
     el.innerHTML = `
       <div class="seg-head">
         <span class="seg-label">${s.jamo} <span style="color:#888;font-weight:400">(${s.id})</span></span>
-        <input type="color" data-color="${i}" value="${s.color}" title="세그먼트 컬러" class="seg-color">
+        <input type="color" data-color="${i}" value="${s.color}" title="${t('seg.colorTitle')}" class="seg-color">
         <span class="seg-meta">${(s.end - s.start).toFixed(3)}s</span>
       </div>
       <div class="row"><span>start</span><span id="v-${i}-start">${s.start.toFixed(3)}s</span></div>
       <input type="range" min="0" max="${buffer.duration.toFixed(3)}" step="0.005" value="${s.start}" data-i="${i}" data-k="start">
       <div class="row"><span>end</span><span id="v-${i}-end">${s.end.toFixed(3)}s</span></div>
       <input type="range" min="0" max="${buffer.duration.toFixed(3)}" step="0.005" value="${s.end}" data-i="${i}" data-k="end">
-      <button data-play="${i}">▶ ${s.jamo} 재생</button>
+      <button data-play="${i}">${t('seg.play', { jamo: s.jamo })}</button>
     `;
     segsEl.appendChild(el);
   });
