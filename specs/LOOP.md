@@ -170,6 +170,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 19 — DJ 이펙트 +2종**: ROBOT(링 모듈레이션 80Hz), TAPESTOP(1.2s 감속 후 정지). 총 26개로 증가.
 - [x] **[2026-04-17] Loop 20 — 세그먼트 Undo**: Cmd/Ctrl+Z로 최근 10단계 편집 되돌리기, history는 `saveSegments` 시마다 스냅샷, help 오버레이에 단축키 추가.
 - [x] **[2026-04-17] Loop 21 — Make Clip 원클릭 바이럴**: Auto-beat + 자동 녹음 콤보 버튼. 한 번 누르면 ~11초짜리 WebM 자동 생성/다운로드.
+- [x] **[2026-04-17] Loop 22 — DJ 슬롯 셔플**: DJ 헤더에 🎲 버튼, 26개에서 랜덤으로 9슬롯 재매핑, 저장 + 토스트.
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

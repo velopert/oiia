@@ -110,7 +110,10 @@ app.innerHTML = `
   <canvas id="waveform"></canvas>
   <div class="keys" id="keys"></div>
   <div class="segments" id="segments"></div>
-  <h3 style="margin:24px 0 8px;font-size:14px;color:#888;">🎧 DJ 슬롯 (1–9 키)</h3>
+  <div class="dj-header">
+    <h3 style="margin:0;font-size:14px;color:#888;">🎧 DJ 슬롯 (1–9 키)</h3>
+    <button id="shuffle-dj" class="dj-shuffle" title="9개 슬롯을 전부 랜덤 이펙트로">🎲 셔플</button>
+  </div>
   <div class="dj-slots" id="dj-slots"></div>
   <div class="controls">
     <button id="play-all">▶ 전체 재생 (Space)</button>
@@ -1245,6 +1248,22 @@ async function makeClip() {
   toast('클립 저장됨 (WebM)');
   setTimeout(() => { mk.disabled = false; mk.textContent = '🎬 Make Clip'; }, 1600);
 }
+function shuffleDj() {
+  const ids = DJ_EFFECTS.map((e) => e.id);
+  const picked = new Set();
+  djMapping = [];
+  while (djMapping.length < 9) {
+    const pick = ids[Math.floor(Math.random() * ids.length)];
+    if (!picked.has(pick) || picked.size === ids.length) {
+      picked.add(pick);
+      djMapping.push(pick);
+    }
+  }
+  saveDjMapping();
+  renderDjSlots();
+  toast('DJ 슬롯 랜덤 셔플됨');
+}
+document.getElementById('shuffle-dj').onclick = shuffleDj;
 document.getElementById('make-clip').onclick = makeClip;
 document.getElementById('auto-beat').onclick = autoBeat;
 document.getElementById('share').onclick = shareLink;
