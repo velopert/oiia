@@ -404,6 +404,28 @@ body.fx-shake { animation: fx-shake 0.5s cubic-bezier(.36,.07,.19,.97); }
 }
 .fps-meter.low { color: #ff6; background: rgba(60,40,0,0.5); }
 
+.countdown {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(120px, 24vw, 300px);
+  font-weight: 900;
+  color: #fff;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.4), rgba(0,0,0,0.85));
+  z-index: 10004;
+  pointer-events: none;
+  text-shadow: 0 0 60px rgba(255,255,255,0.35);
+  letter-spacing: 0.02em;
+}
+.countdown.tick { animation: cd-tick 0.5s ease-out; }
+@keyframes cd-tick {
+  0%   { transform: scale(0.5); opacity: 0; }
+  30%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .toast {
   position: fixed;
   bottom: 28px;

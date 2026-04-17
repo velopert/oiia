@@ -150,6 +150,7 @@ app.innerHTML = `
     <button id="reset" class="secondary">↺ 기본값</button>
     <button id="export" class="secondary">⬇ 타임스탬프 복사</button>
   </div>
+  <div id="countdown" class="countdown" hidden></div>
   <div id="toast" class="toast" hidden></div>
 `;
 
@@ -1425,12 +1426,28 @@ function loopToggle() {
   toast('루프 녹음 중…');
 }
 
+async function countdown(steps = ['3', '2', '1', 'REC']) {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  el.hidden = false;
+  for (const s of steps) {
+    el.textContent = s;
+    el.classList.remove('tick');
+    void el.offsetWidth;
+    el.classList.add('tick');
+    await new Promise((r) => setTimeout(r, 650));
+  }
+  el.hidden = true;
+  el.classList.remove('tick');
+}
+
 async function makeClip() {
   const mk = document.getElementById('make-clip');
   if (mk.disabled) return;
   mk.disabled = true;
   mk.textContent = '🎬 준비 중…';
   if (audioCtx?.state === 'suspended') await audioCtx.resume();
+  await countdown();
   setupRecorder();
   if (!recorder) { mk.disabled = false; mk.textContent = '🎬 Make Clip'; return; }
   if (recorder.state === 'recording') recorder.stop();
