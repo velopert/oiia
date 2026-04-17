@@ -298,13 +298,23 @@ html[data-theme="light"] .preset-btn:hover { background: #eaf2ff; }
 .dj-filter:focus { outline: 1px solid #5af; }
 button:focus-visible,
 .key:focus-visible,
-.dj-slot-wrap:focus-visible {
+.dj-slot-wrap:focus-visible,
+.dj-pad:focus-visible {
   outline: 2px solid #5af;
   outline-offset: 2px;
+}
+html[data-theme="light"] button:focus-visible,
+html[data-theme="light"] .key:focus-visible,
+html[data-theme="light"] .dj-slot-wrap:focus-visible,
+html[data-theme="light"] .dj-pad:focus-visible {
+  outline-color: #0066cc;
 }
 .start-hint-btn:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 4px;
+}
+html[data-theme="light"] .start-hint-btn:focus-visible {
+  outline-color: #111;
 }
 html[data-theme="light"] .dj-filter { background: #fff; color: #222; border-color: #ccc; }
 .dj-shuffle {
