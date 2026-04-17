@@ -251,6 +251,9 @@ function setupDjMode() {
   refreshLang();
   langBtn.onclick = () => {
     setLocale(getLocale() === 'ko' ? 'en' : 'ko');
+    langBtn.classList.remove('flash');
+    void langBtn.offsetWidth;
+    langBtn.classList.add('flash');
   };
 
   bar.appendChild(tapFloat);
