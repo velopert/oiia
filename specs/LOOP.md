@@ -135,7 +135,6 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [ ] **iOS audio unlock**: 최초 터치에 `audioCtx.resume()` + 무음 버퍼로 wake (이미 부분 구현, 모바일 검증).
 
 ### Onboarding / polish
-- [ ] **Tour 재방문**: help overlay에 "튜토리얼 다시 보기" 버튼.
 
 ### Audio quality
 
@@ -194,6 +193,7 @@ Backlog에 새로 넣은 항목이 있으면 언급.
 - [x] **[2026-04-17] Loop 49 — 루프 재생 속도**: 루프 버튼 옆 `0.5× / 1× / 2×` 토글. 재생 중에도 즉시 반영 (loopRunIteration 재트리거).
 - [x] **[2026-04-17] Loop 50 — 메트로놈 클릭**: `🥁 Metro` 버튼, BPM 기반 4/4 down/up-beat 사각파 블립 (다운비트 1600Hz, 아닌 것 1100Hz).
 - [x] **[2026-04-17] Loop 51 — 세그먼트 컬러 피커**: `input[type=color]`로 각 세그먼트 컬러 편집. URL preset encode/decode에 컬러 포함. 키 카드 + 파형 + active chip 자동 리렌더.
+- [x] **[2026-04-17] Loop 52 — Help 오버레이 액션**: "🎯 튜토리얼 다시 보기" + "🗑 전체 초기화" (confirm 후 localStorage 싹 비우고 리로드).
 
 ## Notes
 - dev server: `npm run dev` → http://localhost:5174/

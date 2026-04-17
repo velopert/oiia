@@ -770,6 +770,27 @@ html[data-theme="light"] .stats-row b { color: #000; }
   padding: 4px 0;
 }
 .stats-row b { color: #fff; font-weight: 700; }
+.keyhelp-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.keyhelp-action {
+  background: #2a2a2a;
+  color: #eee;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.keyhelp-action:hover { background: #333; border-color: #5af; }
+.keyhelp-action.danger { color: #ff8877; border-color: #553333; }
+.keyhelp-action.danger:hover { background: #331a1a; border-color: #ff8877; }
+html[data-theme="light"] .keyhelp-action { background: #f4f4f4; color: #222; border-color: #ccc; }
+html[data-theme="light"] .keyhelp-action.danger { color: #c62828; border-color: #e8b0b0; }
+
 .keyhelp-close {
   margin-top: 16px;
   color: #666;

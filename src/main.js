@@ -127,6 +127,18 @@ function setupTheme() {
 }
 setupTheme();
 
+document.getElementById('replay-tour')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  localStorage.removeItem('oiia-tour-done-v1');
+  location.reload();
+});
+document.getElementById('reset-storage')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!confirm('세그먼트·DJ 매핑·볼륨·테마·튜토리얼 기록을 모두 지우고 새로고침합니다. 진행?')) return;
+  ['oiia-segments-v7', 'oiia-dj-mapping-v1', 'oiia-dj-vol-v1', 'oiia-theme-v1', 'oiia-tour-done-v1', 'oiia-master-vol-v1'].forEach((k) => localStorage.removeItem(k));
+  location.href = location.origin + location.pathname;
+});
+
 const sessionStats = { key: {}, dj: {}, total: 0, start: Date.now() };
 
 function bumpStat(group, id) {
