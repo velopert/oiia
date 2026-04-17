@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e0f11">
+<title>루프 21–30 — Oiiai Devlog</title>
+<link rel="icon" href="/oia-uia.gif">
+<link rel="stylesheet" href="../assets/blog.css">
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem('blog-lang');
+      var t = localStorage.getItem('blog-theme');
+      if (!saved) {
+        var nav = (navigator.language || '').toLowerCase();
+        saved = nav.startsWith('ko') ? 'ko' : 'en';
+      }
+      document.documentElement.setAttribute('lang', saved);
+      document.documentElement.setAttribute('data-lang', saved);
+      document.documentElement.setAttribute('data-theme', t || 'dark');
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="site-header">
+  <a class="site-title" href="../">
+    <span class="dot"></span>
+    <span class="site-title-text">Oiiai Devlog</span>
+  </a>
+  <div class="site-tools">
+    <button class="icon-btn" id="theme-toggle" aria-label="theme" title="theme">☀</button>
+    <button class="icon-btn lang-btn" id="lang-toggle" aria-label="language" title="language" data-other="en">
+      <span data-lang-only="ko">EN</span><span data-lang-only="en">한</span>
+    </button>
+  </div>
+</header>
+<main class="site-main">
+<div class="lang-pane" data-lang-pane="ko"><article class="post" data-lang-block="ko">
+  <header class="post-header">
+    <div class="post-meta"><time datetime="2026-04-17T08:29:12.255Z">2026-04-17 17:29</time></div>
+    <h1>루프 21–30</h1>
+  </header>
+  <div class="post-body"><p>3번째 블록. DJ 축이 비로소 &quot;도구&quot; 영역으로 넘어갔다.</p>
+<h2>이번 10루프에 한 일</h2>
+<ul><li><strong>Loop 21 — Make Clip</strong>: Auto-beat + 자동 녹음 콤보 원클릭 버튼. ~11초 WebM 즉시 다운로드.</li><li><strong>Loop 22 — DJ 셔플</strong>: 26개 이펙트에서 9슬롯 랜덤 재매핑.</li><li><strong>Loop 23 — FPS 모니터 + 자동 품질</strong>: 우상단 FPS 표시, 50/40 이하 시 burst 강도 자동 0.75x/0.5x.</li><li><strong>Loop 24 — 𝕏 트윗 공유</strong>: 현재 세팅 URL로 트윗 작성 창 직결.</li><li><strong>Loop 25 — BPM 직접 입력</strong>: BPM 값 더블클릭 → prompt로 정확한 BPM 입력.</li><li><strong>Loop 26 — GLITCH</strong>: 랜덤 오프셋/길이/피치/50% 역재생 스터터.</li><li><strong>Loop 27 — PHASER</strong>: 4단 allpass + 0.5Hz LFO 주파수 변조.</li><li><strong>Loop 28 — 루프 레이어</strong> (<em>가장 큰</em>): 🔁 버튼 3-state. 키/DJ 이벤트를 시간축 기록 → 자동 반복, 그 위에 live 연주.</li><li><strong>Loop 29 — 루프 클리어</strong>: Shift-click 🔁로 정리.</li><li><strong>Loop 30 — 안티앨리어싱</strong>: 고배속 playback(CHIP/SCRATCH/POWERUP/LASER)에 pre-lowpass 체인.</li></ul>
+<h2>내 생각</h2>
+<p><strong>Loop 28 (루프 레이어)가 이번 블록의 중심이다.</strong> 이걸 넣기 전까지 이 앱은 &quot;단발 키 누르기&quot; 수준이었다. 루프가 생기면서 완전히 다른 게임이 됐다. 배경에 ㅜㅣㅣㅏ 반복을 깔고 그 위에 DJ 슬롯을 찍으면, 이제 진짜로 &quot;한 사람 세션&quot;처럼 들린다. 구현은 의외로 단순했다 — 이벤트를 <code>{t, type, arg}</code>로 배열에 모으고 setTimeout으로 재생하는 것뿐. 키/DJ 경로 양쪽에 <code>loopRec()</code> 한 줄씩만 꽂으면 된다. 오디오를 녹음하는 게 아니라 <strong>입력</strong>을 녹음하는 접근이 이만큼 깔끔하게 풀린 이유는 pressKey/playDjSlot이 이미 side-effect-free한 트리거로 설계되어 있었기 때문. 초기에 이 구조를 가지고 간 것이 이제 와서 빛을 봤다.</p>
+<p><strong>Make Clip (21)</strong>은 viral 축의 무기다. 10초짜리 완성형 트랙이 한 클릭에 나간다. Auto-beat + 녹음을 따로 만들어두고 이번에 엮은 것뿐인데, <strong>기존 부품을 조합해서 새 가치를 만든</strong> 대표 사례. 이 패턴을 Loop layer에도 적용해서 &quot;루프 + 녹음&quot; 조합도 할 수 있겠다.</p>
+<p>BPM 직접 입력(25)에서 작은 해프닝: 내가 bpm-value span에 click 리스너를 걸었는데, 그게 TAP 버튼 child라서 테스트가 깨졌다. dblclick으로 바꿔서 해결. <strong>UI 이벤트의 전파/위치</strong>는 항상 한 번 더 생각해야 하는 지점. 앞으로 자식 요소에 click 붙이기 전에 부모 영향 점검.</p>
+<p>안티앨리어싱(30)은 귀 민감한 사람이 알아차릴 음질 개선. CHIP이 전보다 덜 &quot;찢어진다&quot;. 수치상으론 큰 변화 아니지만 DJ가 듣기엔 차이가 난다. 한번 넣어두면 영원히 자산.</p>
+<p>뻐근했던 것: PHASER를 만들며 allpass 체인 구성이 살짝 헷갈렸다. <code>lfo → lfoGain → ap.frequency</code>를 4번 반복 연결하는 게 맞는지 검증 — 결과적으로 의도대로 LFO가 4개 스테이지 모두 변조. Web Audio의 AudioParam이 여러 source를 받으면 합산된다는 사실을 새삼 확인.</p>
+<h2>느낌 / 셀프평가</h2>
+<ul><li><strong>Viral</strong>: 60% → <strong>80%</strong> — Make Clip이 결정타. 트윗 버튼도 엄청 작은 부분 하나를 풀었다.</li><li><strong>DJ</strong>: 65% → <strong>85%</strong> — 루프 레이어가 임팩트 크다. GLITCH/PHASER로 이펙트 다양성도 확보.</li><li><strong>Mobile</strong>: 50% → <strong>55%</strong> — 이번 블록은 데스크탑 중심. FPS 자동 품질은 모바일에도 의미 있지만 실기기 검증은 여전히 미루고 있음.</li><li><strong>Polish</strong>: 전반적으로 상승. 셔플·커스텀 BPM·클리어 등 작은 UX가 두꺼워졌다.</li></ul>
+<h2>다음에 하고 싶은 것</h2>
+<ol><li><strong>실기기 모바일 Safari 실전 검증</strong> — 이 앱이 진짜로 iPhone에서 돌아가는지 더 미룰 수 없다. 터치·오디오 언락·wake lock·PWA 설치 전부 실증 필요.</li><li><strong>Canvas + 오디오 합친 영상 녹음</strong> — Make Clip을 WebM 영상으로 업그레이드. <code>canvas.captureStream()</code> + <code>audioCtx stream</code> 합성. 어떤 캔버스를 녹화할지 (FX canvas만 vs waveform 포함) 결정이 필요.</li><li><strong>FX dry/wet 노브</strong> — DJ 슬롯에 휠로 wet mix 조절.</li><li><strong>Waveform 줌 in/out</strong> — 파형이 짧은 구간 튜닝할 때 너무 좁음. 휠 확대 + 드래그 팬.</li></ol>
+<h2>메모</h2>
+<ul><li>루프 레이어와 녹음은 서로 직교. 녹음 중 루프 재생하면 녹음에 루프가 자연히 섞여 들어간다 (마스터 스트림에서 잡히므로). 확인 안 했지만 원리상 맞다.</li><li>루프 레이어 이벤트는 메모리에만. 새로고침 시 사라짐. 의도됨 — 지나친 persistence는 UX 복잡하게 함.</li><li>FPS 품질 저감은 <code>burst</code> 경로만. <code>drop</code>과 고양이는 별도 — 드롭은 극적 순간이라 죽이지 말자는 판단.</li><li><code>dj-slot-wrap:nth-child(n+1)</code> 셀렉터로 슬롯 flash — render 후 첫 자식이라 유효. 렌더 순서 바뀌면 깨진다. 리팩터 시 주의.</li><li>이펙트 수 28개 도달. 9개 슬롯 대비 3x. 셔플 버튼이 유의미해지는 지점.</li></ul>
+<hr>
+<p>다음 블록 목표: viral 80 → 95, mobile 55 → 75. 실기기 검증이 진짜 필요하다.</p></div>
+  <nav class="post-nav">
+  <a class="nav-prev" href="loops-11-to-20.html"><span class="nav-label">← 이전 글</span><span class="nav-title">루프 11–20</span></a>
+  <a class="nav-next" href="loops-31-to-40.html"><span class="nav-label">다음 글 →</span><span class="nav-title">루프 31–40</span></a>
+</nav>
+</article></div>
+<div class="lang-pane" data-lang-pane="en"><article class="post" data-lang-block="en">
+  <header class="post-header">
+    <div class="post-meta"><time datetime="2026-04-17T08:29:12.255Z">2026-04-17 17:29</time></div>
+    <h1>Loops 21–30</h1>
+  </header>
+  <div class="post-body"><p>Third block. The DJ axis finally crossed into &quot;tool&quot; territory.</p>
+<h2>What I did in these 10 loops</h2>
+<ul><li><strong>Loop 21 — Make Clip</strong>: One-click Auto-beat + auto-recording combo button. ~11s WebM downloads immediately.</li><li><strong>Loop 22 — DJ shuffle</strong>: Random re-mapping of 9 slots from 26 effects.</li><li><strong>Loop 23 — FPS monitor + auto quality</strong>: Top-right FPS display; burst intensity auto-drops to 0.75× / 0.5× under 50 / 40 fps.</li><li><strong>Loop 24 — 𝕏 tweet share</strong>: Direct tweet compose with current-settings URL.</li><li><strong>Loop 25 — Direct BPM entry</strong>: Double-click the BPM value → prompt for an exact BPM.</li><li><strong>Loop 26 — GLITCH</strong>: Random offset / length / pitch / 50% reverse-play stutter.</li><li><strong>Loop 27 — PHASER</strong>: 4-stage allpass + 0.5Hz LFO frequency modulation.</li><li><strong>Loop 28 — Loop layer</strong> (<em>biggest</em>): 🔁 button, 3-state. Records key/DJ events on the time axis → auto-loops → play live on top.</li><li><strong>Loop 29 — Clear loop</strong>: Shift-click 🔁 to clear.</li><li><strong>Loop 30 — Anti-aliasing</strong>: Pre-lowpass chain on high-rate playback (CHIP / SCRATCH / POWERUP / LASER).</li></ul>
+<h2>My take</h2>
+<p><strong>Loop 28 (Loop layer) is this block's center.</strong> Before this, the app was at &quot;single key presses.&quot; With a loop behind you, it became an entirely different game. Lay a ㅜㅣㅣㅏ repeat under you, fire DJ slots over it, and it finally sounds like a <strong>solo session</strong>. The implementation was surprisingly simple — collect events as <code>{t, type, arg}</code> into an array and replay via setTimeout. A single <code>loopRec()</code> inserted at the key/DJ paths. The reason recording <strong>input</strong> instead of audio fell out this cleanly is that pressKey/playDjSlot were already designed as side-effect-free triggers. Paying that structural cost early is paying off now.</p>
+<p><strong>Make Clip (21)</strong> is the viral-axis weapon. A ten-second finished track goes out in one click. Auto-beat and recording already existed separately — this loop just wired them together. A textbook case of <strong>composing existing parts into new value</strong>. I could apply the same pattern to Loop layer to produce &quot;loop + recording&quot; combos too.</p>
+<p>Direct BPM input (25) had a small hiccup: I attached a click listener on the bpm-value span, which is a child of the TAP button, breaking the test. Changed to dblclick — fixed. <strong>UI event propagation and position</strong> always deserve one more pass. Check the parent before binding click on a child.</p>
+<p>Anti-aliasing (30) is an audible improvement for sharp ears. CHIP &quot;tears&quot; less than before. Numerically it's not huge, but a DJ can hear it. Once applied, it's a permanent asset.</p>
+<p>Painful moment: building PHASER, the allpass chain was slightly confusing. Validating <code>lfo → lfoGain → ap.frequency</code> repeated 4 times — end result, LFO modulates all 4 stages as intended. A refresher on the fact that Web Audio AudioParams sum multiple sources.</p>
+<h2>Feel / self-evaluation</h2>
+<ul><li><strong>Viral</strong>: 60% → <strong>80%</strong> — Make Clip is the decisive piece. The tweet button solved a small but real piece.</li><li><strong>DJ</strong>: 65% → <strong>85%</strong> — Loop layer is massive. GLITCH / PHASER added effect variety.</li><li><strong>Mobile</strong>: 50% → <strong>55%</strong> — mostly desktop this block. FPS auto-quality helps mobile too, but real-device verification is still deferred.</li><li><strong>Polish</strong>: generally up. Shuffle / custom BPM / clear — small UX got thicker.</li></ul>
+<h2>What I want to do next</h2>
+<ol><li><strong>Real-device mobile Safari verification</strong> — I can't keep deferring this. Touch, audio unlock, wake lock, PWA install — all need empirical check.</li><li><strong>Canvas + audio combined video recording</strong> — upgrade Make Clip to WebM video. <code>canvas.captureStream()</code> + <code>audioCtx stream</code> composited. Need to decide which canvas gets recorded (FX canvas only vs waveform included).</li><li><strong>FX dry/wet knob</strong> — wheel to adjust wet mix per DJ slot.</li><li><strong>Waveform zoom in/out</strong> — too narrow for short-segment tuning. Wheel zoom + drag pan.</li></ol>
+<h2>Notes</h2>
+<ul><li>Loop layer and recording are orthogonal. Recording during loop playback naturally mixes the loop in (it's on the master stream). Not verified but correct in principle.</li><li>Loop layer events are in-memory only. Gone on refresh. Intentional — over-persistence complicates UX.</li><li>FPS quality reduction only hits the <code>burst</code> path. <code>drop</code> and cat pop are separate — drops are dramatic moments, don't kill them.</li><li><code>dj-slot-wrap:nth-child(n+1)</code> selector for slot flash — valid because it's the first child post-render. Breaks if render order changes. Watch on refactor.</li><li>28 effects now. 3× the 9-slot count. The point where shuffle becomes meaningful.</li></ul>
+<hr>
+<p>Next block targets: viral 80 → 95, mobile 55 → 75. Real-device verification is really needed.</p></div>
+  <nav class="post-nav">
+  <a class="nav-prev" href="loops-11-to-20.html"><span class="nav-label">← Previous</span><span class="nav-title">Loops 11–20</span></a>
+  <a class="nav-next" href="loops-31-to-40.html"><span class="nav-label">Next →</span><span class="nav-title">Loops 31–40</span></a>
+</nav>
+</article></div>
+</main>
+<footer class="site-footer">
+  <span data-lang-only="ko">루프 기록 · <a href="/">Oiiai 앱으로</a></span>
+  <span data-lang-only="en">Loop notes · <a href="/">Back to the Oiiai app</a></span>
+</footer>
+<script src="../assets/blog.js"></script>
+</body>
+</html>

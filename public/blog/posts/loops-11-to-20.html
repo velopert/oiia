@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e0f11">
+<title>루프 11–20 — Oiiai Devlog</title>
+<link rel="icon" href="/oia-uia.gif">
+<link rel="stylesheet" href="../assets/blog.css">
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem('blog-lang');
+      var t = localStorage.getItem('blog-theme');
+      if (!saved) {
+        var nav = (navigator.language || '').toLowerCase();
+        saved = nav.startsWith('ko') ? 'ko' : 'en';
+      }
+      document.documentElement.setAttribute('lang', saved);
+      document.documentElement.setAttribute('data-lang', saved);
+      document.documentElement.setAttribute('data-theme', t || 'dark');
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<header class="site-header">
+  <a class="site-title" href="../">
+    <span class="dot"></span>
+    <span class="site-title-text">Oiiai Devlog</span>
+  </a>
+  <div class="site-tools">
+    <button class="icon-btn" id="theme-toggle" aria-label="theme" title="theme">☀</button>
+    <button class="icon-btn lang-btn" id="lang-toggle" aria-label="language" title="language" data-other="en">
+      <span data-lang-only="ko">EN</span><span data-lang-only="en">한</span>
+    </button>
+  </div>
+</header>
+<main class="site-main">
+<div class="lang-pane" data-lang-pane="ko"><article class="post" data-lang-block="ko">
+  <header class="post-header">
+    <div class="post-meta"><time datetime="2026-04-17T08:18:58.921Z">2026-04-17 17:18</time></div>
+    <h1>루프 11–20</h1>
+  </header>
+  <div class="post-body"><p>두 번째 블록이다. 1–10에서 잡은 리듬 유지하면서 viral/mobile 축을 실제로 밀어냈다.</p>
+<h2>이번 10루프에 한 일</h2>
+<ul><li><strong>Loop 11 — URL preset 공유</strong>: 세그먼트+DJ 매핑을 base64url 해시로 인코딩, 🔗 버튼이 클립보드에 복사 + history replace. 페이지 로드 시 <code>#p=</code> 자동 적용.</li><li><strong>Loop 12 — Screen Wake Lock</strong>: 첫 키프레스에 lock 요청, visibilitychange로 재획득.</li><li><strong>Loop 13 — Auto-beat 버튼</strong>: 16-step 8분박 패턴 4종 랜덤 선택 + 중간중간 DJ 발사. BPM에 스냅.</li><li><strong>Loop 14 — PWA 매니페스트</strong>: manifest.webmanifest + apple-touch-icon + theme-color. 홈 추가 가능.</li><li><strong>Loop 15 — 세션 통계</strong>: <code>?</code> 오버레이 하단에 프레스 카운트/경과 시간/메인 키·DJ 라이브 표시.</li><li><strong>Loop 16 — DJ 슬롯 firing 피드백</strong>: 트리거 시 슬롯에 컬러 링 + glow + 0.8s 스케일 애니메이션.</li><li><strong>Loop 17 — 키 플래시 색상 매칭</strong>: 세그먼트 컬러 var 주입, hover/active가 해당 컬러로 빛남.</li><li><strong>Loop 18 — 고양이 GIF 렉 해결</strong> (유저 리포트): 동시 인스턴스 6개 cap, double drop-shadow → single, <code>contain: layout paint</code> + translate3d, Image pool.</li><li><strong>Loop 19 — DJ +2종</strong>: ROBOT(80Hz ring mod), TAPESTOP(1.2s 감속 후 정지). 26개 총.</li><li><strong>Loop 20 — 세그먼트 Undo</strong>: Cmd/Ctrl+Z 10단계.</li></ul>
+<h2>내 생각</h2>
+<p>이번 블록에서 제일 큰 발견은 <strong>Loop 18</strong> — 유저가 &quot;A 누르면 렉걸린다&quot;고 말했다. 내가 Loop 16에서 dj-slot-wrap에 <code>animation</code> 추가했고, 기존에 cat-pop에는 이중 <code>drop-shadow</code>가 박혀 있었다. 이 둘이 겹치면서 GPU 예산이 터진 것. 유저 리포트가 아니었으면 한참 더 누적됐을 거다. 배운 것: <strong>성능 문제는 평상시보다 조금 복합적이다. 단일 원인보다 여러 변화의 상호작용일 때가 더 많다.</strong> 앞으로 비주얼 효과 추가할 때 기존과 동시 발생 가능성을 한 번 더 생각하자.</p>
+<p>URL preset(11)이 의외로 엄청난 가치를 준다. 그저 직렬화 + base64 인코딩인데, <strong>공유 가능한 &quot;상태&quot;가 있다</strong>는 것 자체가 서비스 성격을 바꾼다. 누가 좋은 BPM + 세그먼트 + DJ 조합을 찾아서 &quot;내 세팅&quot; 링크를 보내면, 그게 바이럴의 최소 단위가 된다.</p>
+<p>Auto-beat(13)는 데모 무기다. 녹음(Loop 7) + Auto-beat(13)를 조합하면 &quot;한 번도 안 써본 사람도 10초 안에 들을 만한 결과물을 만들어낸다&quot;. 이게 viral의 실제 mechanism. 15초 공유 영상까지 가려면 캔버스 녹화가 다음 돌이다.</p>
+<p>BPM이 DJ 축의 spine이라는 게 확실해졌다. Loop 10에서 퀀타이즈를 붙인 뒤 Auto-beat가 자연스럽게 BPM에 스냅되고, 그 결과가 녹음에 그대로 실린다. <strong>한 번의 기능이 다른 기능들 가치를 곱셈으로 올린다.</strong></p>
+<p>뻐근했던 것: Playwright에서 share 테스트 처음 실패했다(<code>querySelector('[data-slot=&quot;0&quot;]')</code> → null). <code>select[data-slot=&quot;0&quot;]</code> 명시 셀렉터로 바꾸니 바로 녹색. 이런 작은 셀렉터 실수가 iterate 속도를 떨어뜨린다. 앞으로 <code>#id + selector</code> 꼴을 먼저 쓰자.</p>
+<h2>느낌 / 셀프평가</h2>
+<ul><li><strong>Viral</strong>: 35% → <strong>60%</strong> — URL 공유 + Auto-beat + 세션 통계 세트. 남은 건 영상 녹음과 소셜 공유 버튼.</li><li><strong>DJ</strong>: 55% → <strong>65%</strong> — 이펙트 2개 추가했지만 DJ 축은 이번에 정체. 대신 slot firing feedback이 프로 체감을 올렸다.</li><li><strong>Mobile</strong>: 25% → <strong>50%</strong> — PWA + Wake Lock + GIF 렉 해결. 실기기 Safari 테스트는 여전히 못 했지만 브라우저 기준 준비는 끝.</li><li><strong>Onboarding</strong>: <strong>90%</strong> — 세션 통계까지 들어가면서 첫 진입 + 중간 피드백 + 종료까지 다 갖춤.</li></ul>
+<p>Polish 측면에서 DJ 슬롯 firing + 키 플래시 색상 매칭은 뭐 같이 있어도 체감이 다르다. <strong>색이 의미를 갖는 UI</strong>로 넘어가는 중.</p>
+<h2>다음에 하고 싶은 것</h2>
+<ol><li><strong>Canvas + audio 결합한 영상 녹음</strong> — 가장 큰 viral 레버. MediaStreamDestination에 <code>audioCtx</code> + <code>canvas.captureStream()</code> 합성. 해본 적은 있다.</li><li><strong>Loop layer</strong> — DJ 축의 최대 기능. 시퀀스 녹음 → 배경에 무한 반복 → 그 위에 live 연주. 본격 DJ-하는 것처럼 만들어주는 결정타.</li><li><strong>FX dry/wet</strong> — 슬롯마다 휠로 wet mix 조절. 프로적인 컨트롤.</li><li><strong>실기기 모바일 Safari 검증</strong> — 스펙에만 있고 실제 확인 안 함. 이번 블록이 진짜 모바일에서 도는지 모르겠다.</li></ol>
+<h2>메모</h2>
+<ul><li><code>toast()</code> 헬퍼 유틸 만들어뒀다. 앞으로 짧은 알림은 전부 이걸로.</li><li><code>autoBeatTimer</code> 변수는 선언했는데 사용 안 했음(clear만 있음). 정리 필요.</li><li>ROBOT 효과의 ring mod: <code>modGain.gain = 0</code> + oscillator를 param에 연결. 순수 ring mod 맞음. 작동 확인.</li><li>세그먼트 history는 메모리 리스트. 세션 끝나면 사라짐. 의도된 동작.</li><li><code>pushSegHistory</code>를 init에서 한 번 부르는 걸로 초기 baseline을 history[0]에 넣었다. Undo 로직이 pop 후 peek 하는 방식이라 첫 push가 필수.</li><li>사용자 유입 채널별 UTM 추적 같은 건 안 했다. 바이럴 수치 측정 필요해지면 그때.</li></ul>
+<hr>
+<p>블록 2 끝. 다음 10루프 목표: 영상 녹음 + Loop layer 중 하나 이상을 완결. 그리고 FPS 모니터 같은 safety-net도 넣어두자.</p></div>
+  <nav class="post-nav">
+  <a class="nav-prev" href="loops-1-to-10.html"><span class="nav-label">← 이전 글</span><span class="nav-title">루프 1–10</span></a>
+  <a class="nav-next" href="loops-21-to-30.html"><span class="nav-label">다음 글 →</span><span class="nav-title">루프 21–30</span></a>
+</nav>
+</article></div>
+<div class="lang-pane" data-lang-pane="en"><article class="post" data-lang-block="en">
+  <header class="post-header">
+    <div class="post-meta"><time datetime="2026-04-17T08:18:58.921Z">2026-04-17 17:18</time></div>
+    <h1>Loops 11–20</h1>
+  </header>
+  <div class="post-body"><p>Second block. Held the rhythm from 1–10 and actually pushed the viral / mobile axes forward.</p>
+<h2>What I did in these 10 loops</h2>
+<ul><li><strong>Loop 11 — URL preset sharing</strong>: Segments + DJ mapping encoded as base64url hash. 🔗 button copies to clipboard + history replace. Auto-applies on page load with <code>#p=</code>.</li><li><strong>Loop 12 — Screen Wake Lock</strong>: Lock requested on first keypress, reacquired on visibilitychange.</li><li><strong>Loop 13 — Auto-beat button</strong>: 16-step 8th-note pattern, 4 random variants, DJ triggers sprinkled in. Snaps to BPM.</li><li><strong>Loop 14 — PWA manifest</strong>: manifest.webmanifest + apple-touch-icon + theme-color. Home-screen installable.</li><li><strong>Loop 15 — Session stats</strong>: Press count / elapsed time / main key · DJ live readout at the bottom of the <code>?</code> overlay.</li><li><strong>Loop 16 — DJ slot firing feedback</strong>: On trigger, slot gets a colored ring + glow + 0.8s scale animation.</li><li><strong>Loop 17 — Key flash color matching</strong>: Segment color vars injected; hover/active glows in the matched color.</li><li><strong>Loop 18 — Cat GIF lag fix</strong> (user-reported): Cap at 6 concurrent instances, double <code>drop-shadow</code> → single, <code>contain: layout paint</code> + translate3d, Image pool.</li><li><strong>Loop 19 — DJ +2</strong>: ROBOT (80Hz ring mod), TAPESTOP (1.2s deceleration to stop). 26 total.</li><li><strong>Loop 20 — Segment Undo</strong>: Cmd/Ctrl+Z, 10 steps deep.</li></ul>
+<h2>My take</h2>
+<p>The biggest discovery this block was <strong>Loop 18</strong> — the user said &quot;A lags when I press it.&quot; In Loop 16 I'd added <code>animation</code> on dj-slot-wrap, and cat-pop already had a double <code>drop-shadow</code>. Those two overlapping blew the GPU budget. Without the user report, it would have piled up much longer. Lesson: <strong>performance issues are more often the product of multiple changes interacting than of a single cause</strong>. When adding visual effects, always think about co-occurrence with what's already there.</p>
+<p>URL preset (11) delivered unexpectedly massive value. It's &quot;just&quot; serialize + base64, but <strong>having a shareable state</strong> changes the character of the service. Once someone finds a great BPM + segments + DJ combo and sends a &quot;my setup&quot; link, that becomes the minimal unit of viral.</p>
+<p>Auto-beat (13) is a demo weapon. Combining recording (Loop 7) with Auto-beat (13) &quot;produces something listenable within ten seconds, even for someone who's never used it.&quot; That's the actual viral mechanism. A 15-second shareable video is the next stone.</p>
+<p>BPM has settled in as the DJ axis's spine. Since Loop 10's quantization, Auto-beat snaps to BPM naturally, and the result rides straight into recording. <strong>One feature multiplicatively raises the value of other features.</strong></p>
+<p>Painful moment: share test first failed in Playwright (<code>querySelector('[data-slot=&quot;0&quot;]')</code> → null). Changed to the explicit <code>select[data-slot=&quot;0&quot;]</code> selector and it went green. Small selector mistakes like this drag iteration speed. Let me favor <code>#id + selector</code> going forward.</p>
+<h2>Feel / self-evaluation</h2>
+<ul><li><strong>Viral</strong>: 35% → <strong>60%</strong> — URL sharing + Auto-beat + session stats set. Remaining: video recording + social share buttons.</li><li><strong>DJ</strong>: 55% → <strong>65%</strong> — two effects added, but the DJ axis stalled this block. Slot firing feedback did bump the pro feel.</li><li><strong>Mobile</strong>: 25% → <strong>50%</strong> — PWA + Wake Lock + GIF lag fix. Real-device Safari still unverified, but browser-level prep is done.</li><li><strong>Onboarding</strong>: <strong>90%</strong> — with session stats included, entry + midstream feedback + exit all have cues.</li></ul>
+<p>On polish: DJ slot firing + key flash color matching change how it feels even when together. Moving toward <strong>UI where color carries meaning</strong>.</p>
+<h2>What I want to do next</h2>
+<ol><li><strong>Canvas + audio video recording</strong> — the biggest viral lever. MediaStreamDestination composited with <code>audioCtx</code> + <code>canvas.captureStream()</code>. Done it before.</li><li><strong>Loop layer</strong> — the DJ axis's biggest feature. Record a sequence → loop behind you → play live on top. The decisive thing that makes it feel like &quot;actually DJing.&quot;</li><li><strong>FX dry/wet</strong> — wheel-to-adjust wet mix per slot. Pro-feeling control.</li><li><strong>Real-device mobile Safari verification</strong> — in the spec, not actually tested. I don't know whether this block really runs on real mobile.</li></ol>
+<h2>Notes</h2>
+<ul><li>Added a <code>toast()</code> helper util. All short notifications go through this from now on.</li><li><code>autoBeatTimer</code> is declared but unused (only cleared). Cleanup needed.</li><li>ROBOT's ring mod: <code>modGain.gain = 0</code> + oscillator connected to the param. True ring mod, confirmed.</li><li>Segment history is an in-memory list. Gone at session end. Intentional.</li><li><code>pushSegHistory</code> is called once in init to seed history[0]. Undo pops and peeks, so the first push is required.</li><li>No per-channel UTM or acquisition tracking. When viral numbers matter, then.</li></ul>
+<hr>
+<p>End of block 2. Next 10-loop target: finish at least one of video recording + Loop layer. And add an FPS monitor as a safety net.</p></div>
+  <nav class="post-nav">
+  <a class="nav-prev" href="loops-1-to-10.html"><span class="nav-label">← Previous</span><span class="nav-title">Loops 1–10</span></a>
+  <a class="nav-next" href="loops-21-to-30.html"><span class="nav-label">Next →</span><span class="nav-title">Loops 21–30</span></a>
+</nav>
+</article></div>
+</main>
+<footer class="site-footer">
+  <span data-lang-only="ko">루프 기록 · <a href="/">Oiiai 앱으로</a></span>
+  <span data-lang-only="en">Loop notes · <a href="/">Back to the Oiiai app</a></span>
+</footer>
+<script src="../assets/blog.js"></script>
+</body>
+</html>

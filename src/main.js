@@ -252,11 +252,11 @@ function setupDjMode() {
   document.body.appendChild(bar);
 
   onLocaleChange(() => {
+    KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
+    if (typeof renderKeys === 'function') renderKeys();
     refreshLabels();
     refreshLang();
     applyAllI18n();
-    KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
-    if (typeof renderKeys === 'function') renderKeys();
   });
 }
 setupDjMode();
@@ -272,6 +272,48 @@ function applyAllI18n() {
   if (tourSkip) tourSkip.textContent = t('tour.skip');
   const tourNext = document.getElementById('tour-next');
   if (tourNext) tourNext.textContent = t('tour.next');
+  renderKeyhelp();
+  renderHint();
+}
+
+function renderHint() {
+  const hintEl = document.querySelector('.hint');
+  if (!hintEl) return;
+  const locale = getLocale();
+  const bodyKey = locale === 'ko' ? 'hint.body.ko' : 'hint.body.en';
+  hintEl.innerHTML = `${t(bodyKey)}<br/>${t('hint.wave')}<br/>${t('hint.shortcuts')}`;
+}
+
+function renderKeyhelp() {
+  const title = document.querySelector('#keyhelp .keyhelp-title');
+  if (title) title.textContent = t('keyhelp.title');
+  const grid = document.querySelector('#keyhelp .keyhelp-grid');
+  if (!grid) return;
+  const rows = [];
+  KEY_ORDER.forEach((k) => {
+    const kb = k.code.replace('Key', '');
+    rows.push([kb, t('keyhelp.' + k.segId)]);
+  });
+  rows.push(['1–9', t('keyhelp.dj')]);
+  rows.push(['0', t('keyhelp.djRandom')]);
+  rows.push(['Space', t('keyhelp.playAll')]);
+  rows.push(['Tab', t('keyhelp.tab')]);
+  rows.push([t('keyhelp.holdLabel'), t('keyhelp.hold')]);
+  rows.push(['Cmd/Ctrl+Z', t('keyhelp.undo')]);
+  rows.push(['?', t('keyhelp.help')]);
+  rows.push(['Esc', t('keyhelp.esc')]);
+  grid.innerHTML = rows.map(([k, d]) => `<kbd>${k}</kbd><span>${d}</span>`).join('');
+  const close = document.querySelector('#keyhelp .keyhelp-close');
+  if (close) close.textContent = t('keyhelp.close');
+  const replayBtn = document.getElementById('replay-tour');
+  if (replayBtn) replayBtn.textContent = t('keyhelp.tour');
+  const resetBtn = document.getElementById('reset-storage');
+  if (resetBtn) { resetBtn.textContent = t('keyhelp.reset'); resetBtn.title = t('keyhelp.resetTitle'); }
+  const intensityLabel = document.querySelector('.keyhelp-intensity');
+  if (intensityLabel) {
+    const currentText = intensityLabel.firstChild;
+    if (currentText && currentText.nodeType === 3) currentText.nodeValue = ' ' + t('keyhelp.fxIntensity') + ' ';
+  }
 }
 
 (function setupFxIntensity() {
@@ -390,6 +432,8 @@ const KEY_LAYOUT = {
   ],
 };
 let KEY_ORDER = KEY_LAYOUT[getLocale()] || KEY_LAYOUT.en;
+renderKeyhelp();
+renderHint();
 
 const app = document.getElementById('app');
 app.innerHTML = `

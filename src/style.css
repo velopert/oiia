@@ -1081,7 +1081,12 @@ html[data-theme="light"] .stats-chip.dj { background: #efdbff; color: #5a2a7f; }
   padding: 6px 12px;
   cursor: pointer;
   font-size: 12px;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-block;
+  line-height: normal;
 }
+.keyhelp-action:hover { text-decoration: none; }
 .keyhelp-action:hover { background: #333; border-color: #5af; }
 .keyhelp-action.danger { color: #ff8877; border-color: #553333; }
 .keyhelp-action.danger:hover { background: #331a1a; border-color: #ff8877; }
